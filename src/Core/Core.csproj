@@ -3,6 +3,7 @@
   <PropertyGroup>
     <GenerateUserSecretsAttribute>false</GenerateUserSecretsAttribute>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <UserSecretsId>7464c1a4-d2f7-47a9-80ee-99977260eebe</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
