@@ -101,7 +101,7 @@ namespace Bit.Core.Services
             _identityErrorDescriber = errors;
             _passwordHasher = passwordHasher;
             _passwordValidators = passwordValidators;
-            _licenseService = licenseService;
+            licenseService = new NoopLicensingService();
             _eventService = eventService;
             _applicationCacheService = applicationCacheService;
             _paymentService = paymentService;

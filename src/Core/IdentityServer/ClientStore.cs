@@ -41,7 +41,7 @@ namespace Bit.Core.IdentityServer
             _userRepository = userRepository;
             _globalSettings = globalSettings;
             _staticClientStore = staticClientStore;
-            _licensingService = licensingService; 
+            _licensingService = new NoopLicensingService();
             _currentContext = currentContext;
             _organizationUserRepository = organizationUserRepository;
         }

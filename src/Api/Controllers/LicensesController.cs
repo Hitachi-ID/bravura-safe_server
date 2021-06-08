@@ -31,7 +31,7 @@ namespace Bit.Api.Controllers
             IOrganizationService organizationService,
             ICurrentContext currentContext)
         {
-            _licensingService = licensingService;
+            _licensingService = new NoopLicensingService();
             _userRepository = userRepository;
             _userService = userService;
             _organizationRepository = organizationRepository;

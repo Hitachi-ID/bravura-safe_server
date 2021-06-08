@@ -29,7 +29,7 @@ namespace Bit.Core.IdentityServer
         {
             _userService = userService;
             _organizationUserRepository = organizationUserRepository;
-            _licensingService = licensingService;
+            _licensingService = new NoopLicensingService();
             _currentContext = currentContext;
         }
 

@@ -76,7 +76,7 @@ namespace Bit.Core.Services
             _pushNotificationService = pushNotificationService;
             _pushRegistrationService = pushRegistrationService;
             _deviceRepository = deviceRepository;
-            _licensingService = licensingService;
+            _licensingService = new NoopLicensingService();
             _eventService = eventService;
             _installationRepository = installationRepository;
             _applicationCacheService = applicationCacheService;

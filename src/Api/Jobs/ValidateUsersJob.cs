@@ -15,7 +15,7 @@ namespace Bit.Api.Jobs
             ILogger<ValidateUsersJob> logger)
             : base(logger)
         {
-            _licensingService = licensingService;
+            _licensingService = new NoopLicensingService();
         }
 
         protected async override Task ExecuteJobAsync(IJobExecutionContext context)
