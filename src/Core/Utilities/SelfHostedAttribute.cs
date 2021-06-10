@@ -17,10 +17,6 @@ namespace Bit.Core.Utilities
             {
                 throw new BadRequestException("Only allowed when self hosted.");
             }
-            else if (NotSelfHostedOnly && globalSettings.SelfHosted)
-            {
-                throw new BadRequestException("Only allowed when not self hosted.");
-            }
         }
     }
 }

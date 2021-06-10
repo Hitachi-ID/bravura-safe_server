@@ -76,25 +76,9 @@ namespace Bit.Core.Models.Api
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (PlanType != PlanType.Free && string.IsNullOrWhiteSpace(PaymentToken))
+            if (PlanType == PlanType.Free)
             {
-                yield return new ValidationResult("Payment required.", new string[] { nameof(PaymentToken) });
-            }
-            if (PlanType != PlanType.Free && !PaymentMethodType.HasValue)
-            {
-                yield return new ValidationResult("Payment method type required.",
-                    new string[] { nameof(PaymentMethodType) });
-            }
-            if (PlanType != PlanType.Free && string.IsNullOrWhiteSpace(BillingAddressCountry))
-            {
-                yield return new ValidationResult("Country required.",
-                    new string[] { nameof(BillingAddressCountry) });
-            }
-            if (PlanType != PlanType.Free && BillingAddressCountry == "US" &&
-                string.IsNullOrWhiteSpace(BillingAddressPostalCode))
-            {
-                yield return new ValidationResult("Zip / postal code is required.",
-                    new string[] { nameof(BillingAddressPostalCode) });
+                yield return new ValidationResult("Plan type is free.", new string[] { nameof(PaymentToken) });
             }
         }
     }

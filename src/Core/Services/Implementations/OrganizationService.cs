@@ -565,24 +565,21 @@ namespace Bit.Core.Services
                 Id = CoreHelpers.GenerateComb(),
                 Name = signup.Name,
                 BillingEmail = signup.BillingEmail,
-                BusinessName = signup.BusinessName,
-                PlanType = plan.Type,
-                Seats = (short)(plan.BaseSeats + signup.AdditionalSeats),
-                MaxCollections = plan.MaxCollections,
-                MaxStorageGb = !plan.BaseStorageGb.HasValue ?
-                    (short?)null : (short)(plan.BaseStorageGb.Value + signup.AdditionalStorageGb),
-                UsePolicies = plan.HasPolicies,
-                UseSso = plan.HasSso,
-                UseGroups = plan.HasGroups,
-                UseEvents = plan.HasEvents,
-                UseDirectory = plan.HasDirectory,
-                UseTotp = plan.HasTotp,
-                Use2fa = plan.Has2fa,
-                UseApi = plan.HasApi,
-                UseResetPassword = plan.HasResetPassword,
-                SelfHost = plan.HasSelfHost,
-                UsersGetPremium = plan.UsersGetPremium || signup.PremiumAccessAddon,
-                Plan = plan.Name,
+                PlanType = PlanType.Custom,
+                Seats = 32767,
+                MaxCollections = 32767,
+                MaxStorageGb = 10240,
+                UsePolicies = true,
+                UseSso = true,
+                UseGroups = true,
+                UseEvents = true,
+                UseDirectory = true,
+                UseTotp = true,
+                Use2fa = true,
+                UseApi = true,
+                SelfHost = true,
+                UsersGetPremium = true,
+                Plan = "Custom",
                 Gateway = null,
                 ReferenceData = signup.Owner.ReferenceData,
                 Enabled = true,
@@ -592,6 +589,7 @@ namespace Bit.Core.Services
                 PrivateKey = signup.PrivateKey,
                 CreationDate = DateTime.UtcNow,
                 RevisionDate = DateTime.UtcNow,
+                ExpirationDate = DateTime.UtcNow.AddYears(100),
             };
 
             if (plan.Type == PlanType.Free)
@@ -602,12 +600,6 @@ namespace Bit.Core.Services
                 {
                     throw new BadRequestException("You can only be an admin of one free organization.");
                 }
-            }
-            else
-            {
-                await _paymentService.PurchaseOrganizationAsync(organization, signup.PaymentMethodType.Value,
-                    signup.PaymentToken, plan, signup.AdditionalStorageGb, signup.AdditionalSeats,
-                    signup.PremiumAccessAddon, signup.TaxInfo);
             }
 
             var returnValue = await SignUpAsync(organization, signup.Owner.Id, signup.OwnerKey, signup.CollectionName, true);
@@ -2028,42 +2020,6 @@ namespace Bit.Core.Services
 
         private void ValidateOrganizationUpgradeParameters(Models.StaticStore.Plan plan, OrganizationUpgrade upgrade)
         {
-            if (!plan.HasAdditionalStorageOption && upgrade.AdditionalStorageGb > 0)
-            {
-                throw new BadRequestException("Plan does not allow additional storage.");
-            }
-
-            if (upgrade.AdditionalStorageGb < 0)
-            {
-                throw new BadRequestException("You can't subtract storage!");
-            }
-
-            if (!plan.HasPremiumAccessOption && upgrade.PremiumAccessAddon)
-            {
-                throw new BadRequestException("This plan does not allow you to buy the premium access addon.");
-            }
-
-            if (plan.BaseSeats + upgrade.AdditionalSeats <= 0)
-            {
-                throw new BadRequestException("You do not have any seats!");
-            }
-
-            if (upgrade.AdditionalSeats < 0)
-            {
-                throw new BadRequestException("You can't subtract seats!");
-            }
-
-            if (!plan.HasAdditionalSeatsOption && upgrade.AdditionalSeats > 0)
-            {
-                throw new BadRequestException("Plan does not allow additional users.");
-            }
-
-            if (plan.HasAdditionalSeatsOption && plan.MaxAdditionalSeats.HasValue &&
-                upgrade.AdditionalSeats > plan.MaxAdditionalSeats.Value)
-            {
-                throw new BadRequestException($"Selected plan allows a maximum of " +
-                    $"{plan.MaxAdditionalSeats.GetValueOrDefault(0)} additional users.");
-            }
         }
 
         private async Task ValidateOrganizationUserUpdatePermissionsAsync(Guid loggedInUserId, Guid organizationId,

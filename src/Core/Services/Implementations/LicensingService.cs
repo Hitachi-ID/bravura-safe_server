@@ -81,43 +81,7 @@ namespace Bit.Core.Services
 
         public async Task ValidateOrganizationsAsync()
         {
-            if (!_globalSettings.SelfHosted)
-            {
-                return;
-            }
-
-            var enabledOrgs = await _organizationRepository.GetManyByEnabledAsync();
-            _logger.LogInformation(Constants.BypassFiltersEventId, null,
-                "Validating licenses for {0} organizations.", enabledOrgs.Count);
-
-            foreach (var org in enabledOrgs)
-            {
-                var license = ReadOrganizationLicense(org);
-                if (license == null)
-                {
-                    await DisableOrganizationAsync(org, null, "No license file.");
-                    continue;
-                }
-
-                var totalLicensedOrgs = enabledOrgs.Count(o => o.LicenseKey.Equals(license.LicenseKey));
-                if (totalLicensedOrgs > 1)
-                {
-                    await DisableOrganizationAsync(org, license, "Multiple organizations.");
-                    continue;
-                }
-
-                if (!license.VerifyData(org, _globalSettings))
-                {
-                    await DisableOrganizationAsync(org, license, "Invalid data.");
-                    continue;
-                }
-
-                if (!license.VerifySignature(_certificate))
-                {
-                    await DisableOrganizationAsync(org, license, "Invalid signature.");
-                    continue;
-                }
-            }
+            return;
         }
 
         private async Task DisableOrganizationAsync(Organization org, ILicense license, string reason)
@@ -135,55 +99,12 @@ namespace Bit.Core.Services
 
         public async Task ValidateUsersAsync()
         {
-            if (!_globalSettings.SelfHosted)
-            {
-                return;
-            }
-
-            var premiumUsers = await _userRepository.GetManyByPremiumAsync(true);
-            _logger.LogInformation(Constants.BypassFiltersEventId, null,
-                "Validating premium for {0} users.", premiumUsers.Count);
-
-            foreach (var user in premiumUsers)
-            {
-                await ProcessUserValidationAsync(user);
-            }
+        return;
         }
 
         public async Task<bool> ValidateUserPremiumAsync(User user)
         {
-            if (!_globalSettings.SelfHosted)
-            {
-                return user.Premium;
-            }
-
-            if (!user.Premium)
-            {
-                return false;
-            }
-
-            // Only check once per day
-            var now = DateTime.UtcNow;
-            if (_userCheckCache.ContainsKey(user.Id))
-            {
-                var lastCheck = _userCheckCache[user.Id];
-                if (lastCheck < now && now - lastCheck < TimeSpan.FromDays(1))
-                {
-                    return user.Premium;
-                }
-                else
-                {
-                    _userCheckCache[user.Id] = now;
-                }
-            }
-            else
-            {
-                _userCheckCache.Add(user.Id, now);
-            }
-
-            _logger.LogInformation(Constants.BypassFiltersEventId, null,
-                "Validating premium license for user {0}({1}).", user.Id, user.Email);
-            return await ProcessUserValidationAsync(user);
+        return true;
         }
 
         private async Task<bool> ProcessUserValidationAsync(User user)
