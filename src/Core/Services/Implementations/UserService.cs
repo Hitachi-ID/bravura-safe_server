@@ -101,7 +101,7 @@ namespace Bit.Core.Services
             _identityErrorDescriber = errors;
             _passwordHasher = passwordHasher;
             _passwordValidators = passwordValidators;
-            licenseService = new NoopLicensingService();
+            _licenseService = new NoopLicensingService();
             _eventService = eventService;
             _applicationCacheService = applicationCacheService;
             _paymentService = paymentService;
@@ -296,6 +296,7 @@ namespace Bit.Core.Services
             }
 
             user.ApiKey = CoreHelpers.SecureRandomString(30);
+            user.Premium = true;
             var result = await base.CreateAsync(user, masterPassword);
             if (result == IdentityResult.Success)
             {

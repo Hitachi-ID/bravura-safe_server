@@ -1,4 +1,8 @@
-﻿using Bit.Api.Utilities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Bit.Api.Utilities;
 using Bit.Core;
 using Bit.Core.Enums;
 using Bit.Core.Exceptions;
@@ -13,11 +17,6 @@ using Bit.Core.Settings;
 using Bit.Core.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bit.Api.Controllers
 {

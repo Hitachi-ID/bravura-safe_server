@@ -112,19 +112,7 @@ namespace Bit.Core.Models.Business
 
         public bool CanUse(User user)
         {
-            if (Issued > DateTime.UtcNow || Expires < DateTime.UtcNow)
-            {
-                return false;
-            }
-
-            if (Version == 1)
-            {
-                return user.EmailVerified && user.Email.Equals(Email, StringComparison.InvariantCultureIgnoreCase);
-            }
-            else
-            {
-                throw new NotSupportedException($"Version {Version} is not supported.");
-            }
+            return true;
         }
 
         public bool VerifyData(User user)

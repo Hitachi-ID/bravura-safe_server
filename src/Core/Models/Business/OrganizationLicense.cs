@@ -179,19 +179,7 @@ namespace Bit.Core.Models.Business
 
         public bool CanUse(GlobalSettings globalSettings)
         {
-            if (!Enabled || Issued > DateTime.UtcNow || Expires < DateTime.UtcNow)
-            {
-                return false;
-            }
-
-            if (Version >= 1 && Version <= 8)
-            {
-                return InstallationId == globalSettings.Installation.Id && SelfHost;
-            }
-            else
-            {
-                throw new NotSupportedException($"Version {Version} is not supported.");
-            }
+            return true;
         }
 
         public bool VerifyData(Organization organization, GlobalSettings globalSettings)
