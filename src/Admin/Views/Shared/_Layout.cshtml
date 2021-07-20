@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex,nofollow" />
-    <title>@ViewData["Title"] - Bitwarden Admin Portal</title>
+    <title>@ViewData["Title"] - Bravura Pass Admin Portal</title>
 
     <link rel="stylesheet" href="~/css/webfonts.css" />
     <environment include="Development">
@@ -71,12 +71,6 @@
                             </li>
                         }
                     }
-                    @if(GlobalSettings.SelfHosted)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" href="https://help.bitwarden.com/hosting/" target="_blank">Docs</a>
-                        </li>
-                    }
                 </ul>
                 @if(SignInManager.IsSignedIn(User))
                 {
@@ -98,7 +92,7 @@
 
     <footer class="container mb-4">
         <hr />
-        &copy; @DateTime.Now.Year, Bitwarden Inc.
+        &copy; @DateTime.Now.Year Hitachi ID Systems, Inc. All rights reserved.
     </footer>
 
     <environment include="Development">
