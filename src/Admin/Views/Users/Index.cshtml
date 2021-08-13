@@ -42,15 +42,6 @@
                             </span>
                         </td>
                         <td>
-                            @if(user.Premium)
-                            {
-                                <i class="fa fa-star fa-lg fa-fw"
-                                   title="Premium, expires @(user.PremiumExpirationDate?.ToShortDateString() ?? "-")"></i>
-                            }
-                            else
-                            {
-                                <i class="fa fa-star-o fa-lg fa-fw text-muted" title="Not Premium"></i>
-                            }
                             @if(user.MaxStorageGb.HasValue && user.MaxStorageGb > 1)
                             {
                                 <i class="fa fa-plus-square fa-lg fa-fw"

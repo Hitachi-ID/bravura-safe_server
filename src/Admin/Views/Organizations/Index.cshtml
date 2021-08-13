@@ -27,8 +27,6 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th style="width: 190px;">Plan</th>
-                <th style="width: 80px;">Seats</th>
                 <th style="width: 150px;">Created</th>
                 <th style="width: 170px; min-width: 170px;">Details</th>
             </tr>
@@ -37,7 +35,7 @@
             @if(!Model.Items.Any())
             {
                 <tr>
-                    <td colspan="5">No results to list.</td>
+                    <td colspan="3">No results to list.</td>
                 </tr>
             }
             else
@@ -49,28 +47,11 @@
                             <a asp-action="@Model.Action" asp-route-id="@org.Id">@org.Name</a>
                         </td>
                         <td>
-                            @org.Plan
-                        </td>
-                        <td>
-                            @org.Seats
-                        </td>
-                        <td>
                             <span title="@org.CreationDate.ToString()">
                                 @org.CreationDate.ToShortDateString()
                             </span>
                         </td>
                         <td>
-                            @if(!Model.SelfHosted)
-                            {
-                                if(!string.IsNullOrWhiteSpace(org.GatewaySubscriptionId))
-                                {
-                                    <i class="fa fa-usd fa-lg fa-fw" title="Paid"></i>
-                                }
-                                else
-                                {
-                                    <i class="fa fa-smile-o fa-lg fa-fw text-muted" title="Freeloader"></i>
-                                }
-                            }
                             @if(org.MaxStorageGb.HasValue && org.MaxStorageGb > 1)
                             {
                                 <i class="fa fa-plus-square fa-lg fa-fw"
@@ -84,7 +65,7 @@
                             @if(org.Enabled)
                             {
                                 <i class="fa fa-check-circle fa-lg fa-fw"
-                                   title="Enabled, expires @(org.ExpirationDate?.ToShortDateString() ?? "-")"></i>
+                                   title="Enabled"></i>
                             }
                             else
                             {
