@@ -17,8 +17,8 @@ version: '{{{ComposeVersion}}}'
 
 services:
   mssql:
-    image: bitwarden/mssql:{{{CoreVersion}}}
-    container_name: bitwarden-mssql
+    image: bravura-vault/mssql:{{{CoreVersion}}}
+    container_name: bravura-vault-mssql
     restart: always
     stop_grace_period: 60s
     volumes:
@@ -35,8 +35,8 @@ services:
       - ../env/mssql.override.env
 
   web:
-    image: bitwarden/web:{{{WebVersion}}}
-    container_name: bitwarden-web
+    image: bravura_vault/web:{{{WebVersion}}}
+    container_name: bravura-vault-web
     restart: always
     volumes:
       - ../web:/etc/bitwarden/web
@@ -45,8 +45,8 @@ services:
       - ../env/uid.env
 
   attachments:
-    image: bitwarden/attachments:{{{CoreVersion}}}
-    container_name: bitwarden-attachments
+    image: bravura-vault/attachments:{{{CoreVersion}}}
+    container_name: bravura-vault-attachments
     restart: always
     volumes:
       - ../core/attachments:/etc/bitwarden/core/attachments
@@ -55,8 +55,8 @@ services:
       - ../env/uid.env
 
   api:
-    image: bitwarden/api:{{{CoreVersion}}}
-    container_name: bitwarden-api
+    image: bravura-vault/api:{{{CoreVersion}}}
+    container_name: bravura-vault-api
     restart: always
     volumes:
       - ../core:/etc/bitwarden/core
@@ -71,8 +71,8 @@ services:
       - public
 
   identity:
-    image: bitwarden/identity:{{{CoreVersion}}}
-    container_name: bitwarden-identity
+    image: bravura-vault/identity:{{{CoreVersion}}}
+    container_name: bravura-vault-identity
     restart: always
     volumes:
       - ../identity:/etc/bitwarden/identity
@@ -88,8 +88,8 @@ services:
       - public
 
   sso:
-    image: bitwarden/sso:{{{CoreVersion}}}
-    container_name: bitwarden-sso
+    image: bravura-vault/sso:{{{CoreVersion}}}
+    container_name: bravura-vault-sso
     restart: always
     volumes:
       - ../identity:/etc/bitwarden/identity
@@ -105,8 +105,8 @@ services:
       - public
 
   admin:
-    image: bitwarden/admin:{{{CoreVersion}}}
-    container_name: bitwarden-admin
+    image: bravura-vault/admin:{{{CoreVersion}}}
+    container_name: bravura-vault-admin
     restart: always
     depends_on:
       - mssql
@@ -123,8 +123,8 @@ services:
       - public
 
   portal:
-    image: bitwarden/portal:{{{CoreVersion}}}
-    container_name: bitwarden-portal
+    image: bravura-vault/portal:{{{CoreVersion}}}
+    container_name: bravura-vault-portal
     restart: always
     depends_on:
       - mssql
@@ -141,8 +141,8 @@ services:
       - public
 
   icons:
-    image: bitwarden/icons:{{{CoreVersion}}}
-    container_name: bitwarden-icons
+    image: bravura-vault/icons:{{{CoreVersion}}}
+    container_name: bravura-vault-icons
     restart: always
     volumes:
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -155,8 +155,8 @@ services:
       - public
 
   notifications:
-    image: bitwarden/notifications:{{{CoreVersion}}}
-    container_name: bitwarden-notifications
+    image: bravura-vault/notifications:{{{CoreVersion}}}
+    container_name: bravura-vault-notifications
     restart: always
     volumes:
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -170,8 +170,8 @@ services:
       - public
 
   events:
-    image: bitwarden/events:{{{CoreVersion}}}
-    container_name: bitwarden-events
+    image: bravura-vault/events:{{{CoreVersion}}}
+    container_name: bravura-vault-events
     restart: always
     volumes:
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -185,8 +185,8 @@ services:
       - public
 
   nginx:
-    image: bitwarden/nginx:{{{CoreVersion}}}
-    container_name: bitwarden-nginx
+    image: bravura-vault/nginx:{{{CoreVersion}}}
+    container_name: bravura-vault-nginx
     restart: always
     depends_on:
       - web

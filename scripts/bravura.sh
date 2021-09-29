@@ -2,19 +2,13 @@
 set -e
 
 cat << "EOF"
- _     _ _                         _            
-| |__ (_) |___      ____ _ _ __ __| | ___ _ __  
-| '_ \| | __\ \ /\ / / _` | '__/ _` |/ _ \ '_ \ 
-| |_) | | |_ \ V  V / (_| | | | (_| |  __/ | | |
-|_.__/|_|\__| \_/\_/ \__,_|_|  \__,_|\___|_| |_|
+HITACHI-ID
+Bravura Pass Vault
 
 EOF
 
 cat << EOF
 Open source password management solutions
-Copyright 2015-$(date +'%Y'), 8bit Solutions LLC
-https://bitwarden.com, https://github.com/bitwarden
-
 ===================================================
 
 EOF
@@ -24,20 +18,20 @@ EOF
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SCRIPT_NAME=`basename "$0"`
 SCRIPT_PATH="$DIR/$SCRIPT_NAME"
-OUTPUT="$DIR/bwdata"
+OUTPUT="$DIR/bravura_vault_data"
 if [ $# -eq 2 ]
 then
     OUTPUT=$2
 fi
 
 SCRIPTS_DIR="$OUTPUT/scripts"
-GITHUB_BASE_URL="https://raw.githubusercontent.com/bitwarden/server/master"
+GITHUB_BASE_URL="https://gitlab.hitachi-id.com/gisselac/bitwarden_server/tree/master"
 
 # Please do not create pull requests modifying the version numbers.
 COREVERSION="1.41.3"
 WEBVERSION="2.20.3"
 
-echo "bitwarden.sh version $COREVERSION"
+echo "bravura.sh version $COREVERSION"
 docker --version
 docker-compose --version
 
@@ -46,7 +40,7 @@ echo ""
 # Functions
 
 function downloadSelf() {
-    if curl -s -w "http_code %{http_code}" -o $SCRIPT_PATH.1 $GITHUB_BASE_URL/scripts/bitwarden.sh | grep -q "^http_code 20[0-9]"
+    if curl -s -w "http_code %{http_code}" -o $SCRIPT_PATH.1 $GITHUB_BASE_URL/scripts/bravura.sh | grep -q "^http_code 20[0-9]"
     then
         mv $SCRIPT_PATH.1 $SCRIPT_PATH
         chmod u+x $SCRIPT_PATH
@@ -97,8 +91,6 @@ updateconf
 renewcert
 rebuild
 help
-
-See more at https://bitwarden.com/help/article/install-on-premise/#script-commands-reference
 
 EOT
 }

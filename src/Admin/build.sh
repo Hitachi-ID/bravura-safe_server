@@ -22,4 +22,4 @@ dotnet publish "$DIR/Admin.csproj" -c "Release" -o "$DIR/obj/build-output/publis
 
 echo -e "\nBuilding docker image"
 docker --version
-docker build -t bitwarden/admin "$DIR/."
+docker build -t bravura_vault/admin "$DIR/."

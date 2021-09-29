@@ -2,6 +2,7 @@ param (
     [string]$outputDir = "../.",
     [string]$coreVersion = "latest",
     [string]$webVersion = "latest",
+    [string]$repository = "bravura_vault",
     [switch] $install,
     [switch] $start,
     [switch] $restart,
@@ -21,16 +22,17 @@ $qFlag = ""
 $quietPullFlag = ""
 $certbotHttpPort = "80"
 $certbotHttpsPort = "443"
-if($env:BITWARDEN_QUIET -eq "true") {
+
+if($env:BRAVURA_VAULT_QUIET -eq "true") {
     $setupQuiet = 1
     $qFlag = " -q"
     $quietPullFlag = " --quiet-pull"
 }
-if("${env:BITWARDEN_CERTBOT_HTTP_PORT}" -ne "") {
-    $certbotHttpPort = $env:BITWARDEN_CERTBOT_HTTP_PORT
+if("${env:BRAVURA_VAULT_CERTBOT_HTTP_PORT}" -ne "") {
+    $certbotHttpPort = $env:BRAVURA_VAULT_CERTBOT_HTTP_PORT
 }
-if("${env:BITWARDEN_CERTBOT_HTTPS_PORT}" -ne "") {
-    $certbotHttpsPort = $env:BITWARDEN_CERTBOT_HTTPS_PORT
+if("${env:BRAVURA_VAULT_CERTBOT_HTTPS_PORT}" -ne "") {
+    $certbotHttpsPort = $env:BRAVURA_VAULT_CERTBOT_HTTPS_PORT
 }
 
 # Functions
@@ -38,7 +40,7 @@ if("${env:BITWARDEN_CERTBOT_HTTPS_PORT}" -ne "") {
 function Install() {
     [string]$letsEncrypt = "n"
     Write-Host "(!) " -f cyan -nonewline
-    [string]$domain = $( Read-Host "Enter the domain name for your Bitwarden instance (ex. bitwarden.example.com)" )
+    [string]$domain = $( Read-Host "Enter the domain name for your Bravura Pass instance (ex. bp.example.com)" )
     echo ""
     
     if ($domain -eq "") {
@@ -70,7 +72,7 @@ function Install() {
     }
     
     Pull-Setup
-    docker run -it --rm --name setup -v ${outputDir}:/bitwarden bitwarden/setup:$coreVersion `
+    docker run -it --rm --name setup -v ${outputDir}:/bitwarden $repository/setup:$coreVersion `
         dotnet Setup.dll -install 1 -domain ${domain} -letsencrypt ${letsEncrypt} `
         -os win -corev $coreVersion -webv $webVersion -q $setupQuiet
 }
@@ -130,8 +132,8 @@ function Create-Dir($str) {
 }
 
 function Docker-Prune {
-    docker image prune --all --force --filter="label=com.bitwarden.product=bitwarden" `
-        --filter="label!=com.bitwarden.project=setup"
+    docker image prune --all --force --filter="label=com.hitachi.product=bravura_vault" `
+        --filter="label!=com.hitachi.project=setup"
 }
 
 function Update-Lets-Encrypt {
@@ -159,7 +161,7 @@ function Update-Database {
     Docker-Compose-Files
     $mssqlId = docker-compose ps -q mssql
     docker run -it --rm --name setup --network container:$mssqlId `
-        -v ${outputDir}:/bitwarden bitwarden/setup:$coreVersion `
+        -v ${outputDir}:/bitwarden $repository/setup:$coreVersion `
         dotnet Setup.dll -update 1 -db 1 -os win -corev $coreVersion -webv $webVersion -q $setupQuiet
     Write-Line "Database update complete"
 }
@@ -168,13 +170,13 @@ function Update([switch] $withpull) {
     if ($withpull) {
         Pull-Setup
     }
-    docker run -it --rm --name setup -v ${outputDir}:/bitwarden bitwarden/setup:$coreVersion `
+    docker run -it --rm --name setup -v ${outputDir}:/bitwarden $repository/setup:$coreVersion `
         dotnet Setup.dll -update 1 -os win -corev $coreVersion -webv $webVersion -q $setupQuiet
 }
 
 function Print-Environment {
     Pull-Setup
-    docker run -it --rm --name setup -v ${outputDir}:/bitwarden bitwarden/setup:$coreVersion `
+    docker run -it --rm --name setup -v ${outputDir}:/bitwarden bravura_vault/setup:$coreVersion `
         dotnet Setup.dll -printenv 1 -os win -corev $coreVersion -webv $webVersion -q $setupQuiet
 }
 
@@ -196,11 +198,11 @@ function Cert-Restart {
 
 
 function Pull-Setup {
-    Invoke-Expression ("docker pull{0} bitwarden/setup:${coreVersion}" -f "") #TODO: qFlag
+    Invoke-Expression ("docker pull{0} $repository/setup:${coreVersion}" -f "") #TODO: qFlag
 }
 
 function Write-Line($str) {
-    if($env:BITWARDEN_QUIET -ne "true") {
+    if($env:BRAVURA_VAULT_QUIET -ne "true") {
         Write-Host $str
     }
 }
