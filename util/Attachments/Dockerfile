@@ -1,4 +1,4 @@
-FROM bravura_vault/server:dev
+FROM bravura_vault/server:latest
 
 LABEL com.hitachi.product="bravura_vault"
 
