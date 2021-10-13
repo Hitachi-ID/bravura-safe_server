@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/mssql/server:2017-CU18-ubuntu-16.04
 LABEL com.hitachi.product="bravura_vault"
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \S
+    && apt-get install -y --no-install-recommends \
         gosu \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
