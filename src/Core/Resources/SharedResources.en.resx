@@ -458,7 +458,7 @@
     <value>Never</value>
   </data>
   <data name="WelcomeToBusinessPortal">
-    <value>Welcome to the Bravura Pass Business Portal</value>
+    <value>Welcome to the Bravura Vault Business Portal</value>
   </data>
   <data name="IdpX509PublicCertValidationError" xml:space="preserve">
     <value>The IdP public certificate provided is invalid: {0}</value>
@@ -589,29 +589,29 @@
   </data>
   <data name="DisableSend" xml:space="preserve">
     <value>Disable Send</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Pass Send'. It should not be translated.</comment>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
   </data>
   <data name="DisableSendDescription" xml:space="preserve">
-    <value>Do not allow users to create or edit a Bravura Pass Send. Deleting an existing Send is still allowed.</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Pass Send'. It should not be translated.</comment>
+    <value>Do not allow users to create or edit a Bravura Vault Send. Deleting an existing Send is still allowed.</value>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
   </data>
   <data name="DisableSendExemption" xml:space="preserve">
     <value>Organization Owners and Administrators are exempt from this policy's enforcement.</value>
   </data>
   <data name="SendOptions" xml:space="preserve">
     <value>Send Options</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Pass Send'. It should not be translated.</comment>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
   </data>
   <data name="Options" xml:space="preserve">
     <value>Options</value>
   </data>
   <data name="DisableHideEmail" xml:space="preserve">
     <value>Do not allow users to hide their email address when creating or editing a Send.</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Pass Send'. It should not be translated.</comment>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
   </data>
   <data name="SendOptionsDescription" xml:space="preserve">
     <value>Set options for creating and editing Sends.</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Pass Send'. It should not be translated.</comment>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
   </data>
   <data name="SendOptionsExemption" xml:space="preserve">
     <value>Organization Owners and Administrators are exempt from this policy's enforcement.</value>
@@ -643,7 +643,7 @@
     <comment>'acr' is an explicit OIDC claim type, see https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.2 (acr). It should not be translated.</comment>
   </data>
   <data name="LoggedOutMessage" xml:space="preserve">
-    <value>You have been logged out of the Bravura Pass Business Portal.</value>
+    <value>You have been logged out of the Bravura Vault Business Portal.</value>
   </data>
   <data name="AccessDeniedError" xml:space="preserve">
     <value>Access Denied to this resource.</value>

@@ -217,7 +217,7 @@ namespace Bit.Core.Services
 
         public async Task SendWelcomeEmailAsync(User user)
         {
-            var message = CreateDefaultMessage("Welcome to Bravura Pass!", user.Email);
+            var message = CreateDefaultMessage("Welcome to Bravura Vault!", user.Email);
             var model = new BaseMailModel
             {
                 WebVaultUrl = _globalSettings.BaseServiceUri.VaultWithHash,
