@@ -10,15 +10,16 @@
 # this file, you can create a `docker-compose.override.yml` file in the #
 # same directory and it will be merged into this file at runtime. You   #
 # can also manage various settings used in this file from the           #
-# ./bwdata/config.yml file for your installation.                       #
+# ./bvdata/config.yml file for your installation.                       #
 #########################################################################
 
 version: '{{{ComposeVersion}}}'
 
 services:
+{{#if UseMssqlDocker}}
   mssql:
-    image: bravura-vault/mssql:{{{CoreVersion}}}
-    container_name: bravura-vault-mssql
+    image: bravura_vault/mssql:{{{CoreVersion}}}
+    container_name: bravura_vault-mssql
     restart: always
     stop_grace_period: 60s
     volumes:
@@ -33,10 +34,10 @@ services:
       - mssql.env
       - ../env/uid.env
       - ../env/mssql.override.env
-
+{{/if}}
   web:
     image: bravura_vault/web:{{{WebVersion}}}
-    container_name: bravura-vault-web
+    container_name: bravura_vault-web
     restart: always
     volumes:
       - ../web:/etc/bitwarden/web
@@ -45,8 +46,8 @@ services:
       - ../env/uid.env
 
   attachments:
-    image: bravura-vault/attachments:{{{CoreVersion}}}
-    container_name: bravura-vault-attachments
+    image: bravura_vault/attachments:{{{CoreVersion}}}
+    container_name: bravura_vault-attachments
     restart: always
     volumes:
       - ../core/attachments:/etc/bitwarden/core/attachments
@@ -55,8 +56,8 @@ services:
       - ../env/uid.env
 
   api:
-    image: bravura-vault/api:{{{CoreVersion}}}
-    container_name: bravura-vault-api
+    image: bravura_vault/api:{{{CoreVersion}}}
+    container_name: bravura_vault-api
     restart: always
     volumes:
       - ../core:/etc/bitwarden/core
@@ -71,8 +72,8 @@ services:
       - public
 
   identity:
-    image: bravura-vault/identity:{{{CoreVersion}}}
-    container_name: bravura-vault-identity
+    image: bravura_vault/identity:{{{CoreVersion}}}
+    container_name: bravura_vault-identity
     restart: always
     volumes:
       - ../identity:/etc/bitwarden/identity
@@ -88,8 +89,8 @@ services:
       - public
 
   sso:
-    image: bravura-vault/sso:{{{CoreVersion}}}
-    container_name: bravura-vault-sso
+    image: bravura_vault/sso:{{{CoreVersion}}}
+    container_name: bravura_vault-sso
     restart: always
     volumes:
       - ../identity:/etc/bitwarden/identity
@@ -105,8 +106,8 @@ services:
       - public
 
   admin:
-    image: bravura-vault/admin:{{{CoreVersion}}}
-    container_name: bravura-vault-admin
+    image: bravura_vault/admin:{{{CoreVersion}}}
+    container_name: bravura_vault-admin
     restart: always
     depends_on:
       - mssql
@@ -123,8 +124,8 @@ services:
       - public
 
   portal:
-    image: bravura-vault/portal:{{{CoreVersion}}}
-    container_name: bravura-vault-portal
+    image: bravura_vault/portal:{{{CoreVersion}}}
+    container_name: bravura_vault-portal
     restart: always
     depends_on:
       - mssql
@@ -141,8 +142,8 @@ services:
       - public
 
   icons:
-    image: bravura-vault/icons:{{{CoreVersion}}}
-    container_name: bravura-vault-icons
+    image: bravura_vault/icons:{{{CoreVersion}}}
+    container_name: bravura_vault-icons
     restart: always
     volumes:
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -155,8 +156,8 @@ services:
       - public
 
   notifications:
-    image: bravura-vault/notifications:{{{CoreVersion}}}
-    container_name: bravura-vault-notifications
+    image: bravura_vault/notifications:{{{CoreVersion}}}
+    container_name: bravura_vault-notifications
     restart: always
     volumes:
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -170,8 +171,8 @@ services:
       - public
 
   events:
-    image: bravura-vault/events:{{{CoreVersion}}}
-    container_name: bravura-vault-events
+    image: bravura_vault/events:{{{CoreVersion}}}
+    container_name: bravura_vault-events
     restart: always
     volumes:
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -185,8 +186,8 @@ services:
       - public
 
   nginx:
-    image: bravura-vault/nginx:{{{CoreVersion}}}
-    container_name: bravura-vault-nginx
+    image: bravura_vault/nginx:{{{CoreVersion}}}
+    container_name: bravura_vault-nginx
     restart: always
     depends_on:
       - web

@@ -18,7 +18,7 @@ EOF
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SCRIPT_NAME=`basename "$0"`
 SCRIPT_PATH="$DIR/$SCRIPT_NAME"
-OUTPUT="$DIR/bravura_vault_data"
+OUTPUT="$DIR/bvdata"
 if [ $# -eq 2 ]
 then
     OUTPUT=$2

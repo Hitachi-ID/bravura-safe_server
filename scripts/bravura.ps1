@@ -19,7 +19,7 @@ param (
 $scriptPath = $MyInvocation.MyCommand.Path
 $dir = Split-Path -Parent $MyInvocation.MyCommand.Path
 if ($output -eq "") {
-    $output = "${dir}\bravura_vault_data"
+    $output = "${dir}\bvdata"
 }
 
 $scriptsDir = "${output}\scripts"

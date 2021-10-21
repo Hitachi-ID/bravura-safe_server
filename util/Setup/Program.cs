@@ -108,7 +108,7 @@ namespace Bit.Setup
 
             Console.WriteLine("\nIf you need to make additional configuration changes, you can modify\n" +
                 "the settings in `{0}` and then run:\n{1}",
-                _context.HostOS == "win" ? ".\\bwdata\\config.yml" : "./bwdata/config.yml",
+                _context.HostOS == "win" ? ".\\bvdata\\config.yml" : "./bvdata/config.yml",
                 _context.HostOS == "win" ? "`.\\bravura.ps1 -rebuild` or `.\\bravura.ps1 -update`" :
                     "`./bravura.sh rebuild` or `./bravura.sh update`");
 

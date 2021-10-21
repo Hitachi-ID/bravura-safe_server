@@ -63,6 +63,8 @@ namespace Bit.Setup
             var dbPassword = _context.Stub ? "RANDOM_DATABASE_PASSWORD" : Helpers.ReadInput("Enter your DB User password [<randomly generated>]:");
             var dbCatalog = Helpers.ReadInput("Enter your database name [vault]:");
 
+            _context.Config.UseMssqlDocker = string.IsNullOrEmpty(dbSource);
+
             var dbConnectionString = new SqlConnectionStringBuilder
             {
                 DataSource = string.IsNullOrEmpty(dbSource) ? "tcp:mssql,1433" : dbSource,
