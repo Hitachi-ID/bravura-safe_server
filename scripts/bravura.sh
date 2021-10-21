@@ -28,8 +28,8 @@ SCRIPTS_DIR="$OUTPUT/scripts"
 GITHUB_BASE_URL="https://gitlab.hitachi-id.com/gisselac/bitwarden_server/tree/master"
 
 # Please do not create pull requests modifying the version numbers.
-COREVERSION="1.41.3"
-WEBVERSION="2.20.3"
+COREVERSION="latest"
+WEBVERSION="latest"
 
 echo "bravura.sh version $COREVERSION"
 docker --version

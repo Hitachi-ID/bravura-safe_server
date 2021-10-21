@@ -58,13 +58,17 @@ namespace Bit.Setup
 
         private void Init()
         {
-            var dbPassword = _context.Stub ? "RANDOM_DATABASE_PASSWORD" : Helpers.SecureRandomString(32);
+            var dbSource = Helpers.ReadInput("Enter your DB Server name [tcp:mssql,1433]:");
+            var dbUser = Helpers.ReadInput("Enter your DB User name [sa]:");
+            var dbPassword = _context.Stub ? "RANDOM_DATABASE_PASSWORD" : Helpers.ReadInput("Enter your DB User password [<randomly generated>]:");
+            var dbCatalog = Helpers.ReadInput("Enter your database name [vault]:");
+
             var dbConnectionString = new SqlConnectionStringBuilder
             {
-                DataSource = "tcp:mssql,1433",
-                InitialCatalog = "vault",
-                UserID = "sa",
-                Password = dbPassword,
+                DataSource = string.IsNullOrEmpty(dbSource) ? "tcp:mssql,1433" : dbSource,
+                InitialCatalog = string.IsNullOrEmpty(dbCatalog) ? "vault" : dbCatalog,
+                UserID = string.IsNullOrEmpty(dbUser) ? "sa" : dbUser,
+                Password = string.IsNullOrEmpty(dbPassword) ? Helpers.SecureRandomString(32) : dbPassword,
                 MultipleActiveResultSets = false,
                 Encrypt = true,
                 ConnectTimeout = 30,

@@ -26,8 +26,8 @@ $scriptsDir = "${output}\scripts"
 $githubBaseUrl = "https://gitlab.hitachi-id.com/gisselac/bitwarden_server/tree/master"
 
 # Please do not create pull requests modifying the version numbers.
-$coreVersion = "1.41.3"
-$webVersion = "2.20.3"
+$coreVersion = "latest"
+$webVersion = "latest"
 
 # Functions
 

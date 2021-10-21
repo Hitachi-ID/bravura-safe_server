@@ -76,15 +76,9 @@ namespace Bit.Setup
                 _context.Install.Domain = _context.Parameters["domain"].ToLowerInvariant();
             }
 
-            if (_context.Stub)
-            {
-                _context.Install.InstallationId = Guid.Empty;
-                _context.Install.InstallationKey = "SECRET_INSTALLATION_KEY";
-            }
-            else if (!ValidateInstallation())
-            {
-                return;
-            }
+            // Automatically stub out Installation ID and Key.
+            _context.Install.InstallationId = Guid.Empty;
+            _context.Install.InstallationKey = "SECRET_INSTALLATION_KEY";
 
             var certBuilder = new CertBuilder(_context);
             certBuilder.BuildForInstall();
@@ -115,17 +109,17 @@ namespace Bit.Setup
             Console.WriteLine("\nIf you need to make additional configuration changes, you can modify\n" +
                 "the settings in `{0}` and then run:\n{1}",
                 _context.HostOS == "win" ? ".\\bwdata\\config.yml" : "./bwdata/config.yml",
-                _context.HostOS == "win" ? "`.\\bitwarden.ps1 -rebuild` or `.\\bitwarden.ps1 -update`" :
-                    "`./bitwarden.sh rebuild` or `./bitwarden.sh update`");
+                _context.HostOS == "win" ? "`.\\bravura.ps1 -rebuild` or `.\\bravura.ps1 -update`" :
+                    "`./bravura.sh rebuild` or `./bravura.sh update`");
 
             Console.WriteLine("\nNext steps, run:");
             if (_context.HostOS == "win")
             {
-                Console.WriteLine("`.\\bitwarden.ps1 -start`");
+                Console.WriteLine("`.\\bravura.ps1 -start`");
             }
             else
             {
-                Console.WriteLine("`./bitwarden.sh start`");
+                Console.WriteLine("`./bravura.sh start`");
             }
             Console.WriteLine(string.Empty);
         }
@@ -155,11 +149,11 @@ namespace Bit.Setup
             Console.Write("to update, run ");
             if (_context.HostOS == "win")
             {
-                Console.Write("`.\\bitwarden.ps1 -updateself` and then `.\\bitwarden.ps1 -update`");
+                Console.Write("`.\\bravura.ps1 -updateself` and then `.\\bravura.ps1 -update`");
             }
             else
             {
-                Console.Write("`./bitwarden.sh updateself` and then `./bitwarden.sh update`");
+                Console.Write("`./bravura.sh updateself` and then `./bravura.sh update`");
             }
             Console.WriteLine("\n");
         }
