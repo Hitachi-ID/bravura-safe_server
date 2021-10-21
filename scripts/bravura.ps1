@@ -23,7 +23,7 @@ if ($output -eq "") {
 }
 
 $scriptsDir = "${output}\scripts"
-$githubBaseUrl = "https://gitlab.hitachi-id.com/gisselac/bitwarden_server/tree/master"
+$githubBaseUrl = "https://gitlab.hitachi-id.com/bravura-vault/server"
 
 # Please do not create pull requests modifying the version numbers.
 $coreVersion = "latest"

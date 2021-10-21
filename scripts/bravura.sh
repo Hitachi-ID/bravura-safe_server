@@ -25,7 +25,7 @@ then
 fi
 
 SCRIPTS_DIR="$OUTPUT/scripts"
-GITHUB_BASE_URL="https://gitlab.hitachi-id.com/gisselac/bitwarden_server/tree/master"
+GITHUB_BASE_URL="https://gitlab.hitachi-id.com/bravura-vault/server"
 
 # Please do not create pull requests modifying the version numbers.
 COREVERSION="latest"
