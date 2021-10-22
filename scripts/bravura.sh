@@ -54,7 +54,11 @@ function downloadRunFile() {
     then
         mkdir $SCRIPTS_DIR
     fi
-    curl -s -o $SCRIPTS_DIR/run.sh $GITHUB_BASE_URL/scripts/run.sh
+
+    # Until we have a published, public place to stash this, manually copy run.sh with bravura.sh and use that file
+    # curl -s -o $SCRIPTS_DIR/run.sh $GITHUB_BASE_URL/scripts/run.sh
+    cp run.sh $SCRIPT_DIR/run.sh
+
     chmod u+x $SCRIPTS_DIR/run.sh
     rm -f $SCRIPTS_DIR/install.sh
 }
@@ -138,7 +142,9 @@ case $1 in
         downloadRunFile
         ;;
     "updateself")
-        downloadSelf && echo "Updated self." && exit
+        # Until we have a published, public place to stash this, manually retrieve bravura.sh
+        # downloadSelf && echo "Updated self." && exit
+        echo "Please manually retrieve latest file." && exit
         ;;
     "help")
         listCommands

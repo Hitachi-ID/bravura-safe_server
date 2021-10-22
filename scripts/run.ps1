@@ -15,6 +15,8 @@ param (
 )
 
 # Setup
+# Temporarily disable DOCKER PULL for local testing
+$testbuild = 1
 
 $dockerDir = "${outputDir}\docker"
 $setupQuiet = 0
@@ -92,7 +94,9 @@ function Docker-Compose-Down {
 
 function Docker-Compose-Pull {
     Docker-Compose-Files
-    Invoke-Expression ("docker-compose pull{0}" -f $qFlag)
+    if($testbuild -ne 1) {
+        Invoke-Expression ("docker-compose pull{0}" -f $qFlag)
+    }
 }
 
 function Docker-Compose-Files {
@@ -198,7 +202,9 @@ function Cert-Restart {
 
 
 function Pull-Setup {
-    Invoke-Expression ("docker pull{0} $repository/setup:${coreVersion}" -f "") #TODO: qFlag
+    if($testbuild -ne 1) {
+        Invoke-Expression ("docker pull{0} $repository/setup:${coreVersion}" -f "") #TODO: qFlag
+    }
 }
 
 function Write-Line($str) {

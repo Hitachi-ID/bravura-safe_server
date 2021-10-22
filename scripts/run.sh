@@ -3,6 +3,9 @@ set -e
 
 # Setup
 
+# Temporarily disable DOCKER PULL for local testing
+TESTBUILD="1"
+
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
@@ -100,7 +103,10 @@ function dockerComposeDown() {
 
 function dockerComposePull() {
     dockerComposeFiles
-    docker-compose pull
+    if [ ! "TESTBUILD" == "1" ]
+    then
+        docker-compose pull
+    fi
 }
 
 function dockerComposeFiles() {
@@ -225,7 +231,10 @@ function certRestart() {
 }
 
 function pullSetup() {
-    docker pull $REPO/setup:$COREVERSION
+    if [ ! "TESTBUILD" == "1" ]
+    then
+        docker pull $REPO/setup:$COREVERSION
+    fi
 }
 
 # Commands

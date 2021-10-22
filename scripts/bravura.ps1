@@ -39,7 +39,9 @@ function Download-Run-File {
     if (!(Test-Path -Path $scriptsDir)) {
         New-Item -ItemType directory -Path $scriptsDir | Out-Null
     }
-    Invoke-RestMethod -OutFile $scriptsDir\run.ps1 -Uri "${githubBaseUrl}/scripts/run.ps1"
+    # Until we have a published, public place to stash this, manually copy run.sh with bravura.sh and use that file
+    # Invoke-RestMethod -OutFile $scriptsDir\run.ps1 -Uri "${githubBaseUrl}/scripts/run.ps1"
+    Copy-Item "run.ps1" -Destination $scriptsDir\run.ps1
 }
 
 function Check-Output-Dir-Exists {
@@ -143,8 +145,10 @@ elseif ($updaterun) {
     Download-Run-File
 }
 elseif ($updateself) {
-    Download-Self
-    Write-Line "Updated self."
+    # Until we have a published, public place to stash this, manually retrieve bravura.sh
+    # Download-Self
+    # Write-Line "Updated self."
+    Write-Line "Please manually retrieve latest file."
 }
 elseif ($help) {
     List-Commands
