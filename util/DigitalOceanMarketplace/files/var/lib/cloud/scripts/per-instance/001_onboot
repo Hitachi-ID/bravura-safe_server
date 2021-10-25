@@ -9,9 +9,9 @@
 # ref: https://help.bitwarden.com/article/install-on-premise/
 #
 
-docker pull bitwarden/setup
+docker pull bravura_vault/setup
 
-curl -s -o /root/bitwarden.sh \
+curl -s -o /root/bravura.sh \
     https://raw.githubusercontent.com/bitwarden/server/master/scripts/bitwarden.sh
 
-chmod +x /root/bitwarden.sh
+chmod +x /root/bravura.sh

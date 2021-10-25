@@ -3,6 +3,9 @@ set -e
 
 # Setup
 
+# Temporarily disable DOCKER PULL for local testing
+TESTBUILD="1"
+
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
@@ -31,6 +34,8 @@ OS="lin"
 ENV_DIR="$OUTPUT_DIR/env"
 DOCKER_DIR="$OUTPUT_DIR/docker"
 
+REPO="bravura_vault"
+
 # Initialize UID/GID which will be used to run services from within containers
 if ! grep -q "^LOCAL_UID=" $ENV_DIR/uid.env 2>/dev/null || ! grep -q "^LOCAL_GID=" $ENV_DIR/uid.env 2>/dev/null
 then
@@ -47,7 +52,7 @@ fi
 
 function install() {
     LETS_ENCRYPT="n"
-    echo -e -n "${CYAN}(!)${NC} Enter the domain name for your Bitwarden instance (ex. bitwarden.example.com): "
+    echo -e -n "${CYAN}(!)${NC} Enter the domain name for your Bravura Pass instance (ex. bp.example.com): "
     read DOMAIN
     echo ""
     
@@ -78,7 +83,7 @@ function install() {
     
     pullSetup
     docker run -it --rm --name setup -v $OUTPUT_DIR:/bitwarden \
-        --env-file $ENV_DIR/uid.env bitwarden/setup:$COREVERSION \
+        --env-file $ENV_DIR/uid.env $REPO/setup:$COREVERSION \
         dotnet Setup.dll -install 1 -domain $DOMAIN -letsencrypt $LETS_ENCRYPT -os $OS \
         -corev $COREVERSION -webv $WEBVERSION
 }
@@ -98,7 +103,10 @@ function dockerComposeDown() {
 
 function dockerComposePull() {
     dockerComposeFiles
-    docker-compose pull
+    if [ ! "TESTBUILD" == "1" ]
+    then
+        docker-compose pull
+    fi
 }
 
 function dockerComposeFiles() {
@@ -138,8 +146,8 @@ function createDir() {
 }
 
 function dockerPrune() {
-    docker image prune --all --force --filter="label=com.bitwarden.product=bitwarden" \
-        --filter="label!=com.bitwarden.project=setup"
+    docker image prune --all --force --filter="label=com.hitachi.product=bravura_vault" \
+        --filter="label!=com.hitachi.project=setup"
 }
 
 function updateLetsEncrypt() {
@@ -167,7 +175,7 @@ function updateDatabase() {
     dockerComposeFiles
     MSSQL_ID=$(docker-compose ps -q mssql)
     docker run -i --rm --name setup --network container:$MSSQL_ID \
-        -v $OUTPUT_DIR:/bitwarden --env-file $ENV_DIR/uid.env bitwarden/setup:$COREVERSION \
+        -v $OUTPUT_DIR:/bitwarden --env-file $ENV_DIR/uid.env $REPO/setup:$COREVERSION \
         dotnet Setup.dll -update 1 -db 1 -os $OS -corev $COREVERSION -webv $WEBVERSION
     echo "Database update complete"
 }
@@ -195,14 +203,14 @@ function update() {
         pullSetup
     fi
     docker run -i --rm --name setup -v $OUTPUT_DIR:/bitwarden \
-        --env-file $ENV_DIR/uid.env bitwarden/setup:$COREVERSION \
+        --env-file $ENV_DIR/uid.env bravura_vault/setup:$COREVERSION \
         dotnet Setup.dll -update 1 -os $OS -corev $COREVERSION -webv $WEBVERSION
 }
 
 function printEnvironment() {
     pullSetup
     docker run -i --rm --name setup -v $OUTPUT_DIR:/bitwarden \
-        --env-file $ENV_DIR/uid.env bitwarden/setup:$COREVERSION \
+        --env-file $ENV_DIR/uid.env bravura_vault/setup:$COREVERSION \
         dotnet Setup.dll -printenv 1 -os $OS -corev $COREVERSION -webv $WEBVERSION
 }
 
@@ -223,7 +231,10 @@ function certRestart() {
 }
 
 function pullSetup() {
-    docker pull bitwarden/setup:$COREVERSION
+    if [ ! "TESTBUILD" == "1" ]
+    then
+        docker pull $REPO/setup:$COREVERSION
+    fi
 }
 
 # Commands

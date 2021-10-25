@@ -19,38 +19,40 @@ param (
 $scriptPath = $MyInvocation.MyCommand.Path
 $dir = Split-Path -Parent $MyInvocation.MyCommand.Path
 if ($output -eq "") {
-    $output = "${dir}\bwdata"
+    $output = "${dir}\bvdata"
 }
 
 $scriptsDir = "${output}\scripts"
-$githubBaseUrl = "https://raw.githubusercontent.com/bitwarden/server/master"
+$githubBaseUrl = "https://gitlab.hitachi-id.com/bravura-vault/server"
 
 # Please do not create pull requests modifying the version numbers.
-$coreVersion = "1.41.3"
-$webVersion = "2.20.3"
+$coreVersion = "latest"
+$webVersion = "latest"
 
 # Functions
 
 function Download-Self {
-    Invoke-RestMethod -OutFile $scriptPath -Uri "${githubBaseUrl}/scripts/bitwarden.ps1"
+    Invoke-RestMethod -OutFile $scriptPath -Uri "${githubBaseUrl}/scripts/bravura.ps1"
 }
 
 function Download-Run-File {
     if (!(Test-Path -Path $scriptsDir)) {
         New-Item -ItemType directory -Path $scriptsDir | Out-Null
     }
-    Invoke-RestMethod -OutFile $scriptsDir\run.ps1 -Uri "${githubBaseUrl}/scripts/run.ps1"
+    # Until we have a published, public place to stash this, manually copy run.sh with bravura.sh and use that file
+    # Invoke-RestMethod -OutFile $scriptsDir\run.ps1 -Uri "${githubBaseUrl}/scripts/run.ps1"
+    Copy-Item "run.ps1" -Destination $scriptsDir\run.ps1
 }
 
 function Check-Output-Dir-Exists {
     if (!(Test-Path -Path $output)) {
-        throw "Cannot find a Bitwarden installation at $output."
+        throw "Cannot find a Bravura Pass installation at $output."
     }
 }
 
 function Check-Output-Dir-Not-Exists {
     if (Test-Path -Path "$output\docker") {
-        throw "Looks like Bitwarden is already installed at $output."
+        throw "Looks like Bravura Pass is already installed at $output."
     }
 }
 
@@ -70,13 +72,11 @@ Available commands:
 -renewcert
 -rebuild
 -help
-
-See more at https://bitwarden.com/help/article/install-on-premise/#script-commands-reference
 "
 }
 
 function Write-Line($str) {
-    if($env:BITWARDEN_QUIET -ne "true") {
+    if($env:BRAVURA_VAULT_QUIET -ne "true") {
         Write-Host $str
     }
 }
@@ -86,23 +86,17 @@ function Write-Line($str) {
 $year = (Get-Date).year
 
 Write-Line @'
- _     _ _                         _            
-| |__ (_) |___      ____ _ _ __ __| | ___ _ __  
-| '_ \| | __\ \ /\ / / _` | '__/ _` |/ _ \ '_ \ 
-| |_) | | |_ \ V  V / (_| | | | (_| |  __/ | | |
-|_.__/|_|\__| \_/\_/ \__,_|_|  \__,_|\___|_| |_|
+HITACHI-ID
+Bravura Pass Vault
 '@
 
 Write-Line "
 Open source password management solutions
-Copyright 2015-${year}, 8bit Solutions LLC
-https://bitwarden.com, https://github.com/bitwarden
-
 ===================================================
 "
 
 if($env:BITWARDEN_QUIET -ne "true") {
-    Write-Line "bitwarden.ps1 version ${coreVersion}"
+    Write-Line "Bravura.ps1 version ${coreVersion}"
     docker --version
     docker-compose --version
 }
@@ -151,8 +145,10 @@ elseif ($updaterun) {
     Download-Run-File
 }
 elseif ($updateself) {
-    Download-Self
-    Write-Line "Updated self."
+    # Until we have a published, public place to stash this, manually retrieve bravura.sh
+    # Download-Self
+    # Write-Line "Updated self."
+    Write-Line "Please manually retrieve latest file."
 }
 elseif ($help) {
     List-Commands

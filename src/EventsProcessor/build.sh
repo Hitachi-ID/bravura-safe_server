@@ -18,5 +18,5 @@ if [ "$1" != "nodocker" ]
 then
     echo -e "\nBuilding docker image"
     docker --version
-    docker build -t bitwarden/event-processor:rc "$DIR/."
+    docker build -t bravura_vault/event-processor:rc "$DIR/."
 fi

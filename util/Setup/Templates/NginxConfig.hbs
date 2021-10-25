@@ -1,7 +1,7 @@
 ﻿#######################################################################
 # WARNING: This file is generated. Do not make changes to this file.  #
 # They will be overwritten on update. You can manage various settings #
-# used in this file from the ./bwdata/config.yml file for your        #
+# used in this file from the ./bvdata/config.yml file for your        #
 # installation.                                                       #
 #######################################################################
 
@@ -138,15 +138,6 @@ server {
 
   location /events/ {
     proxy_pass http://events:5000/;
-  }
-
-  location /sso {
-    proxy_pass http://sso:5000;
-{{#if Ssl}}
-    include /etc/nginx/security-headers-ssl.conf;
-{{/if}}
-    include /etc/nginx/security-headers.conf;
-    add_header X-Frame-Options SAMEORIGIN;
   }
 
   location /identity {

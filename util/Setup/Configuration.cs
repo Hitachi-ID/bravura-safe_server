@@ -86,6 +86,9 @@ namespace Bit.Setup
             "app live sync.")]
         public bool PushNotifications { get; set; } = true;
 
+        [Description("Bypass settin up an MSSQL docker image. Intended for use with external MSSQL stores.")]
+        public bool UseMssqlDocker { get; set; }
+
         [Description("Use a docker volume (`mssql_data`) instead of a host-mapped volume for the persisted " +
             "database.\n" +
             "WARNING: Changing this value will cause you to lose access to the existing persisted database.\n" +

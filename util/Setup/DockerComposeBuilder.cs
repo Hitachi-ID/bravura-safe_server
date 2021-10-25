@@ -49,6 +49,7 @@ namespace Bit.Setup
                 {
                     ComposeVersion = context.Config.ComposeVersion;
                 }
+                UseMssqlDocker = context.Config.UseMssqlDocker;
                 MssqlDataDockerVolume = context.Config.DatabaseDockerVolume;
                 HttpPort = context.Config.HttpPort;
                 HttpsPort = context.Config.HttpsPort;
@@ -63,6 +64,7 @@ namespace Bit.Setup
             }
 
             public string ComposeVersion { get; set; } = "3";
+            public bool UseMssqlDocker { get; set; }
             public bool MssqlDataDockerVolume { get; set; }
             public string HttpPort { get; set; }
             public string HttpsPort { get; set; }

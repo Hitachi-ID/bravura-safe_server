@@ -16,4 +16,4 @@ dotnet publish "$DIR/Api.csproj" -c "Release" -o "$DIR/obj/build-output/publish"
 
 echo -e "\nBuilding docker image"
 docker --version
-docker build -t bitwarden/api "$DIR/."
+docker build -t bravura_vault/api "$DIR/."

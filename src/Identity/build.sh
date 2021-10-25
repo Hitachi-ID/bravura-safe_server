@@ -16,4 +16,4 @@ dotnet publish "$DIR/Identity.csproj" -c "Release" -o "$DIR/obj/build-output/pub
 
 echo -e "\nBuilding docker image"
 docker --version
-docker build -t bitwarden/identity "$DIR/."
+docker build -t bravura_vault/identity "$DIR/."
