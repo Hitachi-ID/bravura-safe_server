@@ -298,6 +298,7 @@ namespace Bit.Core.Services
             user.ApiKey = CoreHelpers.SecureRandomString(30);
             user.Premium = true;
             user.EmailVerified = true;
+            user.MaxStorageGb = 1;
             var result = await base.CreateAsync(user, masterPassword);
             if (result == IdentityResult.Success)
             {
