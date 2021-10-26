@@ -92,8 +92,10 @@ services:
     image: bravura_vault/admin:{{{CoreVersion}}}
     container_name: bravura_vault-admin
     restart: always
+{{#if UseMssqlDocker}}
     depends_on:
       - mssql
+{{/if}}
     volumes:
       - ../core:/etc/bitwarden/core
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -178,10 +180,12 @@ services:
     networks:
       - default
       - public
+{{#if UseMssqlDocker}}
 {{#if MssqlDataDockerVolume}}
 
 volumes:
   mssql_data:
+{{/if}}
 {{/if}}
 
 networks:
