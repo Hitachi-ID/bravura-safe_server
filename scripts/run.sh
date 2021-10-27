@@ -103,7 +103,7 @@ function dockerComposeDown() {
 
 function dockerComposePull() {
     dockerComposeFiles
-    if [ ! "TESTBUILD" == "1" ]
+    if [ ! $TESTBUILD == "1" ]
     then
         docker-compose pull
     fi
@@ -231,7 +231,7 @@ function certRestart() {
 }
 
 function pullSetup() {
-    if [ ! "TESTBUILD" == "1" ]
+    if [ ! $TESTBUILD == "1" ]
     then
         docker pull $REPO/setup:$COREVERSION
     fi
