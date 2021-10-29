@@ -57,7 +57,7 @@ function downloadRunFile() {
 
     # Until we have a published, public place to stash this, manually copy run.sh with bravura.sh and use that file
     # curl -s -o $SCRIPTS_DIR/run.sh $GITHUB_BASE_URL/scripts/run.sh
-    cp run.sh $SCRIPT_DIR/run.sh
+    cp run.sh $SCRIPTS_DIR/run.sh
 
     chmod u+x $SCRIPTS_DIR/run.sh
     rm -f $SCRIPTS_DIR/install.sh
