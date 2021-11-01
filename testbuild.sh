@@ -138,8 +138,8 @@ else
     chmod u+x "$DIR/src/Admin/build.sh"
     "$DIR/src/Admin/build.sh"
 
-#    chmod u+x "$DIR/util/MsSql/build.sh"
-#    "$DIR/util/MsSql/build.sh"
+    chmod u+x "$DIR/util/MsSql/build.sh"
+    "$DIR/util/MsSql/build.sh"
 
     chmod u+x "$DIR/util/Setup/build.sh"
     "$DIR/util/Setup/build.sh"

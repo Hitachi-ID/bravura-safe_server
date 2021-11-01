@@ -58,12 +58,16 @@ namespace Bit.Setup
 
         private void Init()
         {
-            var dbSource = Helpers.ReadInput("Enter your DB Server name [tcp:mssql,1433]:");
-            var dbUser = Helpers.ReadInput("Enter your DB User name [sa]:");
-            var dbPassword = _context.Stub ? "RANDOM_DATABASE_PASSWORD" : Helpers.ReadInput("Enter your DB User password [<randomly generated>]:");
-            var dbCatalog = Helpers.ReadInput("Enter your database name [vault]:");
+            var dbSource = Helpers.ReadInput("Enter your Database Server name. Default will use a local mssql docker. [tcp:mssql,1433]");
+            var dbUser = "";
+            if(string.IsNullOrEmpty(dbSource))
+                Helpers.WriteLine(_context, "Default local docker will be used. The Database User will be sa.");
+            else
+                dbUser = Helpers.ReadInput("Enter your Database User name [sa]");
+            var dbPassword = _context.Stub ? "RANDOM_DATABASE_PASSWORD" : Helpers.ReadInput("Enter your Database User password [<randomly generated>]");
+            var dbCatalog = Helpers.ReadInput("Enter your Database name [vault]");
 
-            _context.Config.UseMssqlDocker = string.IsNullOrEmpty(dbSource);
+            _context.Config.UseMssqlDocker = string.IsNullOrEmpty(dbSource) & string.IsNullOrEmpty(dbUser);
 
             var dbConnectionString = new SqlConnectionStringBuilder
             {

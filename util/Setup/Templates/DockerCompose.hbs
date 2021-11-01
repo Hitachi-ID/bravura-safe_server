@@ -30,6 +30,8 @@ services:
 {{/if}}
       - ../logs/mssql:/var/opt/mssql/log
       - ../mssql/backups:/etc/bitwarden/mssql/backups
+    ports:
+      - '1433:1433'
     env_file:
       - mssql.env
       - ../env/uid.env
