@@ -36,6 +36,10 @@ services:
       - mssql.env
       - ../env/uid.env
       - ../env/mssql.override.env
+    networks:
+      - default
+      - public
+
 {{/if}}
   web:
     image: bravura_vault/web:{{{WebVersion}}}
