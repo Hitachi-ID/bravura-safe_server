@@ -23,6 +23,10 @@ using Microsoft.Azure.Storage.Blob;
 using Bit.Core.Models.Table;
 using IdentityModel;
 using System.Text.Json;
+using Bit.Core.Enums.Provider;
+using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
+using System.Threading;
 
 namespace Bit.Core.Utilities
 {
@@ -551,12 +555,20 @@ namespace Bit.Core.Utilities
             return sb.ToString();
         }
 
-        public static string SanitizeForEmail(string value)
+        public static string SanitizeForEmail(string value, bool htmlEncode = true)
         {
-            var cleanedValue = value.Replace("@", "[at]")
-                .Replace("http://", string.Empty)
-                .Replace("https://", string.Empty);
-            return HttpUtility.HtmlEncode(cleanedValue);
+            var cleanedValue = value.Replace("@", "[at]");
+            var regexOptions = RegexOptions.CultureInvariant |
+                RegexOptions.Singleline |
+                RegexOptions.IgnoreCase;
+            cleanedValue = Regex.Replace(cleanedValue, @"(\.\w)",
+                    m => string.Concat("[dot]", m.ToString().Last()), regexOptions);
+            while (Regex.IsMatch(cleanedValue, @"((^|\b)(\w*)://)", regexOptions))
+            {
+                cleanedValue = Regex.Replace(cleanedValue, @"((^|\b)(\w*)://)",
+                    string.Empty, regexOptions);
+            }
+            return htmlEncode ? HttpUtility.HtmlEncode(cleanedValue) : cleanedValue;
         }
 
         public static string DateTimeToTableStorageKey(DateTime? date = null)
@@ -607,11 +619,12 @@ namespace Bit.Core.Utilities
         public static bool UserInviteTokenIsValid(IDataProtector protector, string token, string userEmail,
             Guid orgUserId, GlobalSettings globalSettings)
         {
-            return TokenIsValid("OrganizationUserInvite", protector, token, userEmail, orgUserId, globalSettings);
+            return TokenIsValid("OrganizationUserInvite", protector, token, userEmail, orgUserId,
+                globalSettings.OrganizationInviteExpirationHours);
         }
 
         public static bool TokenIsValid(string firstTokenPart, IDataProtector protector, string token, string userEmail,
-            Guid id, GlobalSettings globalSettings)
+            Guid id, double expirationInHours)
         {
             var invalid = true;
             try
@@ -623,7 +636,7 @@ namespace Bit.Core.Utilities
                     dataParts[2].Equals(userEmail, StringComparison.InvariantCultureIgnoreCase))
                 {
                     var creationTime = FromEpocMilliseconds(Convert.ToInt64(dataParts[3]));
-                    var expTime = creationTime.AddHours(globalSettings.OrganizationInviteExpirationHours);
+                    var expTime = creationTime.AddHours(expirationInHours);
                     invalid = expTime < DateTime.UtcNow;
                 }
             }
@@ -737,7 +750,8 @@ namespace Bit.Core.Utilities
             return configDict;
         }
 
-        public static List<KeyValuePair<string, string>> BuildIdentityClaims(User user, ICollection<CurrentContentOrganization> orgs, bool isPremium)
+        public static List<KeyValuePair<string, string>> BuildIdentityClaims(User user, ICollection<CurrentContentOrganization> orgs,
+            ICollection<CurrentContentProvider> providers, bool isPremium)
         {
             var claims = new List<KeyValuePair<string, string>>()
             {
@@ -849,6 +863,29 @@ namespace Bit.Core.Utilities
                     }
                 }
             }
+            
+            if (providers.Any())
+            {
+                foreach (var group in providers.GroupBy(o => o.Type))
+                {
+                    switch (group.Key)
+                    {
+                        case ProviderUserType.ProviderAdmin:
+                            foreach (var provider in group)
+                            {
+                                claims.Add(new KeyValuePair<string, string>("providerprovideradmin", provider.Id.ToString()));
+                            }
+                            break;
+                        case ProviderUserType.ServiceUser:
+                            foreach (var provider in group)
+                            {
+                                claims.Add(new KeyValuePair<string, string>("providerserviceuser", provider.Id.ToString()));
+                            }
+                            break;
+                    }
+                }
+            }
+            
             return claims;
         }
 
@@ -875,6 +912,23 @@ namespace Bit.Core.Utilities
             }
             list.Add(item);
             return list;
+        }
+
+        public static string DecodeMessageText(this QueueMessage message)
+        {
+            var text = message?.MessageText;
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return text;
+            }
+            try
+            {
+                return Base64DecodeString(text);
+            }
+            catch
+            {
+                return text;
+            }
         }
     }
 }

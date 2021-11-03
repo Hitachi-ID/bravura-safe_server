@@ -17,7 +17,7 @@ namespace Bit.Core.Services
 {
     public class SendService : ISendService
     {
-        public const long MAX_FILE_SIZE = 500L * 1024L * 1024L; // 500MB
+        public const long MAX_FILE_SIZE = Constants.FileSize501mb;
         public const string MAX_FILE_SIZE_READABLE = "500 MB";
         private readonly ISendRepository _sendRepository;
         private readonly IUserRepository _userRepository;
@@ -129,6 +129,11 @@ namespace Bit.Core.Services
             }
 
             var data = JsonConvert.DeserializeObject<SendFileData>(send.Data);
+
+            if (data.Validated)
+            {
+                throw new BadRequestException("File has already been uploaded.");
+            }
 
             await _sendFileStorageService.UploadNewFileAsync(stream, send, data.Id);
 
@@ -284,7 +289,7 @@ namespace Bit.Core.Services
 
             foreach (var policy in policies.Where(p => p.Enabled && p.Type == PolicyType.DisableSend))
             {
-                if (!_currentContext.ManagePolicies(policy.OrganizationId))
+                if (!await _currentContext.ManagePolicies(policy.OrganizationId))
                 {
                     throw new BadRequestException("Due to an Enterprise Policy, you are only able to delete an existing Send.");
                 }
@@ -292,8 +297,13 @@ namespace Bit.Core.Services
 
             if (send.HideEmail.GetValueOrDefault())
             {
-                foreach (var policy in policies.Where(p => p.Enabled && p.Type == PolicyType.SendOptions && !_currentContext.ManagePolicies(p.OrganizationId)))
+                foreach (var policy in policies.Where(p => p.Enabled && p.Type == PolicyType.SendOptions))
                 {
+                    if (await _currentContext.ManagePolicies(policy.OrganizationId))
+                    {
+                        continue;
+                    }
+
                     SendOptionsPolicyData data = null;
                     if (policy.Data != null)
                     {
