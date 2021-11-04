@@ -143,7 +143,7 @@ namespace Bit.Setup
             {
                 return;
             }
-            Console.WriteLine("\nBitwarden is up and running!");
+            Console.WriteLine("\nBravura Vault is up and running!");
             Console.WriteLine("===================================================");
             Console.WriteLine("\nvisit {0}", _context.Config.Url);
             Console.Write("to update, run ");
