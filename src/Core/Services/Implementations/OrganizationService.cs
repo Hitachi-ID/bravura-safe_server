@@ -618,12 +618,6 @@ namespace Bit.Core.Services
                     throw new BadRequestException("You can only be an admin of one free organization.");
                 }
             }
-            else if (plan.Type != PlanType.Free)
-            {
-                await _paymentService.PurchaseOrganizationAsync(organization, signup.PaymentMethodType.Value,
-                    signup.PaymentToken, plan, signup.AdditionalStorageGb, signup.AdditionalSeats,
-                    signup.PremiumAccessAddon, signup.TaxInfo);
-            }
 
             var ownerId = provider ? default : signup.Owner.Id;
             var returnValue = await SignUpAsync(organization, ownerId, signup.OwnerKey, signup.CollectionName, true);
