@@ -3,7 +3,7 @@ set -e
 
 cat << "EOF"
 HITACHI-ID
-Bravura Pass Vault
+Bravura Vault
 
 EOF
 
