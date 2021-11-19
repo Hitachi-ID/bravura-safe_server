@@ -182,8 +182,7 @@ function forceUpdateLetsEncrypt() {
 function updateDatabase() {
     pullSetup
     dockerComposeFiles
-    MSSQL_ID=$(docker-compose ps -q mssql)
-    docker run -i --rm --name setup --network container:$MSSQL_ID \
+    docker run -i --rm --name setup \
         -v $OUTPUT_DIR:/bitwarden --env-file $ENV_DIR/uid.env $REPO/setup:$COREVERSION \
         dotnet Setup.dll -update 1 -db 1 -os $OS -corev $COREVERSION -webv $WEBVERSION
     echo "Database update complete"

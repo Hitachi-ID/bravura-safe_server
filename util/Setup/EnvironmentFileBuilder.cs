@@ -42,7 +42,7 @@ namespace Bit.Setup
 
         public void BuildForUpdater()
         {
-            Init();
+            Init(false);
             LoadExistingValues(_globalOverrideValues, "/bitwarden/env/global.override.env");
             LoadExistingValues(_mssqlOverrideValues, "/bitwarden/env/mssql.override.env");
 
@@ -56,18 +56,25 @@ namespace Bit.Setup
             Build();
         }
 
-        private void Init()
+        private void Init(bool forInstall = true)
         {
-            var dbSource = Helpers.ReadInput("Enter your Database Server name. Default will use a local mssql docker. [tcp:mssql,1433]");
+            var dbSource = "";
             var dbUser = "";
-            if(string.IsNullOrEmpty(dbSource))
-                Helpers.WriteLine(_context, "Default local docker will be used. The Database User will be sa.");
-            else
-                dbUser = Helpers.ReadInput("Enter your Database User name [sa]");
-            var dbPassword = _context.Stub ? "RANDOM_DATABASE_PASSWORD" : Helpers.ReadInput("Enter your Database User password [<randomly generated>]");
-            var dbCatalog = Helpers.ReadInput("Enter your Database name [vault]");
+            var dbPassword = "";
+            var dbCatalog = "";
 
-            _context.Config.UseMssqlDocker = string.IsNullOrEmpty(dbSource) & string.IsNullOrEmpty(dbUser);
+            if (forInstall)
+            {
+                dbSource = Helpers.ReadInput("Enter your Database Server name. Default will use a local mssql docker. [tcp:mssql,1433]");
+                if (string.IsNullOrEmpty(dbSource))
+                    Helpers.WriteLine(_context, "Default local docker will be used. The Database User will be sa.");
+                else
+                    dbUser = Helpers.ReadInput("Enter your Database User name [sa]");
+                dbPassword = _context.Stub ? "RANDOM_DATABASE_PASSWORD" : Helpers.ReadInput("Enter your Database User password [<randomly generated>]");
+                dbCatalog = Helpers.ReadInput("Enter your Database name [vault]");
+
+                _context.Config.UseMssqlDocker = string.IsNullOrEmpty(dbSource) & string.IsNullOrEmpty(dbUser);
+            }
 
             var dbConnectionString = new SqlConnectionStringBuilder
             {
