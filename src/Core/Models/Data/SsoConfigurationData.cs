@@ -15,6 +15,10 @@ namespace Bit.Core.Models.Data
 
         public SsoType ConfigType { get; set; }
 
+        // Crypto Agent
+        public bool UseCryptoAgent { get; set; }
+        public string CryptoAgentUrl { get; set; }
+
         // OIDC
         public string Authority { get; set; }
         public string ClientId { get; set; }
@@ -34,11 +38,11 @@ namespace Bit.Core.Models.Data
         public string IdpSingleSignOnServiceUrl { get; set; }
         public string IdpSingleLogoutServiceUrl { get; set; }
         public string IdpX509PublicCert { get; set; }
-        public Saml2BindingType IdpBindingType { get; set; }
+        public Saml2BindingType IdpBindingType { get; set; } = Saml2BindingType.HttpRedirect;
         public bool IdpAllowUnsolicitedAuthnResponse { get; set; }
         public string IdpArtifactResolutionServiceUrl { get; set; }
         public bool IdpDisableOutboundLogoutRequests { get; set; }
-        public string IdpOutboundSigningAlgorithm { get; set; }
+        public string IdpOutboundSigningAlgorithm { get; set; } = SamlSigningAlgorithms.Sha256;
         public bool IdpWantAuthnRequestsSigned { get; set; }
 
         // SAML2 SP

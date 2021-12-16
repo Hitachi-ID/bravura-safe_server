@@ -3,126 +3,198 @@ name: Release
 
 on:
   workflow_dispatch:
-    inputs:
-      release_tag_name_input:
-        description: "Release Tag Name <X.X.X>"
-        required: true
+    inputs: {}
+
 
 jobs:
   setup:
     name: Setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
-      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
-      tag_version: ${{ steps.create_tags.outputs.tag_version }}
+      release_version: ${{ steps.version.outputs.package }}
     steps:
       - name: Branch check
         run: |
-          if [[ "$GITHUB_REF" != "refs/heads/rc" ]]; then
+          if [[ "$GITHUB_REF" != "refs/heads/release" ]]; then
             echo "==================================="
-            echo "[!] Can only release from rc branch"
+            echo "[!] Can only release from the 'release' branch"
             echo "==================================="
             exit 1
           fi
 
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
-
-      - name: Create Release Vars
-        id: create_tags
-        run: |
-          case "${RELEASE_TAG_NAME_INPUT:0:1}" in
-            v)
-              echo "RELEASE_NAME=${RELEASE_TAG_NAME_INPUT:1}" >> $GITHUB_ENV
-              echo "RELEASE_TAG_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
-              echo "::set-output name=package_version::${RELEASE_TAG_NAME_INPUT:1}"
-              echo "::set-output name=tag_version::$RELEASE_TAG_NAME_INPUT"
-              ;;
-            [0-9])
-              echo "RELEASE_NAME=$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
-              echo "RELEASE_TAG_NAME=v$RELEASE_TAG_NAME_INPUT" >> $GITHUB_ENV
-              echo "::set-output name=package_version::$RELEASE_TAG_NAME_INPUT"
-              echo "::set-output name=tag_version::v$RELEASE_TAG_NAME_INPUT"
-              ;;
-            *)
-              exit 1
-              ;;
-          esac
-        env:
-          RELEASE_TAG_NAME_INPUT: ${{ github.event.inputs.release_tag_name_input }}
-
-      - name: Create Draft Release
-        id: create_release
-        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.RELEASE_TAG_NAME }}
-          release_name: Version ${{ env.RELEASE_NAME }}
-          draft: true
-          prerelease: false
+          ref: release
+
+      - name: Check Release Version
+        id: version
+        run: |
+          version=$( grep -o "<Version>.*</Version>" Directory.Build.props | grep -o "[0-9]*\.[0-9]*\.[0-9]*")
+          previous_release_tag_version=$(
+            curl -sL https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest | jq -r ".tag_name"
+          )
+
+          if [ "v$version" == "$previous_release_tag_version" ]; then
+            echo "[!] Already released v$version. Please bump version to continue"
+            exit 1
+          fi
+
+          echo "::set-output name=package::$version"
 
 
-  upload:
-    name: Upload
-    runs-on: ubuntu-latest
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-20.04
     needs:
       - setup
-    env:
-      _TAG_VERSION: ${{ needs.setup.outputs.tag_version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Api
+          - name: Admin
+          - name: Billing
+          - name: Events
+          - name: Sso
+          - name: Identity
     steps:
+      - name: Setup
+        id: setup
+        run: |
+          NAME_LOWER=$(echo "${{ matrix.name }}" | awk '{print tolower($0)}')
+          echo "Matrix name: ${{ matrix.name }}"
+          echo "NAME_LOWER: $NAME_LOWER"
+          echo "::set-output name=name_lower::$NAME_LOWER"
+
+      - name: Download latest Release ${{ matrix.name }} asset
+        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
+        with:
+          workflow: build.yml
+          workflow_conclusion: success
+          branch: release
+          artifacts: ${{ matrix.name }}.zip
+
+      - name: Login to Azure
+        uses: Azure/login@77f1b2e3fb80c0e8645114159d17008b8a2e475a
+        with:
+          creds: ${{ secrets.AZURE_PROD_KV_CREDENTIALS }}
+
+      - name: Retrieve secrets
+        id: retrieve-secrets
+        env:
+          VAULT_NAME: "bitwarden-prod-kv"
+        run: |
+          webapp_name=$(
+            az keyvault secret show --vault-name $VAULT_NAME \
+              --name appservices-${{ steps.setup.outputs.name_lower }}-webapp-name \
+              --query value --output tsv
+          )
+          echo "::add-mask::$webapp_name"
+          echo "::set-output name=webapp-name::$webapp_name"
+
+      - name: Deploy App
+        uses: azure/webapps-deploy@798e43877120eda6a2a690a4f212c545e586ae31
+        with:
+          app-name: ${{ steps.retrieve-secrets.outputs.webapp-name }}
+          package: ./${{ matrix.name }}.zip
+          slot: "staging"
+
+
+  release-docker:
+    name: Build Docker images
+    runs-on: ubuntu-20.04
+    needs: build-artifacts
+    env:
+      _RELEASE_VERSION: ${{ needs.setup.outputs.release_version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service_name: Admin
+          - service_name: Api
+          - service_name: Attachments
+          - service_name: Events
+          - service_name: Icons
+          - service_name: Identity
+          - service_name: K8S-Proxy
+          - service_name: MsSql
+          - service_name: Nginx
+          - service_name: Notifications
+          - service_name: Server
+          - service_name: Setup
+          - service_name: Sso
+    steps:
+      - name: Print environment
+        run: |
+          whoami
+          docker --version
+          echo "GitHub ref: $GITHUB_REF"
+          echo "GitHub event: $GITHUB_EVENT"
+
+      - name: Setup DCT
+        id: setup-dct
+        uses: bitwarden/gh-actions/setup-docker-trust@a8c384a05a974c05c48374c818b004be221d43ff
+        with:
+          azure-creds: ${{ secrets.AZURE_PROD_KV_CREDENTIALS }}
+          azure-keyvault-name: "bitwarden-prod-kv"
+
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
 
-      - name: Restore
-        run: dotnet tool restore
-
-      - name: Make Docker stub
+      - name: Setup service name
+        id: setup
         run: |
-          STUB_OUTPUT=$(pwd)/docker-stub
-          docker run -i --rm --name setup -v $STUB_OUTPUT:/bitwarden bitwarden/setup:dev \
-            dotnet Setup.dll -stub 1 -install 1 -domain bitwarden.example.com -os lin
-          sudo chown -R $(whoami):$(whoami) $STUB_OUTPUT
-          rm -rf $STUB_OUTPUT/letsencrypt
-          rm $STUB_OUTPUT/env/uid.env $STUB_OUTPUT/config.yml
-          touch $STUB_OUTPUT/env/uid.env
-          cd docker-stub; zip -r ../docker-stub.zip *; cd ..
+          SERVICE_NAME=$(echo "${{ matrix.service_name }}" | awk '{print tolower($0)}')
+          echo "Matrix name: ${{ matrix.service_name }}"
+          echo "SERVICE_NAME: $SERVICE_NAME"
+          echo "::set-output name=service_name::$SERVICE_NAME"
 
-      - name: Upload Docker stub artifact
-        uses: actions/upload-artifact@ee69f02b3dfdecd58bb31b4d133da38ba6fe3700
-        with:
-          name: docker-stub.zip
-          path: ./docker-stub.zip
+      - name: Pull latest selfhost Release image
+        run: docker pull bitwarden/${{ steps.setup.outputs.service_name }}:latest
 
-      - name: Build Swagger
+      - name: Tag version
         run: |
-          cd ./src/Api
-          echo "Restore"
-          dotnet restore
-          echo "Clean"
-          dotnet clean -c "Release" -o obj/build-output/publish
-          echo "Publish"
-          dotnet publish -c "Release" -o obj/build-output/publish
+          docker tag bitwarden/${{ steps.setup.outputs.service_name }}:latest bitwarden/${{ steps.setup.outputs.service_name }}:$_RELEASE_VERSION
 
-          dotnet swagger tofile --output ../../swagger.json --host https://api.bitwarden.com \
-            ./obj/build-output/publish/Api.dll public
-          cd ../..
+      - name: List Docker images
+        run: docker images
+
+      - name: Push latest image
+        run: |
+          docker push bitwarden/${{ steps.setup.outputs.service_name }}:$_RELEASE_VERSION
         env:
-          ASPNETCORE_ENVIRONMENT: Production
-          swaggerGen: 'True'
+          DOCKER_CONTENT_TRUST: 1
+          DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE: ${{ steps.setup-dct.outputs.dct-delegate-repo-passphrase }}
 
-      - name: Upload Swagger artifact
-        uses: actions/upload-artifact@ee69f02b3dfdecd58bb31b4d133da38ba6fe3700
+      - name: Log out of Docker
+        run: docker logout
+
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-20.04
+    needs:
+      - setup
+      - deploy
+    steps:
+      - name: Download latest Release docker-stub
+        uses: bitwarden/gh-actions/download-artifacts@23433be15ed6fd046ce12b6889c5184a8d9c8783
         with:
-          name: swagger.json
-          path: ./swagger.json
+          workflow: build.yml
+          workflow_conclusion: success
+          branch: release
+          artifacts: "docker-stub.zip,
+                      swagger.json"
 
-      - name: Upload release assets
-        run: |
-          hub release edit \
-            -a ./swagger.json \
-            -a ./docker-stub.zip \
-            -m "" \
-            $_TAG_VERSION
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create release
+        uses: ncipollo/release-action@95215a3cb6e6a1908b3c44e00b4fdb15548b1e09
+        with:
+          artifacts: 'docker-stub.zip,
+                      swagger.json'
+          commit: ${{ github.sha }}
+          tag: "v${{ needs.setup.outputs.release_version }}"
+          name: "Version ${{ needs.setup.outputs.release_version }}"
+          body: "<insert release notes here>"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true

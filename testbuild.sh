@@ -120,37 +120,36 @@ else
     echo "Building bravura_vault"
     echo "=================="
 
-    chmod u+x "$DIR/src/Api/build.sh"
-    "$DIR/src/Api/build.sh"
+    "$DIR/scripts/build" api
+    "$DIR/scripts/build-docker" api
 
-    chmod u+x "$DIR/src/Identity/build.sh"
-    "$DIR/src/Identity/build.sh"
+    "$DIR/scripts/build" identity
+    "$DIR/scripts/build-docker" identity
 
-    chmod u+x "$DIR/util/Server/build.sh"
-    "$DIR/util/Server/build.sh"
+    "$DIR/scripts/build" server
+    "$DIR/scripts/build-docker" server
 
-    chmod u+x "$DIR/util/Nginx/build.sh"
-    "$DIR/util/Nginx/build.sh"
+    "$DIR/scripts/build" nginx
+    "$DIR/scripts/build-docker" nginx
 
-    chmod u+x "$DIR/util/Attachments/build.sh"
-    "$DIR/util/Attachments/build.sh"
+    "$DIR/scripts/build" attachments
+    "$DIR/scripts/build-docker" attachments
 
-    chmod u+x "$DIR/src/Icons/build.sh"
-    "$DIR/src/Icons/build.sh"
+    "$DIR/scripts/build" icons
+    "$DIR/scripts/build-docker" icons
 
-    chmod u+x "$DIR/src/Notifications/build.sh"
-    "$DIR/src/Notifications/build.sh"
+    "$DIR/scripts/build" notifications
+    "$DIR/scripts/build-docker" notifications
 
-    chmod u+x "$DIR/src/Events/build.sh"
-    "$DIR/src/Events/build.sh"
+    "$DIR/scripts/build" events
+    "$DIR/scripts/build-docker" events
 
-    chmod u+x "$DIR/src/Admin/build.sh"
-    "$DIR/src/Admin/build.sh"
+    "$DIR/scripts/build" admin
+    "$DIR/scripts/build-docker" admin
 
-    chmod u+x "$DIR/util/MsSql/build.sh"
-    "$DIR/util/MsSql/build.sh"
+    "$DIR/scripts/build" mssql
+    "$DIR/scripts/build-docker" mssql
 
-    chmod u+x "$DIR/util/Setup/build.sh"
-    "$DIR/util/Setup/build.sh"
+    "$DIR/scripts/build" setup
+    "$DIR/scripts/build-docker" setup
 fi
-

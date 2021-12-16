@@ -177,7 +177,7 @@ namespace Bit.Core.Models.Business
             }
         }
 
-        public bool CanUse(GlobalSettings globalSettings)
+        public bool CanUse(IGlobalSettings globalSettings)
         {
             return true;
         }

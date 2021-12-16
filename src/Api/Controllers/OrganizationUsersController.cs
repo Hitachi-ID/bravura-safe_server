@@ -61,7 +61,8 @@ namespace Bit.Api.Controllers
         public async Task<ListResponseModel<OrganizationUserUserDetailsResponseModel>> Get(string orgId)
         {
             var orgGuidId = new Guid(orgId);
-            if (!await _currentContext.ManageAssignedCollections(orgGuidId) &&
+            if (!await _currentContext.ViewAllCollections(orgGuidId) &&
+                !await _currentContext.ViewAssignedCollections(orgGuidId) &&
                 !await _currentContext.ManageGroups(orgGuidId) &&
                 !await _currentContext.ManageUsers(orgGuidId))
             {
@@ -134,7 +135,8 @@ namespace Bit.Api.Controllers
             }
 
             var userId = _userService.GetProperUserId(User);
-            var result = await _organizationService.InviteUserAsync(orgGuidId, userId.Value, null, new OrganizationUserInvite(model));
+            var result = await _organizationService.InviteUsersAsync(orgGuidId, userId.Value,
+                new (OrganizationUserInvite, string)[] { (new OrganizationUserInvite(model), null) });
         }
         
         [HttpPost("reinvite")]
@@ -283,14 +285,16 @@ namespace Bit.Api.Controllers
                 throw new NotFoundException();
             }
             
-            // Get the calling user's Type for this organization and pass it along
-            var orgType = _currentContext.Organizations?.FirstOrDefault(o => o.Id == orgGuidId)?.Type;
-            if (orgType == null)
+            // Get the users role, since provider users aren't a member of the organization we use the owner check
+            var orgUserType = await _currentContext.OrganizationOwner(orgGuidId)
+                ? OrganizationUserType.Owner
+                : _currentContext.Organizations?.FirstOrDefault(o => o.Id == orgGuidId)?.Type;
+            if (orgUserType == null)
             {
                 throw new NotFoundException();
             }
 
-            var result = await _userService.AdminResetPasswordAsync(orgType.Value, orgGuidId, new Guid(id), model.NewMasterPasswordHash, model.Key);
+            var result = await _userService.AdminResetPasswordAsync(orgUserType.Value, orgGuidId, new Guid(id), model.NewMasterPasswordHash, model.Key);
             if (result.Succeeded)
             {
                 return;

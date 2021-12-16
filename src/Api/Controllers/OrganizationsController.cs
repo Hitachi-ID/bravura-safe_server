@@ -30,6 +30,8 @@ namespace Bit.Api.Controllers
         private readonly IUserService _userService;
         private readonly IPaymentService _paymentService;
         private readonly ICurrentContext _currentContext;
+        private readonly ISsoConfigRepository _ssoConfigRepository;
+        private readonly ISsoConfigService _ssoConfigService;
         private readonly GlobalSettings _globalSettings;
 
         public OrganizationsController(
@@ -40,6 +42,8 @@ namespace Bit.Api.Controllers
             IUserService userService,
             IPaymentService paymentService,
             ICurrentContext currentContext,
+            ISsoConfigRepository ssoConfigRepository,
+            ISsoConfigService ssoConfigService,
             GlobalSettings globalSettings)
         {
             _organizationRepository = organizationRepository;
@@ -49,6 +53,8 @@ namespace Bit.Api.Controllers
             _userService = userService;
             _paymentService = paymentService;
             _currentContext = currentContext;
+            _ssoConfigRepository = ssoConfigRepository;
+            _ssoConfigService = ssoConfigService;
             _globalSettings = globalSettings;
         }
 
@@ -279,6 +285,19 @@ namespace Bit.Api.Controllers
                 Success = result.Item1,
                 PaymentIntentClientSecret = result.Item2
             };
+        }
+
+        [HttpPost("{id}/subscription")]
+        [SelfHosted(NotSelfHostedOnly = true)]
+        public async Task PostSubscription(string id, [FromBody] OrganizationSubscriptionUpdateRequestModel model)
+        {
+            var orgIdGuid = new Guid(id);
+            if (!await _currentContext.OrganizationOwner(orgIdGuid))
+            {
+                throw new NotFoundException();
+            }
+
+            await _organizationService.UpdateSubscription(orgIdGuid, model.SeatAdjustment, model.MaxAutoscaleSeats);
         }
 
         [HttpPost("{id}/seat")]
@@ -585,6 +604,54 @@ namespace Bit.Api.Controllers
 
             var org = await _organizationService.UpdateOrganizationKeysAsync(new Guid(id), model.PublicKey, model.EncryptedPrivateKey);
             return new OrganizationKeysResponseModel(org);
+        }
+
+        [HttpGet("{id:guid}/sso")]
+        public async Task<OrganizationSsoResponseModel> GetSso(Guid id)
+        {
+            if (!await _currentContext.ManageSso(id))
+            {
+                throw new NotFoundException();
+            }
+
+            var organization = await _organizationRepository.GetByIdAsync(id);
+            if (organization == null)
+            {
+                throw new NotFoundException();
+            }
+
+            var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(id);
+
+            return new OrganizationSsoResponseModel(organization, _globalSettings, ssoConfig);
+        }
+
+        [HttpPost("{id:guid}/sso")]
+        public async Task<OrganizationSsoResponseModel> PostSso(Guid id, [FromBody]OrganizationSsoRequestModel model)
+        {
+            if (!await _currentContext.ManageSso(id))
+            {
+                throw new NotFoundException();
+            }
+
+            var organization = await _organizationRepository.GetByIdAsync(id);
+            if (organization == null)
+            {
+                throw new NotFoundException();
+            }
+
+            var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(id);
+            if (ssoConfig == null)
+            {
+                ssoConfig = model.ToSsoConfig(id);
+            }
+            else
+            {
+                ssoConfig = model.ToSsoConfig(ssoConfig);
+            }
+
+            await _ssoConfigService.SaveAsync(ssoConfig);
+
+            return new OrganizationSsoResponseModel(organization, _globalSettings, ssoConfig);
         }
     }
 }
