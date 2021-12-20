@@ -248,7 +248,9 @@ jobs:
         uses: Azure/get-keyvault-secrets@80ccd3fafe5662407cc2e55f202ee34bfff8c403
         with:
           keyvault: "bitwarden-prod-kv"
-          secrets: "docker-password,
+          secrets: "aws-ecr-access-key-id,
+                    aws-ecr-secret-access-key,
+                    docker-password,
                     docker-username,
                     dct-delegate-2-repo-passphrase,
                     dct-delegate-2-key"
@@ -260,7 +262,7 @@ jobs:
           creds: ${{ secrets.AZURE_QA_KV_CREDENTIALS }}
 
       - name: Log into Docker
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc' || github.ref == 'refs/heads/hotfix'
         env:
           DOCKER_USERNAME: ${{ steps.retrieve-secrets.outputs.docker-username }}
           DOCKER_PASSWORD: ${{ steps.retrieve-secrets.outputs.docker-password }}
@@ -272,13 +274,12 @@ jobs:
           fi
 
       - name: Setup Docker Trust
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc' || github.ref == 'refs/heads/hotfix'
         env:
           DCT_DELEGATION_KEY_ID: "c9bde8ec820701516491e5e03d3a6354e7bd66d05fa3df2b0062f68b116dc59c"
           DCT_DELEGATE_KEY: ${{ steps.retrieve-secrets.outputs.dct-delegate-2-key }}
         run: |
           mkdir -p ~/.docker/trust/private
-
           echo "$DCT_DELEGATE_KEY" > ~/.docker/trust/private/$DCT_DELEGATION_KEY_ID.key
 
       - name: Setup service name
@@ -299,64 +300,96 @@ jobs:
         if: ${{ matrix.dotnet }}
         run: |
           mkdir -p ${{ matrix.base_path}}/${{ matrix.service_name }}/obj/build-output/publish
-          unzip ${{ matrix.service_name }}.zip -d ${{ matrix.base_path }}/${{ matrix.service_name }}/obj/build-output/publish
+          unzip ${{ matrix.service_name }}.zip \
+            -d ${{ matrix.base_path }}/${{ matrix.service_name }}/obj/build-output/publish
 
       - name: Build Docker images
         run: |
           if [ "${{ matrix.service_name }}" = "K8S-Proxy" ]; then
             docker build -f ${{ matrix.base_path }}/Nginx/Dockerfile-k8s \
-              -t ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }} ${{ matrix.base_path }}/Nginx
+              -t ${{ steps.setup.outputs.service_name }} ${{ matrix.base_path }}/Nginx
           else
-            docker build -t ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }} \
+            docker build -t ${{ steps.setup.outputs.service_name }} \
               ${{ matrix.base_path }}/${{ matrix.service_name }}
           fi
 
-      - name: Tag rc
-        if: github.ref == 'refs/heads/rc'
-        run: |
-          docker tag ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }} \
-            ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:rc
-
-      - name: Tag dev
-        if: github.ref == 'refs/heads/master'
-        run: |
-          docker tag ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }} \
-            ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:dev
-
-      - name: Tag latest
-        if: github.ref == 'refs/heads/release'
-        run: |
-          docker tag ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }} \
-            ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:latest
-
-      - name: List Docker images
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
-        run: docker images
-
       - name: Docker Trust setup
-        if: matrix.docker_repo == 'bitwarden' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc')
+        if: |
+          matrix.docker_repo == 'bitwarden'
+          && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc' || github.ref == 'refs/heads/hotfix')
+        env:
+          DCT_REPO_PASSPHRASE: ${{ steps.retrieve-secrets.outputs.dct-delegate-2-repo-passphrase }}
         run: |
           echo "DOCKER_CONTENT_TRUST=1" >> $GITHUB_ENV
-          echo "DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ steps.retrieve-secrets.outputs.dct-delegate-2-repo-passphrase }}" >> $GITHUB_ENV
+          echo "DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$DCT_REPO_PASSPHRASE" >> $GITHUB_ENV  
 
-      - name: Push rc images
+      - name: Tag and Push RC to Docker Hub
         if: github.ref == 'refs/heads/rc'
         run: |
+          docker tag ${{ steps.setup.outputs.service_name }} \
+            ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:rc
           docker push ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:rc
 
-      - name: Push dev images
+      - name: Tag and Push Hotfix to Docker Hub
+        if: github.ref == 'refs/heads/hotfix'
+        run: |
+          docker tag ${{ steps.setup.outputs.service_name }} \
+            ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:hotfix
+          docker push ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:hotfix
+
+      - name: Tag and Push Dev to Docker Hub
         if: github.ref == 'refs/heads/master'
         run: |
+          docker tag ${{ steps.setup.outputs.service_name }} \
+            ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:dev
           docker push ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:dev
 
-      - name: Push latest images
-        if: github.ref == 'refs/heads/release'
+      - name: Log out of Docker and disable Docker Notary
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc' || github.ref == 'refs/heads/hotfix'
         run: |
-          docker push ${{ matrix.docker_repo }}/${{ steps.setup.outputs.service_name }}:latest
+          docker logout
+          echo "DOCKER_CONTENT_TRUST=0" >> $GITHUB_ENV
 
-      - name: Log out of Docker
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
-        run: docker logout
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@0d9a5be0dceea74e09396820e1e522ba4a110d2f  # v1
+        with:
+          aws-access-key-id: ${{ steps.retrieve-secrets.outputs.aws-ecr-access-key-id }}
+          aws-secret-access-key: ${{ steps.retrieve-secrets.outputs.aws-ecr-secret-access-key }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@aaf69d68aa3fb14c1d5a6be9ac61fe15b48453a2  # v1
+
+      - name: Tag and Push RC to AWS ECR nonprod registry
+        if: github.ref == 'refs/heads/rc'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker tag ${{ steps.setup.outputs.service_name }} \
+            $ECR_REGISTRY/nonprod/${{ steps.setup.outputs.service_name }}:rc-${IMAGE_TAG:(-8)}
+          docker push $ECR_REGISTRY/nonprod/${{ steps.setup.outputs.service_name }}:rc-${IMAGE_TAG:(-8)}
+
+      - name: Tag and Push Hotfix to AWS ECR nonprod registry
+        if: github.ref == 'refs/heads/hotfix'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker tag ${{ steps.setup.outputs.service_name }} \
+            $ECR_REGISTRY/nonprod/${{ steps.setup.outputs.service_name }}:hotfix-${IMAGE_TAG:(-8)}
+          docker push $ECR_REGISTRY/nonprod/${{ steps.setup.outputs.service_name }}:hotfix-${IMAGE_TAG:(-8)}
+
+      - name: Tag and Push Dev to AWS ECR nonprod registry
+        if: github.ref == 'refs/heads/master'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker tag ${{ steps.setup.outputs.service_name }} \
+            $ECR_REGISTRY/nonprod/${{ steps.setup.outputs.service_name }}:dev-${IMAGE_TAG:(-8)}
+          docker push $ECR_REGISTRY/nonprod/${{ steps.setup.outputs.service_name }}:dev-${IMAGE_TAG:(-8)}
 
 
   upload:
@@ -371,10 +404,12 @@ jobs:
         run: dotnet tool restore
 
       - name: Make Docker stub
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc' || github.ref == 'refs/heads/hotfix'
         run: |
           if [[ "${{ github.ref }}" == "rc" ]]; then
             SETUP_IMAGE="bitwarden/setup:rc"
+          elif [[ "${{ github.ref }}" == "hotfix" ]]; then
+            SETUP_IMAGE="bitwarden/setup:hotfix"
           else
             SETUP_IMAGE="bitwarden/setup:dev"
           fi
@@ -389,7 +424,7 @@ jobs:
           cd docker-stub; zip -r ../docker-stub.zip *; cd ..
 
       - name: Upload Docker stub artifact
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/rc' || github.ref == 'refs/heads/hotfix'
         uses: actions/upload-artifact@ee69f02b3dfdecd58bb31b4d133da38ba6fe3700
         with:
           name: docker-stub.zip
@@ -432,7 +467,10 @@ jobs:
       - upload
     steps:
       - name: Check if any job failed
-        if: ${{ (github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/rc') }}
+        if: |
+          github.ref == 'refs/heads/master'
+          || github.ref == 'refs/heads/rc'
+          || github.ref == 'refs/heads/hotfix'
         env:
           CLOC_STATUS: ${{ needs.cloc.result }}
           TESTING_STATUS: ${{ needs.testing.result }}

@@ -292,7 +292,7 @@ namespace Bit.Core.Context
 
         public async Task<bool> CreateNewCollections(Guid orgId)
         {
-            return await OrganizationAdmin(orgId) || (Organizations?.Any(o => o.Id == orgId
+            return await OrganizationManager(orgId) || (Organizations?.Any(o => o.Id == orgId
                         && (o.Permissions?.CreateNewCollections ?? false)) ?? false);
         }
 
@@ -392,13 +392,13 @@ namespace Bit.Core.Context
 
         public async Task<Guid?> ProviderIdForOrg(Guid orgId)
         {
-            if (Organizations.Any(org => org.Id == orgId))
+            if (Organizations?.Any(org => org.Id == orgId) ?? false)
             {
                 return null;
             }
 
             var po = (await GetProviderOrganizations())
-                .FirstOrDefault(po => po.OrganizationId == orgId);
+                ?.FirstOrDefault(po => po.OrganizationId == orgId);
 
             return po?.ProviderId;
         }
@@ -465,7 +465,7 @@ namespace Bit.Core.Context
 
         protected async Task<IEnumerable<ProviderUserOrganizationDetails>> GetProviderOrganizations()
         {
-            if (_providerUserOrganizations == null)
+            if (_providerUserOrganizations == null && UserId.HasValue)
             {
                 _providerUserOrganizations = await _providerUserRepository.GetManyOrganizationDetailsByUserAsync(UserId.Value, ProviderUserStatusType.Confirmed);
             }

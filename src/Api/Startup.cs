@@ -61,7 +61,8 @@ namespace Bit.Api
             }
 
             // Stripe Billing
-            StripeConfiguration.ApiKey = globalSettings.StripeApiKey;
+            StripeConfiguration.ApiKey = globalSettings.Stripe.ApiKey;
+            StripeConfiguration.MaxNetworkRetries = globalSettings.Stripe.MaxNetworkRetries;
 
             // Repositories
             services.AddSqlServerRepositories(globalSettings);
@@ -168,6 +169,9 @@ namespace Bit.Api
         {
             IdentityModelEventSource.ShowPII = true;
             app.UseSerilog(env, appLifetime, globalSettings);
+
+            // Add general security headers
+            app.UseMiddleware<SecurityHeadersMiddleware>();
 
             // Default Middleware
             app.UseDefaultMiddleware(env, globalSettings);

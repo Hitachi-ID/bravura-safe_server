@@ -10,16 +10,15 @@
 # this file, you can create a `docker-compose.override.yml` file in the #
 # same directory and it will be merged into this file at runtime. You   #
 # can also manage various settings used in this file from the           #
-# ./bvdata/config.yml file for your installation.                       #
+# ./bwdata/config.yml file for your installation.                       #
 #########################################################################
 
 version: '{{{ComposeVersion}}}'
 
 services:
-{{#if UseMssqlDocker}}
   mssql:
-    image: bravura_vault/mssql:{{{CoreVersion}}}
-    container_name: bravura_vault-mssql
+    image: bitwarden/mssql:{{{CoreVersion}}}
+    container_name: bitwarden-mssql
     restart: always
     stop_grace_period: 60s
     volumes:
@@ -30,20 +29,14 @@ services:
 {{/if}}
       - ../logs/mssql:/var/opt/mssql/log
       - ../mssql/backups:/etc/bitwarden/mssql/backups
-    ports:
-      - '1433:1433'
     env_file:
       - mssql.env
       - ../env/uid.env
       - ../env/mssql.override.env
-    networks:
-      - default
-      - public
 
-{{/if}}
   web:
-    image: bravura_vault/web:{{{WebVersion}}}
-    container_name: bravura_vault-web
+    image: bitwarden/web:{{{WebVersion}}}
+    container_name: bitwarden-web
     restart: always
     volumes:
       - ../web:/etc/bitwarden/web
@@ -52,8 +45,8 @@ services:
       - ../env/uid.env
 
   attachments:
-    image: bravura_vault/attachments:{{{CoreVersion}}}
-    container_name: bravura_vault-attachments
+    image: bitwarden/attachments:{{{CoreVersion}}}
+    container_name: bitwarden-attachments
     restart: always
     volumes:
       - ../core/attachments:/etc/bitwarden/core/attachments
@@ -62,8 +55,8 @@ services:
       - ../env/uid.env
 
   api:
-    image: bravura_vault/api:{{{CoreVersion}}}
-    container_name: bravura_vault-api
+    image: bitwarden/api:{{{CoreVersion}}}
+    container_name: bitwarden-api
     restart: always
     volumes:
       - ../core:/etc/bitwarden/core
@@ -78,8 +71,8 @@ services:
       - public
 
   identity:
-    image: bravura_vault/identity:{{{CoreVersion}}}
-    container_name: bravura_vault-identity
+    image: bitwarden/identity:{{{CoreVersion}}}
+    container_name: bitwarden-identity
     restart: always
     volumes:
       - ../identity:/etc/bitwarden/identity
@@ -94,14 +87,29 @@ services:
       - default
       - public
 
-  admin:
-    image: bravura_vault/admin:{{{CoreVersion}}}
-    container_name: bravura_vault-admin
+  sso:
+    image: bitwarden/sso:{{{CoreVersion}}}
+    container_name: bitwarden-sso
     restart: always
-{{#if UseMssqlDocker}}
+    volumes:
+      - ../identity:/etc/bitwarden/identity
+      - ../core:/etc/bitwarden/core
+      - ../ca-certificates:/etc/bitwarden/ca-certificates
+      - ../logs/sso:/etc/bitwarden/logs
+    env_file:
+      - global.env
+      - ../env/uid.env
+      - ../env/global.override.env
+    networks:
+      - default
+      - public
+
+  admin:
+    image: bitwarden/admin:{{{CoreVersion}}}
+    container_name: bitwarden-admin
+    restart: always
     depends_on:
       - mssql
-{{/if}}
     volumes:
       - ../core:/etc/bitwarden/core
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -115,8 +123,8 @@ services:
       - public
 
   icons:
-    image: bravura_vault/icons:{{{CoreVersion}}}
-    container_name: bravura_vault-icons
+    image: bitwarden/icons:{{{CoreVersion}}}
+    container_name: bitwarden-icons
     restart: always
     volumes:
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -129,8 +137,8 @@ services:
       - public
 
   notifications:
-    image: bravura_vault/notifications:{{{CoreVersion}}}
-    container_name: bravura_vault-notifications
+    image: bitwarden/notifications:{{{CoreVersion}}}
+    container_name: bitwarden-notifications
     restart: always
     volumes:
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -144,8 +152,8 @@ services:
       - public
 
   events:
-    image: bravura_vault/events:{{{CoreVersion}}}
-    container_name: bravura_vault-events
+    image: bitwarden/events:{{{CoreVersion}}}
+    container_name: bitwarden-events
     restart: always
     volumes:
       - ../ca-certificates:/etc/bitwarden/ca-certificates
@@ -159,8 +167,8 @@ services:
       - public
 
   nginx:
-    image: bravura_vault/nginx:{{{CoreVersion}}}
-    container_name: bravura_vault-nginx
+    image: bitwarden/nginx:{{{CoreVersion}}}
+    container_name: bitwarden-nginx
     restart: always
     depends_on:
       - web
@@ -186,12 +194,26 @@ services:
     networks:
       - default
       - public
-{{#if UseMssqlDocker}}
+
+{{#if EnableKeyConnector}}
+  key-connector:
+    image: bitwarden/key-connector:latest
+    container_name: bitwarden-key-connector
+    restart: always
+    volumes:
+      - ../key-connector:/etc/bitwarden/key-connector
+      - ../ca-certificates:/etc/bitwarden/ca-certificates
+      - ../logs/key-connector:/etc/bitwarden/logs
+    env_file:
+      - ../env/key-connector.override.env
+    networks:
+      - default
+      - public
+{{/if}}
 {{#if MssqlDataDockerVolume}}
 
 volumes:
   mssql_data:
-{{/if}}
 {{/if}}
 
 networks:

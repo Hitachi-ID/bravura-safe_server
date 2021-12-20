@@ -247,6 +247,16 @@ namespace Bit.Core.Services
                 }
             }
 
+            if (!newPlan.HasKeyConnector && organization.UseKeyConnector)
+            {
+                var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(organization.Id);
+                if (ssoConfig != null && ssoConfig.GetData().KeyConnectorEnabled)
+                {
+                    throw new BadRequestException("Your new plan does not allow the Key Connector feature. " +
+                                                  "Disable your Key Connector.");
+                }
+            }
+
             if (!newPlan.HasResetPassword && organization.UseResetPassword)
             {
                 var resetPasswordPolicy =
@@ -295,6 +305,7 @@ namespace Bit.Core.Services
             organization.Use2fa = newPlan.Has2fa;
             organization.UseApi = newPlan.HasApi;
             organization.UseSso = newPlan.HasSso;
+            organization.UseKeyConnector = newPlan.HasKeyConnector;
             organization.UseResetPassword = newPlan.HasResetPassword;
             organization.SelfHost = newPlan.HasSelfHost;
             organization.UsersGetPremium = newPlan.UsersGetPremium || upgrade.PremiumAccessAddon;
@@ -679,6 +690,7 @@ namespace Bit.Core.Services
                 MaxStorageGb = _globalSettings.SelfHosted ? 10240 : license.MaxStorageGb, // 10 TB
                 UsePolicies = license.UsePolicies,
                 UseSso = license.UseSso,
+                UseKeyConnector = license.UseKeyConnector,
                 UseGroups = license.UseGroups,
                 UseDirectory = license.UseDirectory,
                 UseEvents = license.UseEvents,
@@ -857,6 +869,16 @@ namespace Bit.Core.Services
                 }
             }
 
+            if (!license.UseKeyConnector && organization.UseKeyConnector)
+            {
+                var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(organization.Id);
+                if (ssoConfig != null && ssoConfig.GetData().KeyConnectorEnabled)
+                {
+                    throw new BadRequestException($"Your organization currently has Key Connector enabled. " +
+                        $"Your new license does not allow for the use of Key Connector. Disable your Key Connector.");
+                }
+            }
+
             if (!license.UseResetPassword && organization.UseResetPassword)
             {
                 var resetPasswordPolicy =
@@ -887,6 +909,7 @@ namespace Bit.Core.Services
             organization.UseApi = license.UseApi;
             organization.UsePolicies = license.UsePolicies;
             organization.UseSso = license.UseSso;
+            organization.UseKeyConnector = license.UseKeyConnector;
             organization.UseResetPassword = license.UseResetPassword;
             organization.SelfHost = license.SelfHost;
             organization.UsersGetPremium = license.UsersGetPremium;
@@ -900,6 +923,8 @@ namespace Bit.Core.Services
 
         public async Task DeleteAsync(Organization organization)
         {
+            await ValidateDeleteOrganizationAsync(organization);
+
             if (!string.IsNullOrWhiteSpace(organization.GatewaySubscriptionId))
             {
                 try
@@ -1229,7 +1254,8 @@ namespace Bit.Core.Services
         {
             string MakeToken(OrganizationUser orgUser) =>
                 _dataProtector.Protect($"OrganizationUserInvite {orgUser.Id} {orgUser.Email} {CoreHelpers.ToEpocMilliseconds(DateTime.UtcNow)}");
-            await _mailService.BulkSendOrganizationInviteEmailAsync(organization.Name,
+            
+            await _mailService.BulkSendOrganizationInviteEmailAsync(organization.Name, CheckOrganizationCanSponsor(organization),
                 orgUsers.Select(o => (o, new ExpiringToken(MakeToken(o), DateTime.UtcNow.AddDays(5)))));
         }
 
@@ -1239,7 +1265,15 @@ namespace Bit.Core.Services
             var nowMillis = CoreHelpers.ToEpocMilliseconds(now);
             var token = _dataProtector.Protect(
                 $"OrganizationUserInvite {orgUser.Id} {orgUser.Email} {nowMillis}");
-            await _mailService.SendOrganizationInviteEmailAsync(organization.Name, orgUser, new ExpiringToken(token, now.AddDays(5)));
+            
+            await _mailService.SendOrganizationInviteEmailAsync(organization.Name, CheckOrganizationCanSponsor(organization), orgUser, new ExpiringToken(token, now.AddDays(5)));
+        }
+
+
+        private bool CheckOrganizationCanSponsor(Organization organization)
+        {
+            return StaticStore.GetPlan(organization.PlanType).Product == ProductType.Enterprise
+                && !_globalSettings.SelfHosted;
         }
 
         public async Task<OrganizationUser> AcceptUserAsync(Guid organizationUserId, User user, string token,
@@ -2089,6 +2123,15 @@ namespace Bit.Core.Services
             if (oldType == OrganizationUserType.Admin || newType == OrganizationUserType.Admin)
             {
                 throw new BadRequestException("Custom users can not manage Admins or Owners.");
+            }
+        }
+
+        private async Task ValidateDeleteOrganizationAsync(Organization organization)
+        {
+            var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(organization.Id);
+            if (ssoConfig?.GetData()?.KeyConnectorEnabled == true)
+            {
+                throw new BadRequestException("You cannot delete an Organization that is using Key Connector.");
             }
         }
     }

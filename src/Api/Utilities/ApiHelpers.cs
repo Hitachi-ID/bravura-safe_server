@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Bit.Core.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.EventGrid;
-using Microsoft.Azure.EventGrid.Models;
+using Azure.Messaging.EventGrid;
+using Azure.Messaging.EventGrid.SystemEvents;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -48,35 +49,31 @@ namespace Bit.Api.Utilities
         {
             var queryKey = request.Query["key"];
 
-            if (queryKey != EventGridKey)
+            if (!CoreHelpers.FixedTimeEquals(queryKey, EventGridKey))
             {
                 return new UnauthorizedObjectResult("Authentication failed. Please use a valid key.");
             }
 
             var response = string.Empty;
-            var requestContent = await new StreamReader(request.Body).ReadToEndAsync();
-            if (string.IsNullOrWhiteSpace(requestContent))
-            {
-                return new OkObjectResult(response);
-            }
-
-            var eventGridSubscriber = new EventGridSubscriber();
-            var eventGridEvents = eventGridSubscriber.DeserializeEventGridEvents(requestContent);
-
+            var requestData = await BinaryData.FromStreamAsync(request.Body);
+            var eventGridEvents = EventGridEvent.ParseMany(requestData);
             foreach (var eventGridEvent in eventGridEvents)
             {
-                if (eventGridEvent.Data is SubscriptionValidationEventData eventData)
+                if (eventGridEvent.TryGetSystemEventData(out object systemEvent))
                 {
-                    // Might want to enable additional validation: subject, topic etc.
-
-                    var responseData = new SubscriptionValidationResponse()
+                    if (systemEvent is SubscriptionValidationEventData eventData)
                     {
-                        ValidationResponse = eventData.ValidationCode
-                    };
+                        // Might want to enable additional validation: subject, topic etc.
+                        var responseData = new SubscriptionValidationResponse()
+                        {
+                            ValidationResponse = eventData.ValidationCode
+                        };
 
-                    return new OkObjectResult(responseData);
+                        return new OkObjectResult(responseData);
+                    }
                 }
-                else if (eventTypeHandlers.ContainsKey(eventGridEvent.EventType))
+
+                if (eventTypeHandlers.ContainsKey(eventGridEvent.EventType))
                 {
                     await eventTypeHandlers[eventGridEvent.EventType](eventGridEvent);
                 }

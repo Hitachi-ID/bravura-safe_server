@@ -1,4 +1,4 @@
-FROM nginx:1.18
+FROM nginx:stable
 
 LABEL com.hitachi.product="bravura_vault"
 

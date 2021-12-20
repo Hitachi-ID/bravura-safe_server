@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Bit.Core.Context;
+using Bit.Core.Enums;
+using Bit.Core.Exceptions;
+using Bit.Core.Models;
+using Bit.Core.Models.Business;
+using Bit.Core.Models.Table;
+using Bit.Core.Repositories;
+using Bit.Core.Settings;
+using Bit.Core.Utilities;
+using Fido2NetLib;
+using Fido2NetLib.Objects;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Bit.Core.Models.Table;
-using Bit.Core.Repositories;
-using System.Linq;
-using Bit.Core.Enums;
-using System.Security.Claims;
-using Bit.Core.Models;
-using Bit.Core.Models.Business;
-using U2fLib = U2F.Core.Crypto.U2F;
-using Bit.Core.Context;
-using Bit.Core.Exceptions;
-using Bit.Core.Utilities;
-using Bit.Core.Settings;
-using System.IO;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.DataProtection;
-using Fido2NetLib;
-using Fido2NetLib.Objects;
+using File = System.IO.File;
+using U2fLib = U2F.Core.Crypto.U2F;
 
 namespace Bit.Core.Services
 {
@@ -605,7 +606,7 @@ namespace Bit.Core.Services
             return IdentityResult.Failed(_identityErrorDescriber.PasswordMismatch());
         }
 
-        public async Task<IdentityResult> SetPasswordAsync(User user, string masterPassword, string key, 
+        public async Task<IdentityResult> SetPasswordAsync(User user, string masterPassword, string key,
             string orgIdentifier = null)
         {
             if (user == null)
@@ -630,42 +631,75 @@ namespace Bit.Core.Services
 
             await _userRepository.ReplaceAsync(user);
             await _eventService.LogUserEventAsync(user.Id, EventType.User_ChangedPassword);
-            
+
             if (!string.IsNullOrWhiteSpace(orgIdentifier))
             {
                 await _organizationService.AcceptUserAsync(orgIdentifier, user, this);
             }
-            
+
             return IdentityResult.Success;
         }
 
-        public async Task<IdentityResult> SetCryptoAgentKeyAsync(User user, string key, string orgIdentifier)
+        public async Task<IdentityResult> SetKeyConnectorKeyAsync(User user, string key, string orgIdentifier)
         {
-            if (user == null)
+            var identityResult = CheckCanUseKeyConnector(user);
+            if (identityResult != null)
             {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (user.UsesCryptoAgent)
-            {
-                Logger.LogWarning("Already uses crypto agent.");
-                return IdentityResult.Failed(_identityErrorDescriber.UserAlreadyHasPassword());
+                return identityResult;
             }
 
             user.RevisionDate = user.AccountRevisionDate = DateTime.UtcNow;
             user.Key = key;
-            user.UsesCryptoAgent = true;
+            user.UsesKeyConnector = true;
 
             await _userRepository.ReplaceAsync(user);
-            // TODO: Use correct event
-            await _eventService.LogUserEventAsync(user.Id, EventType.User_ChangedPassword);
+            await _eventService.LogUserEventAsync(user.Id, EventType.User_MigratedKeyToKeyConnector);
 
             await _organizationService.AcceptUserAsync(orgIdentifier, user, this);
 
             return IdentityResult.Success;
         }
 
-        
+        public async Task<IdentityResult> ConvertToKeyConnectorAsync(User user)
+        {
+            var identityResult = CheckCanUseKeyConnector(user);
+            if (identityResult != null)
+            {
+                return identityResult;
+            }
+
+            user.RevisionDate = user.AccountRevisionDate = DateTime.UtcNow;
+            user.MasterPassword = null;
+            user.UsesKeyConnector = true;
+
+            await _userRepository.ReplaceAsync(user);
+            await _eventService.LogUserEventAsync(user.Id, EventType.User_MigratedKeyToKeyConnector);
+
+            return IdentityResult.Success;
+        }
+
+        private IdentityResult CheckCanUseKeyConnector(User user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user.UsesKeyConnector)
+            {
+                Logger.LogWarning("Already uses Key Connector.");
+                return IdentityResult.Failed(_identityErrorDescriber.UserAlreadyHasPassword());
+            }
+
+            if (_currentContext.Organizations.Any(u =>
+                    u.Type is OrganizationUserType.Owner or OrganizationUserType.Admin))
+            {
+                throw new BadRequestException("Cannot use Key Connector when admin or owner of an organization.");
+            }
+
+            return null;
+        }
+
         public async Task<IdentityResult> AdminResetPasswordAsync(OrganizationUserType callingUserType, Guid orgId, Guid id, string newMasterPassword, string key)
         {
             // Org must be able to use reset password
@@ -674,15 +708,15 @@ namespace Bit.Core.Services
             {
                 throw new BadRequestException("Organization does not allow password reset.");
             }
-            
-            // Enterprise policy must be enabled 
+
+            // Enterprise policy must be enabled
             var resetPasswordPolicy =
                 await _policyRepository.GetByOrganizationIdTypeAsync(orgId, PolicyType.ResetPassword);
             if (resetPasswordPolicy == null || !resetPasswordPolicy.Enabled)
             {
                 throw new BadRequestException("Organization does not have the password reset policy enabled.");
             }
-            
+
             // Org User must be confirmed and have a ResetPasswordKey
             var orgUser = await _organizationUserRepository.GetByIdAsync(id);
             if (orgUser == null || orgUser.Status != OrganizationUserStatusType.Confirmed ||
@@ -691,7 +725,7 @@ namespace Bit.Core.Services
             {
                 throw new BadRequestException("Organization User not valid");
             }
-            
+
             // Calling User must be of higher/equal user type to reset user's password
             var canAdjustPassword = false;
             switch (callingUserType)
@@ -718,7 +752,12 @@ namespace Bit.Core.Services
             {
                 throw new NotFoundException();
             }
-            
+
+            if (user.UsesKeyConnector)
+            {
+                throw new BadRequestException("Cannot reset password of a user with Key Connector.");
+            }
+
             var result = await UpdatePasswordHash(user, newMasterPassword);
             if (!result.Succeeded)
             {
@@ -736,14 +775,14 @@ namespace Bit.Core.Services
 
             return IdentityResult.Success;
         }
-        
+
         public async Task<IdentityResult> UpdateTempPasswordAsync(User user, string newMasterPassword, string key, string hint)
         {
             if (!user.ForcePasswordReset)
             {
                 throw new BadRequestException("User does not have a temporary password to update.");
             }
-            
+
             var result = await UpdatePasswordHash(user, newMasterPassword);
             if (!result.Succeeded)
             {
@@ -823,14 +862,14 @@ namespace Bit.Core.Services
             return IdentityResult.Failed(_identityErrorDescriber.PasswordMismatch());
         }
 
-        public async Task<IdentityResult> RefreshSecurityStampAsync(User user, string masterPassword)
+        public async Task<IdentityResult> RefreshSecurityStampAsync(User user, string secret)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (await CheckPasswordAsync(user, masterPassword))
+            if (await VerifySecretAsync(user, secret))
             {
                 var result = await base.UpdateSecurityStampAsync(user);
                 if (!result.Succeeded)
@@ -881,7 +920,7 @@ namespace Bit.Core.Services
             }
         }
 
-        public async Task<bool> RecoverTwoFactorAsync(string email, string masterPassword, string recoveryCode,
+        public async Task<bool> RecoverTwoFactorAsync(string email, string secret, string recoveryCode,
             IOrganizationService organizationService)
         {
             var user = await _userRepository.GetByEmailAsync(email);
@@ -891,12 +930,12 @@ namespace Bit.Core.Services
                 return false;
             }
 
-            if (!await CheckPasswordAsync(user, masterPassword))
+            if (!await VerifySecretAsync(user, secret))
             {
                 return false;
             }
 
-            if (string.Compare(user.TwoFactorRecoveryCode, recoveryCode, true) != 0)
+            if (!CoreHelpers.FixedTimeEquals(user.TwoFactorRecoveryCode, recoveryCode))
             {
                 return false;
             }
@@ -1256,7 +1295,7 @@ namespace Bit.Core.Services
                 purpose);
             return token;
         }
-        
+
         private async Task<IdentityResult> UpdatePasswordHash(User user, string newPassword,
             bool validatePassword = true, bool refreshStamp = true)
         {
@@ -1352,6 +1391,36 @@ namespace Bit.Core.Services
             user.ApiKey = CoreHelpers.SecureRandomString(30);
             user.RevisionDate = DateTime.UtcNow;
             await _userRepository.ReplaceAsync(user);
+        }
+
+        public async Task SendOTPAsync(User user)
+        {
+            if (user.Email == null)
+            {
+                throw new BadRequestException("No user email.");
+            }
+
+            if (!user.UsesKeyConnector)
+            {
+                throw new BadRequestException("Not using Key Connector.");
+            }
+
+            var token = await base.GenerateUserTokenAsync(user, TokenOptions.DefaultEmailProvider,
+                "otp:" + user.Email);
+            await _mailService.SendOTPEmailAsync(user.Email, token);
+        }
+
+        public Task<bool> VerifyOTPAsync(User user, string token)
+        {
+            return base.VerifyUserTokenAsync(user, TokenOptions.DefaultEmailProvider,
+                "otp:" + user.Email, token);
+        }
+
+        public async Task<bool> VerifySecretAsync(User user, string secret)
+        {
+            return user.UsesKeyConnector
+                ? await VerifyOTPAsync(user, secret)
+                : await CheckPasswordAsync(user, secret);
         }
     }
 }
