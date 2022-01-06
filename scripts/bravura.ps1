@@ -87,7 +87,7 @@ $year = (Get-Date).year
 
 Write-Line @'
 HITACHI-ID
-Bravura Pass Vault
+Bravura Safe Vault
 '@
 
 Write-Line "

@@ -163,7 +163,7 @@ namespace Bit.Setup
             {
                 return;
             }
-            Console.WriteLine("\nBravura Vault is up and running!");
+            Console.WriteLine("\nBravura Safe is up and running!");
             Console.WriteLine("===================================================");
             Console.WriteLine("\nvisit {0}", _context.Config.Url);
             Console.Write("to update, run ");

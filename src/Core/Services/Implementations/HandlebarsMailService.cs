@@ -251,7 +251,7 @@ namespace Bit.Core.Services
 
         public async Task SendWelcomeEmailAsync(User user)
         {
-            var message = CreateDefaultMessage("Welcome to Bravura Vault!", user.Email);
+            var message = CreateDefaultMessage("Welcome to Bravura Safe!", user.Email);
             var model = new BaseMailModel
             {
                 WebVaultUrl = _globalSettings.BaseServiceUri.VaultWithHash,
@@ -832,7 +832,7 @@ namespace Bit.Core.Services
         
         public async Task SendOTPEmailAsync(string email, string token)
         {
-            var message = CreateDefaultMessage("Your Bitwarden Verification Code", email);
+            var message = CreateDefaultMessage("Your Bravura Safe Verification Code", email);
             var model = new EmailTokenViewModel
             {
                 Token = token,

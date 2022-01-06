@@ -536,7 +536,7 @@
     <value>You were removed from the organization managing single sign-on for your account. Contact the organization administrator for help regaining access to your account.</value>
   </data>
   <data name="UserAlreadyExistsKeyConnector" xml:space="preserve">
-    <value>You were removed from the organization managing single sign-on for your account. Create a new account to continue using Bitwarden.</value>
+    <value>You were removed from the organization managing single sign-on for your account. Create a new account to continue using Bravura Safe.</value>
   </data>
   <data name="RedirectGet" xml:space="preserve">
     <value>Redirect GET</value>
@@ -589,29 +589,29 @@
   </data>
   <data name="DisableSend" xml:space="preserve">
     <value>Disable Send</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Safe Send'. It should not be translated.</comment>
   </data>
   <data name="DisableSendDescription" xml:space="preserve">
-    <value>Do not allow users to create or edit a Bravura Vault Send. Deleting an existing Send is still allowed.</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
+    <value>Do not allow users to create or edit a Bravura Safe Send. Deleting an existing Send is still allowed.</value>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Safe Send'. It should not be translated.</comment>
   </data>
   <data name="DisableSendExemption" xml:space="preserve">
     <value>Organization Owners and Administrators are exempt from this policy's enforcement.</value>
   </data>
   <data name="SendOptions" xml:space="preserve">
     <value>Send Options</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Safe Send'. It should not be translated.</comment>
   </data>
   <data name="Options" xml:space="preserve">
     <value>Options</value>
   </data>
   <data name="DisableHideEmail" xml:space="preserve">
     <value>Do not allow users to hide their email address when creating or editing a Send.</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Safe Send'. It should not be translated.</comment>
   </data>
   <data name="SendOptionsDescription" xml:space="preserve">
     <value>Set options for creating and editing Sends.</value>
-    <comment>'Send' is a noun and the name of a feature called 'Bravura Vault Send'. It should not be translated.</comment>
+    <comment>'Send' is a noun and the name of a feature called 'Bravura Safe Send'. It should not be translated.</comment>
   </data>
   <data name="SendOptionsExemption" xml:space="preserve">
     <value>Organization Owners and Administrators are exempt from this policy's enforcement.</value>
