@@ -602,6 +602,7 @@ namespace Bit.Core.Services
                 UseTotp = true,
                 Use2fa = true,
                 UseApi = true,
+                UseResetPassword = true,
                 SelfHost = true,
                 UsersGetPremium = true,
                 Plan = "Custom",
