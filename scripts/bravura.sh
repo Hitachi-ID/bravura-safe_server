@@ -16,7 +16,7 @@ EOF
 # Setup
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-SCRIPT_NAME=`basename "$0"`
+SCRIPT_NAME=$(basename "$0")
 SCRIPT_PATH="$DIR/$SCRIPT_NAME"
 OUTPUT="$DIR/bvdata"
 if [ $# -eq 2 ]
