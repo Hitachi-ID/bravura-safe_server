@@ -1,20 +1,20 @@
-﻿using Bit.Core.Models.Business;
-using Bit.Core.Models.Table;
-using Bit.Core.Repositories;
-using Bit.Core.Utilities;
-using Bit.Core.Settings;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Azure.Storage;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Bit.Core.Models.Business;
+using Bit.Core.Models.Table;
+using Bit.Core.Repositories;
+using Bit.Core.Settings;
+using Bit.Core.Utilities;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Storage;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Bit.Core.Services
 {
@@ -99,12 +99,12 @@ namespace Bit.Core.Services
 
         public async Task ValidateUsersAsync()
         {
-        return;
+            return;
         }
 
         public async Task<bool> ValidateUserPremiumAsync(User user)
         {
-        return true;
+            return true;
         }
 
         private async Task<bool> ProcessUserValidationAsync(User user)
