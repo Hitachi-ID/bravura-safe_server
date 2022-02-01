@@ -28,6 +28,7 @@ $githubBaseUrl = "https://gitlab.hitachi-id.com/bravura-vault/server"
 # Please do not create pull requests modifying the version numbers.
 $coreVersion = "latest"
 $webVersion = "latest"
+$keyConnectorVersion = "1.0.0"
 
 # Functions
 
@@ -109,36 +110,36 @@ if ($install) {
     Test-Output-Dir-Not-Exists
     New-Item -ItemType directory -Path $output -ErrorAction Ignore | Out-Null
     Get-Run-File
-    #Invoke-Expression "& `"$scriptsDir\run.ps1`" -install -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion"
+    Invoke-Expression "& `"$scriptsDir\run.ps1`" -install -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion -keyConnectorVersion $keyConnectorVersion"
 }
 elseif ($start -Or $restart) {
     Test-Output-Dir-Exists
-    Invoke-Expression "& `"$scriptsDir\run.ps1`" -restart -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion"
+    Invoke-Expression "& `"$scriptsDir\run.ps1`" -restart -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion -keyConnectorVersion $keyConnectorVersion"
 }
 elseif ($update) {
     Test-Output-Dir-Exists
     Get-Run-File
-    Invoke-Expression "& `"$scriptsDir\run.ps1`" -update -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion"
+    Invoke-Expression "& `"$scriptsDir\run.ps1`" -update -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion -keyConnectorVersion $keyConnectorVersion"
 }
 elseif ($rebuild) {
     Test-Output-Dir-Exists
-    Invoke-Expression "& `"$scriptsDir\run.ps1`" -rebuild -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion"
+    Invoke-Expression "& `"$scriptsDir\run.ps1`" -rebuild -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion -keyConnectorVersion $keyConnectorVersion"
 }
 elseif ($updateconf) {
     Test-Output-Dir-Exists
-    Invoke-Expression "& `"$scriptsDir\run.ps1`" -updateconf -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion"
+    Invoke-Expression "& `"$scriptsDir\run.ps1`" -updateconf -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion -keyConnectorVersion $keyConnectorVersion"
 }
 elseif ($updatedb) {
     Test-Output-Dir-Exists
-    Invoke-Expression "& `"$scriptsDir\run.ps1`" -updatedb -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion"
+    Invoke-Expression "& `"$scriptsDir\run.ps1`" -updatedb -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion -keyConnectorVersion $keyConnectorVersion"
 }
 elseif ($stop) {
     Test-Output-Dir-Exists
-    Invoke-Expression "& `"$scriptsDir\run.ps1`" -stop -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion"
+    Invoke-Expression "& `"$scriptsDir\run.ps1`" -stop -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion -keyConnectorVersion $keyConnectorVersion"
 }
 elseif ($renewcert) {
     Test-Output-Dir-Exists
-    Invoke-Expression "& `"$scriptsDir\run.ps1`" -renewcert -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion"
+    Invoke-Expression "& `"$scriptsDir\run.ps1`" -renewcert -outputDir `"$output`" -coreVersion $coreVersion -webVersion $webVersion -keyConnectorVersion $keyConnectorVersion"
 }
 elseif ($updaterun) {
     Test-Output-Dir-Exists

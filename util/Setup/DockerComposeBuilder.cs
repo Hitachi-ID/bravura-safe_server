@@ -62,6 +62,10 @@ namespace Bit.Setup
                 {
                     WebVersion = context.WebVersion;
                 }
+                if (!string.IsNullOrWhiteSpace(context.KeyConnectorVersion))
+                {
+                    KeyConnectorVersion = context.KeyConnectorVersion;
+                }
             }
 
             public string ComposeVersion { get; set; } = "3";
@@ -73,6 +77,7 @@ namespace Bit.Setup
             public bool HasPort => !string.IsNullOrWhiteSpace(HttpPort) || !string.IsNullOrWhiteSpace(HttpsPort);
             public string CoreVersion { get; set; } = "latest";
             public string WebVersion { get; set; } = "latest";
+            public string KeyConnectorVersion { get; set; } = "latest";
         }
     }
 }
