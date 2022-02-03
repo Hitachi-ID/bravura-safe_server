@@ -48,6 +48,6 @@ if [[ -d $OUTPUT ]]; then
     rm -rf $OUTPUT
 fi
 
-dotnet test "./bitwarden.tests.sln" /p:CoverletOutputFormatter="cobertura" --collect:"XPlat Code Coverage" --results-directory:"$OUTPUT" -c $CONFIGURATION
+dotnet test "./bitwarden.tests.sln" /p:DefineConstants="OSS" /p:CoverletOutputFormatter="cobertura" --collect:"XPlat Code Coverage" --results-directory:"$OUTPUT" -c $CONFIGURATION
 
 dotnet tool run reportgenerator -reports:$OUTPUT/**/*.cobertura.xml -targetdir:$OUTPUT -reporttype:"$REPORT_TYPE"

@@ -18,4 +18,4 @@ npm install
 cd "$CUR_DIR"
 gulp --gulpfile "$DIR/gulpfile.js" build
 echo "Publish"
-dotnet publish "$DIR/Admin.csproj" -c "Release" -o "$DIR/obj/build-output/publish"
+dotnet publish -p:DefineConstants="OSS" "$DIR/Admin.csproj" -c "Release" -o "$DIR/obj/build-output/publish"
