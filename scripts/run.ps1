@@ -74,7 +74,7 @@ function Install() {
     }
     
     Write-Host "(!) " -f cyan -nonewline
-    [string]$database = $( Read-Host "Enter the database name for your Bitwarden instance (ex. vault): ")
+    [string]$database = $( Read-Host "Enter the database name for your Bravura Safe instance (ex. vault): ")
     echo ""
 
     if ($database -eq "") {

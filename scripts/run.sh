@@ -87,7 +87,7 @@ function install() {
         fi
     fi
 
-    echo -e -n "${CYAN}(!)${NC} Enter the database name for your Bitwarden instance (ex. vault): "
+    echo -e -n "${CYAN}(!)${NC} Enter the database name for your Bravura Safe instance (ex. vault): "
     read DATABASE
     echo ""
 
