@@ -26,7 +26,8 @@ namespace Bit.Admin.Controllers
             return View(new HomeModel
             {
                 GlobalSettings = _globalSettings,
-                CurrentVersion = Core.Utilities.CoreHelpers.GetVersion()
+                CurrentVersion = Core.Utilities.CoreHelpers.GetVersion(),
+                CurrentInternalVersion = Core.Utilities.CoreHelpers.GetInternalVersion()
             });
         }
         

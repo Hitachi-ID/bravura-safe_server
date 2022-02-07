@@ -4,6 +4,7 @@
 		<TargetFramework>net5.0</TargetFramework>
 		<Version>1.45.0</Version>
 		<RootNamespace>Bit.$(MSBuildProjectName)</RootNamespace>
+        <InternalVersion>2022-01</InternalVersion>
 	</PropertyGroup>
 
 </Project>
