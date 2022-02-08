@@ -37,6 +37,7 @@ namespace Bit.Core.Utilities
         private static readonly DateTime _max = new DateTime(9999, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private static readonly Random _random = new Random();
         private static string _version;
+        private static string _internalVersion;
         private static readonly string _qwertyDvorakMap = "-=qwertyuiop[]asdfghjkl;'zxcvbnm,./_+QWERTYUIO" +
             "P{}ASDFGHJKL:\"ZXCVBNM<>?";
         private static readonly string _dvorakMap = "[]',.pyfgcrl/=aoeuidhtns-;qjkxbmwvz{}\"<>PYFGC" +
@@ -574,6 +575,18 @@ namespace Bit.Core.Utilities
             }
 
             return _version;
+        }
+
+        public static string GetInternalVersion()
+        {
+            if (string.IsNullOrWhiteSpace(_internalVersion))
+            {
+                _internalVersion = Assembly.GetExecutingAssembly()
+                    .GetCustomAttribute<AssemblyDescriptionAttribute>()
+                    .Description;
+            }
+
+            return _internalVersion;
         }
 
         public static string Dvorak2Qwerty(string value)
