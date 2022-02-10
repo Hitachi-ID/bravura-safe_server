@@ -196,6 +196,9 @@ namespace Bit.Core.Settings
             private string _readOnlyConnectionString;
             private string _jobSchedulerConnectionString;
 
+            public string CryptKey { get; set; }
+            public string AuthKey { get; set; }
+
             public string ConnectionString
             {
                 get => _connectionString;

@@ -32,7 +32,7 @@
     @ReferenceData VARCHAR(MAX),
     @Enabled BIT,
     @LicenseKey VARCHAR(100),
-    @ApiKey VARCHAR(30),
+    @ApiKey VARCHAR(MAX),
     @PublicKey VARCHAR(MAX),
     @PrivateKey VARCHAR(MAX),
     @TwoFactorProviders NVARCHAR(MAX),

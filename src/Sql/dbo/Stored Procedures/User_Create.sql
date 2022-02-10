@@ -4,11 +4,11 @@
     @Email NVARCHAR(256),
     @EmailVerified BIT,
     @MasterPassword NVARCHAR(300),
-    @MasterPasswordHint NVARCHAR(50),
+    @MasterPasswordHint NVARCHAR(MAX),
     @Culture NVARCHAR(10),
     @SecurityStamp NVARCHAR(50),
     @TwoFactorProviders NVARCHAR(MAX),
-    @TwoFactorRecoveryCode NVARCHAR(32),
+    @TwoFactorRecoveryCode NVARCHAR(MAX),
     @EquivalentDomains NVARCHAR(MAX),
     @ExcludedGlobalEquivalentDomains NVARCHAR(MAX),
     @AccountRevisionDate DATETIME2(7),
@@ -29,7 +29,7 @@
     @KdfIterations INT,
     @CreationDate DATETIME2(7),
     @RevisionDate DATETIME2(7),
-    @ApiKey VARCHAR(30),
+    @ApiKey VARCHAR(MAX),
     @ForcePasswordReset BIT = 0,
     @UsesKeyConnector BIT = 0
 AS
