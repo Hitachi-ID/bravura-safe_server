@@ -95,6 +95,8 @@ namespace Bit.Setup
             {
                 ["globalSettings__baseServiceUri__vault"] = _context.Config.Url,
                 ["globalSettings__sqlServer__connectionString"] = $"\"{dbConnectionString.Replace("\"", "\\\"")}\"",
+                ["globalSettings__sqlServer__cryptKey"] = Convert.ToBase64String(Helpers.GenerateNewKey()),
+                ["globalSettings__sqlServer__authKey"] = Convert.ToBase64String(Helpers.GenerateNewKey()),
                 ["globalSettings__identityServer__certificatePassword"] = _context.Install?.IdentityCertPassword,
                 ["globalSettings__internalIdentityKey"] = _context.Stub ? "RANDOM_IDENTITY_KEY" :
                     Helpers.SecureRandomString(64, alpha: true, numeric: true),

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Bit.Core.Enums;
 using Bit.Core.Utilities;
+using Bit.Core.Utilities.Crypto;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 
@@ -11,6 +12,7 @@ namespace Bit.Core.Models.Table
     public class User : ITableObject<Guid>, ISubscriber, IStorable, IStorableSubscriber, IRevisable, ITwoFactorProvidersUser, IReferenceable
     {
         private Dictionary<TwoFactorProviderType, TwoFactorProvider> _twoFactorProviders;
+        private bool? encrypted;
 
         public Guid Id { get; set; }
         [MaxLength(50)]
@@ -21,7 +23,6 @@ namespace Bit.Core.Models.Table
         public bool EmailVerified { get; set; }
         [MaxLength(300)]
         public string MasterPassword { get; set; }
-        [MaxLength(50)]
         public string MasterPasswordHint { get; set; }
         [MaxLength(10)]
         public string Culture { get; set; } = "en-US";
@@ -29,7 +30,6 @@ namespace Bit.Core.Models.Table
         [MaxLength(50)]
         public string SecurityStamp { get; set; }
         public string TwoFactorProviders { get; set; }
-        [MaxLength(32)]
         public string TwoFactorRecoveryCode { get; set; }
         public string EquivalentDomains { get; set; }
         public string ExcludedGlobalEquivalentDomains { get; set; }
@@ -51,7 +51,6 @@ namespace Bit.Core.Models.Table
         [MaxLength(100)]
         public string LicenseKey { get; set; }
         [Required]
-        [MaxLength(30)]
         public string ApiKey { get; set; }
         public KdfType Kdf { get; set; } = KdfType.PBKDF2_SHA256;
         public int KdfIterations { get; set; } = 5000;
@@ -183,6 +182,28 @@ namespace Bit.Core.Models.Table
                 TwoFactorEnabled = twoFactorEnabled,
                 SecurityStamp = SecurityStamp
             };
+        }
+
+        public User Encrypt(byte[] cryptKey, byte[] authKey)
+        {
+            if (encrypted == true)
+                return this;
+            if (MasterPasswordHint is not null) MasterPasswordHint = AESHMACEncryption.SimpleEncrypt(MasterPasswordHint, cryptKey, authKey);
+            if (TwoFactorRecoveryCode is not null) TwoFactorRecoveryCode = AESHMACEncryption.SimpleEncrypt(TwoFactorRecoveryCode, cryptKey, authKey);
+            if (ApiKey is not null) ApiKey = AESHMACEncryption.SimpleEncrypt(ApiKey, cryptKey, authKey);
+            encrypted = true;
+            return this;
+        }
+
+        public User Decrypt(byte[] cryptKey, byte[] authKey)
+        {
+            if (encrypted == false)
+                return this;
+            if (MasterPasswordHint is not null) MasterPasswordHint = AESHMACEncryption.SimpleDecrypt(MasterPasswordHint, cryptKey, authKey);
+            if (TwoFactorRecoveryCode is not null) TwoFactorRecoveryCode = AESHMACEncryption.SimpleDecrypt(TwoFactorRecoveryCode, cryptKey, authKey);
+            if (ApiKey is not null) ApiKey = AESHMACEncryption.SimpleDecrypt(ApiKey, cryptKey, authKey);
+            encrypted = false;
+            return this;
         }
     }
 }

@@ -14,17 +14,23 @@ namespace Bit.Core.Repositories.SqlServer
 {
     public class UserRepository : Repository<User, Guid>, IUserRepository
     {
+        private byte[] cryptKey;
+        private byte[] authKey;
+
         public UserRepository(GlobalSettings globalSettings)
             : this(globalSettings.SqlServer.ConnectionString, globalSettings.SqlServer.ReadOnlyConnectionString)
-        { }
+        {
+            cryptKey = Convert.FromBase64String(globalSettings.SqlServer.CryptKey);
+            authKey = Convert.FromBase64String(globalSettings.SqlServer.AuthKey);
+        }
 
-        public UserRepository(string connectionString, string readOnlyConnectionString)
+            public UserRepository(string connectionString, string readOnlyConnectionString)
             : base(connectionString, readOnlyConnectionString)
         { }
 
         public override async Task<User> GetByIdAsync(Guid id)
         {
-            return await base.GetByIdAsync(id);
+            return (await base.GetByIdAsync(id))?.Decrypt(cryptKey, authKey);
         }
 
         public async Task<User> GetByEmailAsync(string email)
@@ -36,7 +42,9 @@ namespace Bit.Core.Repositories.SqlServer
                     new { Email = email },
                     commandType: CommandType.StoredProcedure);
 
-                return results.SingleOrDefault();
+                var result = results.SingleOrDefault();
+                result?.Decrypt(cryptKey, authKey);
+                return result;
             }
         }
 
@@ -49,7 +57,9 @@ namespace Bit.Core.Repositories.SqlServer
                     new { OrganizationId = organizationId, ExternalId = externalId },
                     commandType: CommandType.StoredProcedure);
 
-                return results.SingleOrDefault();
+                var result = results.SingleOrDefault();
+                result?.Decrypt(cryptKey, authKey);
+                return result;
             }
         }
 
@@ -76,7 +86,12 @@ namespace Bit.Core.Repositories.SqlServer
                     commandType: CommandType.StoredProcedure,
                     commandTimeout: 120);
 
-                return results.ToList();
+                var resultList = results.ToList();
+                foreach (var result in resultList)
+                {
+                    result.Decrypt(cryptKey, authKey);
+                }
+                return resultList;
             }
         }
 
@@ -89,7 +104,12 @@ namespace Bit.Core.Repositories.SqlServer
                     new { Premium = premium },
                     commandType: CommandType.StoredProcedure);
 
-                return results.ToList();
+                var resultList = results.ToList();
+                foreach (var result in resultList)
+                {
+                    result.Decrypt(cryptKey, authKey);
+                }
+                return resultList;
             }
         }
 
@@ -119,9 +139,17 @@ namespace Bit.Core.Repositories.SqlServer
             }
         }
 
+        public override async Task<User> CreateAsync(User user)
+        {
+            user.Encrypt(cryptKey, authKey);
+            return (await base.CreateAsync(user))?.Decrypt(cryptKey, authKey);
+        }
+
         public override async Task ReplaceAsync(User user)
         {
+            user.Encrypt(cryptKey, authKey);
             await base.ReplaceAsync(user);
+            user.Decrypt(cryptKey, authKey);
         }
 
         public override async Task DeleteAsync(User user)
@@ -168,7 +196,12 @@ namespace Bit.Core.Repositories.SqlServer
                     new { Ids = ids.ToGuidIdArrayTVP() },
                     commandType: CommandType.StoredProcedure);
 
-                return results.ToList();
+                var resultList = results.ToList();
+                foreach(var result in resultList)
+                {
+                    result.Decrypt(cryptKey, authKey);
+                }
+                return resultList;
             }
         }
     }

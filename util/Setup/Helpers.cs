@@ -11,6 +11,17 @@ namespace Bit.Setup
 {
     public static class Helpers
     {
+
+        public static readonly int KeyBitSize = 256;
+
+        public static byte[] GenerateNewKey()
+        {
+            RandomNumberGenerator Random = RandomNumberGenerator.Create();
+            var key = new byte[KeyBitSize / 8];
+            Random.GetBytes(key);
+            return key;
+        }
+
         public static string SecureRandomString(int length, bool alpha = true, bool upper = true, bool lower = true,
             bool numeric = true, bool special = false)
         {

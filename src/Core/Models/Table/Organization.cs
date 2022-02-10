@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Bit.Core.Enums;
 using Bit.Core.Utilities;
+using Bit.Core.Utilities.Crypto;
 using Newtonsoft.Json;
 
 namespace Bit.Core.Models.Table
@@ -11,6 +12,7 @@ namespace Bit.Core.Models.Table
     public class Organization : ITableObject<Guid>, ISubscriber, IStorable, IStorableSubscriber, IRevisable, IReferenceable
     {
         private Dictionary<TwoFactorProviderType, TwoFactorProvider> _twoFactorProviders;
+        private bool? encrypted;
 
         public Guid Id { get; set; }
         [MaxLength(50)]
@@ -59,7 +61,6 @@ namespace Bit.Core.Models.Table
         public bool Enabled { get; set; } = true;
         [MaxLength(100)]
         public string LicenseKey { get; set; }
-        [MaxLength(30)]
         public string ApiKey { get; set; }
         public string PublicKey { get; set; }
         public string PrivateKey { get; set; }
@@ -200,6 +201,24 @@ namespace Bit.Core.Models.Table
             }
 
             return providers[provider];
+        }
+
+        public Organization Encrypt(byte[] cryptKey, byte[] authKey)
+        {
+            if (encrypted == true)
+                return this;
+            if (ApiKey is not null) ApiKey = AESHMACEncryption.SimpleEncrypt(ApiKey, cryptKey, authKey);
+            encrypted = true;
+            return this;
+        }
+
+        public Organization Decrypt(byte[] cryptKey, byte[] authKey)
+        {
+            if (encrypted == false)
+                return this;
+            if (ApiKey is not null) ApiKey = AESHMACEncryption.SimpleDecrypt(ApiKey, cryptKey, authKey);
+            encrypted = false;
+            return this;
         }
     }
 }
