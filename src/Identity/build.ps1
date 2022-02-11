@@ -9,4 +9,4 @@ dotnet restore $dir\Identity.csproj
 echo "Clean"
 dotnet clean $dir\Identity.csproj -c "Release" -o $dir\obj\Azure\publish
 echo "Publish"
-dotnet publish $dir\Identity.csproj -c "Release" -o $dir\obj\Azure\publish
+dotnet publish $dir\Identity.csproj -c "Release" -o $dir\obj\Azure\publish -p:DefineConstants="OSS"
