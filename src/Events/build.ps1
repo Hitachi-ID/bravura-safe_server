@@ -9,4 +9,4 @@ dotnet restore $dir\Events.csproj
 echo "Clean"
 dotnet clean $dir\Events.csproj -c "Release" -o $dir\obj\Azure\publish
 echo "Publish"
-dotnet publish $dir\Events.csproj -c "Release" -o $dir\obj\Azure\publish
+dotnet publish $dir\Events.csproj -c "Release" -o $dir\obj\Azure\publish -p:DefineConstants="OSS"

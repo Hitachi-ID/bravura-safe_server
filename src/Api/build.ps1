@@ -9,4 +9,4 @@ dotnet restore $dir\Api.csproj
 echo "Clean"
 dotnet clean $dir\Api.csproj -c "Release" -o $dir\obj\Azure\publish
 echo "Publish"
-dotnet publish $dir\Api.csproj -c "Release" -o $dir\obj\Azure\publish
+dotnet publish -p:DefineConstants="OSS" $dir\Api.csproj -c "Release" -o $dir\obj\Azure\publish -p:DefineConstants="OSS"

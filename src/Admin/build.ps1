@@ -15,4 +15,4 @@ npm install
 cd $curDir
 gulp --gulpfile $dir\gulpfile.js build
 echo "Publish"
-dotnet publish $dir\Admin.csproj -c "Release" -o $dir\obj\Azure\publish
+dotnet publish $dir\Admin.csproj -c "Release" -o $dir\obj\Azure\publish -p:DefineConstants="OSS"
