@@ -27,7 +27,7 @@ case "$PROJECT" in
   "identity" | "Identity") build Identity $PWD/src/Identity ;;
   "events" | "Events") build Events $PWD/src/Events ;;
   "billing" | "Billing") build Billing $PWD/src/Billing ;;
-  "sso" | "Sso") build Sso $PWD/bitwarden_license/src/Sso ;;
+  #"sso" | "Sso") build Sso $PWD/bitwarden_license/src/Sso ;;
   "server" | "Server") build Server $PWD/util/Server ;;
   "icons" | "Icons") build Icons $PWD/src/Icons ;;
   "notifications" | "Notifications") build Notifications $PWD/src/Notifications ;;
@@ -39,7 +39,7 @@ case "$PROJECT" in
     build Identity $PWD/src/Identity 
     build Events $PWD/src/Events 
     build Billing $PWD/src/Billing 
-    build Sso $PWD/bitwarden_license/src/Sso 
+    #build Sso $PWD/bitwarden_license/src/Sso 
     build Server $PWD/util/Server 
     build Icons $PWD/src/Icons 
     build Notifications $PWD/src/Notifications 

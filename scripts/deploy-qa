@@ -30,13 +30,13 @@ case "$PROJECT" in
   "identity" | "Identity") deploy_app_service Identity $PWD/src/Identity ;;
   "events" | "Events") deploy_app_service Events $PWD/src/Events ;;
   "billing" | "Billing") deploy_app_service Billing $PWD/src/Billing ;;
-  "sso" | "Sso") deploy_app_service Sso $PWD/bitwarden_license/src/Sso ;;
+  #"sso" | "Sso") deploy_app_service Sso $PWD/bitwarden_license/src/Sso ;;
   "")
     deploy_app_service Api $PWD/src/Api 
     deploy_app_service Admin $PWD/src/Admin 
     deploy_app_service Identity $PWD/src/Identity 
     deploy_app_service Events $PWD/src/Events 
     deploy_app_service Billing $PWD/src/Billing 
-    deploy_app_service Sso $PWD/bitwarden_license/src/Sso 
+    #deploy_app_service Sso $PWD/bitwarden_license/src/Sso 
   ;;
 esac
