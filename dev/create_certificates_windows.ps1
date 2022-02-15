@@ -1,4 +1,4 @@
-# Script for generating and installing the Bitwarden development certificates on Windows.
+# Script for generating and installing the Bravura Safe development certificates on Windows.
 
 $params = @{
     'KeyAlgorithm' = 'RSA';
@@ -7,8 +7,8 @@ $params = @{
     'CertStoreLocation' = 'Cert:\CurrentUser\My';
 };
 
-$params['Subject'] = 'CN=Bitwarden Identity Server Dev';
+$params['Subject'] = 'CN=Bravura Safe Identity Server Dev';
 New-SelfSignedCertificate @params;
 
-$params['Subject'] = 'CN=Bitwarden Data Protection Dev';
+$params['Subject'] = 'CN=Bravura Safe Data Protection Dev';
 New-SelfSignedCertificate @params;

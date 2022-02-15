@@ -59,7 +59,7 @@ namespace Bit.Api.Models.Public.Response
         [Required]
         public Guid Id { get; set; }
         /// <summary>
-        /// The member's unique identifier across Bitwarden.
+        /// The member's unique identifier across Bravura Safe.
         /// </summary>
         /// <example>48b47ee1-493e-4c67-aef7-014996c40eca</example>
         [Required]

@@ -15,22 +15,22 @@ namespace Bit.Api.Utilities
             {
                 config.SwaggerDoc("public", new OpenApiInfo
                 {
-                    Title = "Bitwarden Public API",
+                    Title = "Bravura Safe Public API",
                     Version = "latest",
                     Contact = new OpenApiContact
                     {
-                        Name = "Bitwarden Support",
+                        Name = "Bravura Safe Support",
                         Url = new Uri("https://bitwarden.com"),
                         Email = "support@bitwarden.com"
                     },
-                    Description = "The Bitwarden public APIs.",
+                    Description = "The Bravura Safe public APIs.",
                     License = new OpenApiLicense
                     {
                         Name = "GNU Affero General Public License v3.0",
                         Url = new Uri("https://github.com/bitwarden/server/blob/master/LICENSE.txt")
                     }
                 });
-                config.SwaggerDoc("internal", new OpenApiInfo { Title = "Bitwarden Internal API", Version = "latest" });
+                config.SwaggerDoc("internal", new OpenApiInfo { Title = "Bravura Safe Internal API", Version = "latest" });
 
                 config.AddSecurityDefinition("OAuth2 Client Credentials", new OpenApiSecurityScheme
                 {

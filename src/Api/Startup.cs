@@ -215,10 +215,10 @@ namespace Bit.Api
                 });
                 app.UseSwaggerUI(config =>
                 {
-                    config.DocumentTitle = "Bitwarden API Documentation";
+                    config.DocumentTitle = "Bravura Safe API Documentation";
                     config.RoutePrefix = "docs";
                     config.SwaggerEndpoint($"{globalSettings.BaseServiceUri.Api}/specs/public/swagger.json",
-                        "Bitwarden Public API");
+                        "Bravura Safe Public API");
                     config.OAuthClientId("accountType.id");
                     config.OAuthClientSecret("secretKey");
                 });

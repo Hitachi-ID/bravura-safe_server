@@ -46,11 +46,11 @@ namespace Bit.Api.Models.Request
             if (Credit)
             {
                 posData += ",accountCredit:1";
-                inv.ItemDesc = "Bitwarden Account Credit";
+                inv.ItemDesc = "Bravura Safe Account Credit";
             }
             else
             {
-                inv.ItemDesc = "Bitwarden";
+                inv.ItemDesc = "Bravura Safe";
             }
 
             inv.PosData = posData;

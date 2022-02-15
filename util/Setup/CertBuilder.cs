@@ -52,7 +52,7 @@ namespace Bit.Setup
                                      $"-out /bitwarden/ssl/self/{_context.Install.Domain}/certificate.crt " +
                                      $"-reqexts SAN -extensions SAN " +
                                      $"-config <(cat /usr/lib/ssl/openssl.cnf <(printf '[SAN]\nsubjectAltName=DNS:{_context.Install.Domain}\nbasicConstraints=CA:true')) " +
-                                     $"-subj \"/C=US/ST=California/L=Santa Barbara/O=Bitwarden Inc./OU=Bitwarden/CN={_context.Install.Domain}\"");
+                                     $"-subj \"/C=CA/ST=Alberta/L=Calgary/O=Hitachi-ID/OU=Hitachi-ID/CN={_context.Install.Domain}\"");
                     }
                 }
             }
@@ -75,7 +75,7 @@ namespace Bit.Setup
             _context.Install.IdentityCertPassword = Helpers.SecureRandomString(32, alpha: true, numeric: true);
             Directory.CreateDirectory("/bitwarden/identity/");
             Helpers.Exec("openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout identity.key " +
-                "-out identity.crt -subj \"/CN=Bitwarden IdentityServer\" -days 36500");
+                "-out identity.crt -subj \"/CN=Bravura Safe Identity Server\" -days 36500");
             Helpers.Exec("openssl pkcs12 -export -out /bitwarden/identity/identity.pfx -inkey identity.key " +
                 $"-in identity.crt -passout pass:{_context.Install.IdentityCertPassword}");
 
@@ -83,15 +83,15 @@ namespace Bit.Setup
 
             if (!_context.Config.Ssl)
             {
-                var message = "You are not using a SSL certificate. Bitwarden requires HTTPS to operate. \n" +
+                var message = "You are not using a SSL certificate. Bravura Safe requires HTTPS to operate. \n" +
                               "You must front your installation with a HTTPS proxy or the web vault (and \n" +
-                              "other Bitwarden apps) will not work properly.";
+                              "other Bravura Safe apps) will not work properly.";
                 Helpers.ShowBanner(_context, "WARNING", message, ConsoleColor.Yellow);
             }
             else if (_context.Config.Ssl && !_context.Install.Trusted)
             {
                 var message = "You are using an untrusted SSL certificate. This certificate will not be \n" +
-                              "trusted by Bitwarden client applications. You must add this certificate to \n" +
+                              "trusted by Bravura Safe client applications. You must add this certificate to \n" +
                               "the trusted store on each device or else you will receive errors when trying \n" +
                               "to connect to your installation.";
                 Helpers.ShowBanner(_context, "WARNING", message, ConsoleColor.Yellow);
@@ -106,7 +106,7 @@ namespace Bit.Setup
                 var keyConnectorCertPassword = Helpers.GetValueFromEnvFile("key-connector",
                     "keyConnectorSettings__certificate__filesystemPassword");
                 Helpers.Exec("openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout bwkc.key " +
-                             "-out bwkc.crt -subj \"/CN=Bitwarden Key Connector\" -days 36500");
+                             "-out bwkc.crt -subj \"/CN=Bravura Safe Key Connector\" -days 36500");
                 Helpers.Exec("openssl pkcs12 -export -out /bitwarden/key-connector/bwkc.pfx -inkey bwkc.key " +
                              $"-in bwkc.crt -passout pass:{keyConnectorCertPassword}");
             }
