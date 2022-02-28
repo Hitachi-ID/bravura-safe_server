@@ -1,11 +1,6 @@
 <p align="center">
   <img src="https://github.com/hitachi-id/brand/blob/master/screenshots/apps-combo-logo.png" alt="Bravura Safe" />
 </p>
-<p align="center">
-  <a href="https://github.com/hitachi-id/bravura-safe_server/actions/workflows/build.yml?query=branch:master" target="_blank">
-    <img src="https://github.com/hitachi-id/bravura-safe_server/actions/workflows/build.yml/badge.svg?branch=master" alt="Github Workflow build on master" />
-  </a>
-</p>
 
 -------------------
 
