@@ -9,7 +9,7 @@
 
 -------------------
 
-Bravura Safe is a clone/fork of the Bitwarden project.
+Bravura Safe server is a clone/fork of the Bitwarden server project.
 
 This project contains the APIs, database, and other core infrastructure items needed for the "backend" of all bitwarden client applications.
 
