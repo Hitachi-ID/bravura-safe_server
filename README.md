@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://github.com/hitachi-id/brand/blob/master/screenshots/apps-combo-logo.png" alt="Bravura Safe" />
-</p>
-
 -------------------
 
 Bravura Safe server is a clone/fork of the Bitwarden server project.
