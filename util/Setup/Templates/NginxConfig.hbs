@@ -67,6 +67,36 @@ server {
     add_header Content-Security-Policy "{{{ContentSecurityPolicy}}}";
     add_header X-Frame-Options SAMEORIGIN;
     add_header X-Robots-Tag "noindex, nofollow";
+
+    # Matches the Angular root index.html
+    location = / {
+      proxy_pass http://web:5000/;
+
+      # Set a predictable cache length for the Angular root to streamline pushing updates.
+      add_header Cache-Control max-age=1800;
+    }
+
+    # Matches static resources containing cache busting hash.
+    # Note: nginx regular expressions do not support {20}, so a more flexible
+    # hash match ([a-f0-9]+) is used here instead of something matching only
+    # 20 character hashes like f02bc57b934321649d87.
+    location ~* ^(.+\.[a-f0-9]+\.(css|eot|gif|ico|jpe?g|js|otf|png|svg|ttf|woff|woff2?))$ {
+      proxy_pass http://web:5000/$1;
+
+      # Cache hashed static resources for up to a year. Resources with hashes
+      # in their file names don't need to check for updates because the hash
+      # will be different whenever the file contents change.
+      add_header Cache-Control max-age=31536000;
+    }
+
+    # Matches all other static resources
+    location ~* ^(.+\.(css|eot|gif|ico|jpe?g|js|otf|png|svg|ttf|woff|woff2?))$ {
+      proxy_pass http://web:5000/$1;
+
+      # Set a predictable short cache length for these non-cache-busted static
+      # resources like fonts.
+      add_header Cache-Control max-age=1800;
+    }
   }
 
   location /alive {
