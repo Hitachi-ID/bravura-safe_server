@@ -47,8 +47,7 @@ server {
     include /etc/nginx/security-headers-ssl.conf;
     include /etc/nginx/security-headers.conf;
     add_header Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://haveibeenpwned.com https://www.gravatar.com; child-src 'self' https://*.duosecurity.com https://*.duofederal.com; frame-src 'self' https://*.duosecurity.com https://*.duofederal.com; connect-src 'self' wss://*.test.hitachi-id.net https://api.pwnedpasswords.com https://2fa.directory; object-src 'self' blob:;";
-    add_header Access-Control-Allow-Origin *;
-        add_header X-Frame-Options SAMEORIGIN;
+    add_header X-Frame-Options SAMEORIGIN;
 
     add_header X-Robots-Tag "noindex, nofollow";
   }
@@ -89,58 +88,49 @@ server {
 
   location /attachments/ {
     proxy_pass http://localhost:5002/;
-    add_header Access-Control-Allow-Origin *;
   }
 
   location /api/ {
     proxy_pass http://localhost:5001/;
-    add_header Access-Control-Allow-Origin *;
   }
 
   location /icons/ {
     proxy_pass http://localhost:5004/;
-    add_header Access-Control-Allow-Origin *;
   }
 
   location /notifications/ {
     proxy_pass http://localhost:5007/;
-    add_header Access-Control-Allow-Origin *;
   }
 
   location /notifications/hub {
     proxy_pass http://localhost:5007/hub;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection $http_connection;
-    add_header Access-Control-Allow-Origin *;
   }
 
   location /events/ {
     proxy_pass http://localhost:5003/;
-    add_header Access-Control-Allow-Origin *;
   }
 
   location /sso {
     proxy_pass http://localhost:5008;
     include /etc/nginx/security-headers-ssl.conf;
     include /etc/nginx/security-headers.conf;
-#    add_header X-Frame-Options SAMEORIGIN;
-    add_header Access-Control-Allow-Origin *;
+    add_header X-Frame-Options SAMEORIGIN;
   }
 
   location /identity {
     proxy_pass http://localhost:5005;
     include /etc/nginx/security-headers-ssl.conf;
     include /etc/nginx/security-headers.conf;
-#    add_header X-Frame-Options SAMEORIGIN;
-    add_header Access-Control-Allow-Origin *;
+    add_header X-Frame-Options SAMEORIGIN;
   }
 
   location /admin {
     proxy_pass http://localhost:5000;
     include /etc/nginx/security-headers-ssl.conf;
     include /etc/nginx/security-headers.conf;
-#    add_header X-Frame-Options SAMEORIGIN;
-    add_header Access-Control-Allow-Origin *;
+    add_header X-Frame-Options SAMEORIGIN;
   }
 
 }
