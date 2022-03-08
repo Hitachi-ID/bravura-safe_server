@@ -1,22 +1,22 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using AspNetCoreRateLimit;
 using Bit.Api.Utilities;
 using Bit.Core;
 using Bit.Core.Context;
 using Bit.Core.Identity;
 using Bit.Core.Settings;
-using AspNetCoreRateLimit;
-using Stripe;
 using Bit.Core.Utilities;
 using IdentityModel;
-using System.Globalization;
-using Microsoft.IdentityModel.Logging;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
+using Stripe;
 
 #if !OSS
 using Bit.CommCore.Utilities;
@@ -123,7 +123,7 @@ namespace Bit.Api
             services.AddCoreLocalizationServices();
 
 #if OSS
-                services.AddOosServices();
+            services.AddOosServices();
 #else
             services.AddCommCoreServices();
 #endif

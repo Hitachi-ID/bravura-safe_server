@@ -392,7 +392,7 @@ namespace Bit.Api.Controllers
             if (ssoConfig?.GetData()?.KeyConnectorEnabled == true &&
                 user.UsesKeyConnector)
             {
-                throw new BadRequestException("Your organization's Single Sign-On settings prevent you from leaving.");
+                throw new BadRequestException("Your team's Single Sign-On settings prevent you from leaving.");
             }
 
 

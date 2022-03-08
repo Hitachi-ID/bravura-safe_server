@@ -37,12 +37,12 @@ namespace Bit.Core.Services
             var org = await _organizationRepository.GetByIdAsync(group.OrganizationId);
             if (org == null)
             {
-                throw new BadRequestException("Organization not found");
+                throw new BadRequestException("Team not found");
             }
 
             if (!org.UseGroups)
             {
-                throw new BadRequestException("This organization cannot use groups.");
+                throw new BadRequestException("This team cannot use groups.");
             }
 
             if (group.Id == default(Guid))

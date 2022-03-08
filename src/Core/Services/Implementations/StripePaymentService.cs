@@ -218,7 +218,7 @@ namespace Bit.Core.Services
         {
             if (!string.IsNullOrWhiteSpace(org.GatewaySubscriptionId))
             {
-                throw new BadRequestException("Organization already has a subscription.");
+                throw new BadRequestException("Team already has a subscription.");
             }
 
             var customerOptions = new Stripe.CustomerGetOptions();

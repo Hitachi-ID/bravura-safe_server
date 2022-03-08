@@ -339,7 +339,7 @@ namespace Bit.Api.Models.Request
                 }
                 else if (organizationIds.Count != 1)
                 {
-                    yield return new ValidationResult("All ciphers must be for the same organization.");
+                    yield return new ValidationResult("All ciphers must be for the same team.");
                 }
             }
 

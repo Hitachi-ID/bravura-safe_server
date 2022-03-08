@@ -72,7 +72,7 @@ namespace Bit.Admin
             services.AddDefaultServices(globalSettings);
 
 #if OSS
-                services.AddOosServices();
+            services.AddOosServices();
 #else
             services.AddCommCoreServices();
 #endif

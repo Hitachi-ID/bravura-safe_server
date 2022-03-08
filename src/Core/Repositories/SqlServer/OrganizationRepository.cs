@@ -23,8 +23,8 @@ namespace Bit.Core.Repositories.SqlServer
             authKey = Convert.FromBase64String(globalSettings.SqlServer.AuthKey);
         }
 
-            public OrganizationRepository(string connectionString, string readOnlyConnectionString)
-            : base(connectionString, readOnlyConnectionString)
+        public OrganizationRepository(string connectionString, string readOnlyConnectionString)
+        : base(connectionString, readOnlyConnectionString)
         { }
 
         public async Task<Organization> GetByIdentifierAsync(string identifier)

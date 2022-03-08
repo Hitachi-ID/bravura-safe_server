@@ -28,7 +28,7 @@ namespace Bit.Core.Test.Services
                     Substitute.For<IOrganizationService>(),
                     Guid.NewGuid()));
 
-            Assert.Contains("Organization not found", badRequestException.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Team not found", badRequestException.Message, StringComparison.OrdinalIgnoreCase);
 
             await sutProvider.GetDependency<IPolicyRepository>()
                 .DidNotReceiveWithAnyArgs()
@@ -185,7 +185,7 @@ namespace Bit.Core.Test.Services
                     Substitute.For<IOrganizationService>(),
                     Guid.NewGuid()));
 
-            Assert.Contains("Single Organization policy not enabled.", badRequestException.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Single Team policy not enabled.", badRequestException.Message, StringComparison.OrdinalIgnoreCase);
 
             await sutProvider.GetDependency<IPolicyRepository>()
                 .DidNotReceiveWithAnyArgs()
@@ -242,7 +242,7 @@ namespace Bit.Core.Test.Services
                     Substitute.For<IOrganizationService>(),
                     Guid.NewGuid()));
 
-            Assert.Contains("Single Organization policy not enabled.", badRequestException.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Single Team policy not enabled.", badRequestException.Message, StringComparison.OrdinalIgnoreCase);
 
             await sutProvider.GetDependency<IPolicyRepository>()
                 .DidNotReceiveWithAnyArgs()

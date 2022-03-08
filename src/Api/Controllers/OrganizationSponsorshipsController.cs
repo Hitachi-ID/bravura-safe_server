@@ -82,7 +82,7 @@ namespace Bit.Api.Controllers
 
             if (!await _currentContext.OrganizationOwner(model.SponsoredOrganizationId))
             {
-                throw new BadRequestException("Can only redeem sponsorship for an organization you own.");
+                throw new BadRequestException("Can only redeem sponsorship for an team you own.");
             }
 
             await _organizationsSponsorshipService.SetUpSponsorshipAsync(
@@ -121,7 +121,7 @@ namespace Bit.Api.Controllers
 
             if (!await _currentContext.OrganizationOwner(sponsoredOrgId))
             {
-                throw new BadRequestException("Only the owner of an organization can remove sponsorship.");
+                throw new BadRequestException("Only the owner of an team can remove sponsorship.");
             }
 
             var existingOrgSponsorship = await _organizationSponsorshipRepository
