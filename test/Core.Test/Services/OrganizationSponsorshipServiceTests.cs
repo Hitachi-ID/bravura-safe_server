@@ -60,7 +60,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.OfferSponsorshipAsync(org, orgUser, PlanSponsorshipType.FamiliesForEnterprise, default, default, "test@bitwarden.com"));
 
-            Assert.Contains("Specified Organization cannot sponsor other organizations.", exception.Message);
+            Assert.Contains("Specified Team cannot sponsor other teams.", exception.Message);
             await sutProvider.GetDependency<IOrganizationSponsorshipRepository>().DidNotReceiveWithAnyArgs()
                 .CreateAsync(default);
         }
@@ -79,7 +79,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.OfferSponsorshipAsync(org, orgUser, PlanSponsorshipType.FamiliesForEnterprise, default, default, "test@bitwarden.com"));
 
-            Assert.Contains("Only confirmed users can sponsor other organizations.", exception.Message);
+            Assert.Contains("Only confirmed users can sponsor other teams.", exception.Message);
             await sutProvider.GetDependency<IOrganizationSponsorshipRepository>().DidNotReceiveWithAnyArgs()
                 .CreateAsync(default);
         }
@@ -99,7 +99,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.OfferSponsorshipAsync(org, orgUser, sponsorship.PlanSponsorshipType.Value, default, default, "test@bitwarden.com"));
 
-            Assert.Contains("Can only sponsor one organization per Organization User.", exception.Message);
+            Assert.Contains("Can only sponsor one team per Team User.", exception.Message);
             await sutProvider.GetDependency<IOrganizationSponsorshipRepository>().DidNotReceiveWithAnyArgs()
                 .CreateAsync(default);
         }
@@ -181,7 +181,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.ResendSponsorshipOfferAsync(null, orgUser, sponsorship, "test@bitwarden.com"));
 
-            Assert.Contains("Cannot find the requested sponsoring organization.", exception.Message);
+            Assert.Contains("Cannot find the requested sponsoring team.", exception.Message);
             await sutProvider.GetDependency<IMailService>()
                 .DidNotReceiveWithAnyArgs()
                 .SendFamiliesForEnterpriseOfferEmailAsync(default, default, default, default);
@@ -197,7 +197,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.ResendSponsorshipOfferAsync(org, null, sponsorship, "test@bitwarden.com"));
 
-            Assert.Contains("Only confirmed users can sponsor other organizations.", exception.Message);
+            Assert.Contains("Only confirmed users can sponsor other teams.", exception.Message);
             await sutProvider.GetDependency<IMailService>()
                 .DidNotReceiveWithAnyArgs()
                 .SendFamiliesForEnterpriseOfferEmailAsync(default, default, default, default);
@@ -215,7 +215,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.ResendSponsorshipOfferAsync(org, orgUser, sponsorship, "test@bitwarden.com"));
 
-            Assert.Contains("Only confirmed users can sponsor other organizations.", exception.Message);
+            Assert.Contains("Only confirmed users can sponsor other teams.", exception.Message);
             await sutProvider.GetDependency<IMailService>()
                 .DidNotReceiveWithAnyArgs()
                 .SendFamiliesForEnterpriseOfferEmailAsync(default, default, default, default);
@@ -232,7 +232,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.ResendSponsorshipOfferAsync(org, orgUser, null, "test@bitwarden.com"));
 
-            Assert.Contains("Cannot find an outstanding sponsorship offer for this organization.", exception.Message);
+            Assert.Contains("Cannot find an outstanding sponsorship offer for this team.", exception.Message);
             await sutProvider.GetDependency<IMailService>()
                 .DidNotReceiveWithAnyArgs()
                 .SendFamiliesForEnterpriseOfferEmailAsync(default, default, default, default);
@@ -253,7 +253,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.ResendSponsorshipOfferAsync(org, orgUser, sponsorship, "test@bitwarden.com"));
 
-            Assert.Contains("Cannot find an outstanding sponsorship offer for this organization.", exception.Message);
+            Assert.Contains("Cannot find an outstanding sponsorship offer for this team.", exception.Message);
             await sutProvider.GetDependency<IMailService>()
                 .DidNotReceiveWithAnyArgs()
                 .SendFamiliesForEnterpriseOfferEmailAsync(default, default, default, default);
@@ -309,7 +309,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.SetUpSponsorshipAsync(sponsorship, org));
 
-            Assert.Contains("Cannot redeem a sponsorship offer for an organization that is already sponsored. Revoke existing sponsorship first.", exception.Message);
+            Assert.Contains("Cannot redeem a sponsorship offer for an team that is already sponsored. Revoke existing sponsorship first.", exception.Message);
             await sutProvider.GetDependency<IPaymentService>()
                 .DidNotReceiveWithAnyArgs()
                 .SponsorOrganizationAsync(default, default);
@@ -332,7 +332,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.SetUpSponsorshipAsync(sponsorship, org));
 
-            Assert.Contains("Can only redeem sponsorship offer on families organizations.", exception.Message);
+            Assert.Contains("Can only redeem sponsorship offer on families teams.", exception.Message);
             await sutProvider.GetDependency<IPaymentService>()
                 .DidNotReceiveWithAnyArgs()
                 .SponsorOrganizationAsync(default, default);
@@ -558,7 +558,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RevokeSponsorshipAsync(org, null));
 
-            Assert.Contains("You are not currently sponsoring an organization.", exception.Message);
+            Assert.Contains("You are not currently sponsoring an team.", exception.Message);
             await AssertDidNotRemoveSponsoredPaymentAsync(sutProvider);
             await AssertDidNotRemoveSponsorshipAsync(sutProvider);
         }
@@ -584,7 +584,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RevokeSponsorshipAsync(null, sponsorship));
 
-            Assert.Contains("Unable to find the sponsored Organization.", exception.Message);
+            Assert.Contains("Unable to find the sponsored Team.", exception.Message);
 
             await AssertDidNotRemoveSponsoredPaymentAsync(sutProvider);
             await AssertDidNotRemoveSponsorshipAsync(sutProvider);
@@ -600,7 +600,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RemoveSponsorshipAsync(null, sponsorship));
 
-            Assert.Contains("The requested organization is not currently being sponsored.", exception.Message);
+            Assert.Contains("The requested team is not currently being sponsored.", exception.Message);
 
             await AssertDidNotRemoveSponsoredPaymentAsync(sutProvider);
             await AssertDidNotRemoveSponsorshipAsync(sutProvider);
@@ -614,7 +614,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RemoveSponsorshipAsync(sponsoredOrg, null));
 
-            Assert.Contains("The requested organization is not currently being sponsored.", exception.Message);
+            Assert.Contains("The requested team is not currently being sponsored.", exception.Message);
 
             await AssertDidNotRemoveSponsoredPaymentAsync(sutProvider);
             await AssertDidNotRemoveSponsorshipAsync(sutProvider);
@@ -628,7 +628,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RemoveSponsorshipAsync(null, sponsorship));
 
-            Assert.Contains("Unable to find the sponsored Organization.", exception.Message);
+            Assert.Contains("Unable to find the sponsored Team.", exception.Message);
 
             await AssertDidNotRemoveSponsoredPaymentAsync(sutProvider);
             await AssertDidNotRemoveSponsorshipAsync(sutProvider);

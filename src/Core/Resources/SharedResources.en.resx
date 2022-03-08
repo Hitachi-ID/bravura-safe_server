@@ -149,7 +149,7 @@
     <value>Edit Policy - {0}</value>
   </data>
   <data name="EditPolicyTwoStepLoginWarning" xml:space="preserve">
-    <value>Organization members who are not Owners or Administrators and do not have two-step login enabled for their personal account will be removed from the organization and will receive an email notifying them about the change.</value>
+    <value>Team members who are not Owners or Administrators and do not have two-step login enabled for their personal account will be removed from the team and will receive an email notifying them about the change.</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
@@ -398,19 +398,19 @@
     <value>No scheme or handler for this SSO configuration found.</value>
   </data>
   <data name="SsoNotEnabledForOrganizationError" xml:space="preserve">
-    <value>SSO is not yet enabled for this organization.</value>
+    <value>SSO is not yet enabled for this team.</value>
   </data>
   <data name="SsoConfigurationNotFoundForOrganizationError" xml:space="preserve">
-    <value>No SSO configuration exists for this organization.</value>
+    <value>No SSO configuration exists for this team.</value>
   </data>
   <data name="SsoNotAllowedForOrganizationError" xml:space="preserve">
-    <value>SSO is not allowed for this organization.</value>
+    <value>SSO is not allowed for this team.</value>
   </data>
   <data name="OrganizationNotFoundByIdentifierError" xml:space="preserve">
-    <value>Organization not found from identifier.</value>
+    <value>Team not found from identifier.</value>
   </data>
   <data name="NoOrganizationIdentifierProvidedError" xml:space="preserve">
-    <value>No organization identifier provided.</value>
+    <value>No team identifier provided.</value>
   </data>
   <data name="InvalidAuthenticationOptionsForSaml2SchemeError" xml:space="preserve">
     <value>Invalid authentication options provided to SAML2 scheme.</value>
@@ -509,10 +509,10 @@
     <value>Unknown userid</value>
   </data>
   <data name="OrganizationOrSsoConfigNotFound" xml:space="preserve">
-    <value>Organization not found or SSO configuration not enabled</value>
+    <value>team not found or SSO configuration not enabled</value>
   </data>
   <data name="SSOProviderIsNotAnOrgId" xml:space="preserve">
-    <value>SSO provider, {0} is not an organization id</value>
+    <value>SSO provider, {0} is not an team id</value>
   </data>
   <data name="CannotFindEmailClaim" xml:space="preserve">
     <value>Cannot find email claim</value>
@@ -524,19 +524,19 @@
     <value>Supplied userId and token did not match.</value>
   </data>
   <data name="CouldNotFindOrganization" xml:space="preserve">
-    <value>Could not find organization for '{0}'</value>
+    <value>Could not find team for '{0}'</value>
   </data>
   <data name="NoSeatsAvailable" xml:space="preserve">
-    <value>No seats available for organization, '{0}'</value>
+    <value>No seats available for team, '{0}'</value>
   </data>
   <data name="UserAlreadyInvited" xml:space="preserve">
-    <value>User, '{0}', has already been invited to this organization, '{1}'. Accept the invite in order to log in with SSO.</value>
+    <value>User, '{0}', has already been invited to this team, '{1}'. Accept the invite in order to log in with SSO.</value>
   </data>
   <data name="UserAlreadyExistsInviteProcess" xml:space="preserve">
-    <value>You were removed from the organization managing single sign-on for your account. Contact the organization administrator for help regaining access to your account.</value>
+    <value>You were removed from the team managing single sign-on for your account. Contact the team administrator for help regaining access to your account.</value>
   </data>
   <data name="UserAlreadyExistsKeyConnector" xml:space="preserve">
-    <value>You were removed from the organization managing single sign-on for your account. Create a new account to continue using Bravura Safe.</value>
+    <value>You were removed from the team managing single sign-on for your account. Create a new account to continue using Bravura Safe.</value>
   </data>
   <data name="RedirectGet" xml:space="preserve">
     <value>Redirect GET</value>
@@ -552,13 +552,13 @@
     <value>OIDC Redirect Behavior</value>
   </data>
   <data name="SingleOrganization" xml:space="preserve">
-    <value>Single Organization</value>
+    <value>Single Team</value>
   </data>
   <data name="SingleOrganizationDescription" xml:space="preserve">
-    <value>Restrict users from being able to join any other organizations.</value>
+    <value>Restrict users from being able to join any other teams.</value>
   </data>
   <data name="SingleOrganizationPolicyWarning" xml:space="preserve">
-    <value>Organization members who are not Owners or Administrators and are already a part of another organization will be removed from this organization and will receive an email notifying them about the change.</value>
+    <value>Team members who are not Owners or Administrators and are already a part of another team will be removed from this team and will receive an email notifying them about the change.</value>
   </data>
   <data name="RequireSso" xml:space="preserve">
     <value>Single Sign-On Authentication</value>
@@ -570,22 +570,22 @@
     <value>Prerequisite</value>
   </data>
   <data name="RequireSsoPolicyReq" xml:space="preserve">
-    <value>The Single Organization enterprise policy must be enabled before activating this policy.</value>
+    <value>The Single Team enterprise policy must be enabled before activating this policy.</value>
   </data>
   <data name="RequireSsoPolicyReqError" xml:space="preserve">
-    <value>Single Organization policy not enabled.</value>
+    <value>Single Team policy not enabled.</value>
   </data>
   <data name="RequireSsoExemption" xml:space="preserve">
-    <value>Organization Owners and Administrators are exempt from this policy's enforcement.</value>
+    <value>Team Owners and Administrators are exempt from this policy's enforcement.</value>
   </data>
   <data name="PersonalOwnership" xml:space="preserve">
     <value>Personal Ownership</value>
   </data>
   <data name="PersonalOwnershipDescription" xml:space="preserve">
-    <value>Require users to save vault items to an organization by removing the personal ownership option.</value>
+    <value>Require users to save vault items to an team by removing the personal ownership option.</value>
   </data>
   <data name="PersonalOwnershipExemption" xml:space="preserve">
-    <value>Organization users that can manage the organization's policies are exempt from this policy's enforcement.</value>
+    <value>Team users that can manage the team's policies are exempt from this policy's enforcement.</value>
   </data>
   <data name="DisableSend" xml:space="preserve">
     <value>Disable Send</value>
@@ -596,7 +596,7 @@
     <comment>'Send' is a noun and the name of a feature called 'Bravura Safe Send'. It should not be translated.</comment>
   </data>
   <data name="DisableSendExemption" xml:space="preserve">
-    <value>Organization Owners and Administrators are exempt from this policy's enforcement.</value>
+    <value>Team Owners and Administrators are exempt from this policy's enforcement.</value>
   </data>
   <data name="SendOptions" xml:space="preserve">
     <value>Send Options</value>
@@ -614,13 +614,13 @@
     <comment>'Send' is a noun and the name of a feature called 'Bravura Safe Send'. It should not be translated.</comment>
   </data>
   <data name="SendOptionsExemption" xml:space="preserve">
-    <value>Organization Owners and Administrators are exempt from this policy's enforcement.</value>
+    <value>Team Owners and Administrators are exempt from this policy's enforcement.</value>
   </data>
   <data name="DisableRequireSsoError" xml:space="preserve">
     <value>You must manually disable the Single Sign-On Authentication policy before this policy can be disabled.</value>
   </data>
   <data name="PersonalOwnershipCheckboxDesc" xml:space="preserve">
-    <value>Disable personal ownership for organization users</value>
+    <value>Disable personal ownership for team users</value>
   </data>
   <data name="AdditionalScopes" xml:space="preserve">
     <value>Additional/Custom Scopes (comma delimited)</value>
@@ -653,10 +653,10 @@
     <value>Master Password Reset</value>
   </data>
   <data name="ResetPasswordDescription" xml:space="preserve">
-    <value>Allow administrators in the organization to reset organization users' master password.</value>
+    <value>Allow administrators in the team to reset team users' master password.</value>
   </data>
   <data name="ResetPasswordWarning" xml:space="preserve">
-    <value>Users in the organization will need to self-enroll or be auto-enrolled before administrators can reset their master password.</value>
+    <value>Users in the team will need to self-enroll or be auto-enrolled before administrators can reset their master password.</value>
   </data>
   <data name="ResetPasswordAutoEnroll" xml:space="preserve">
     <value>Automatic Enrollment</value>
@@ -665,7 +665,7 @@
     <value>All users will be automatically enrolled in password reset once their invite is accepted and will not be allowed to withdraw.</value>
   </data>
   <data name="ResetPasswordAutoEnrollWarning" xml:space="preserve">
-    <value>Users already in the organization will not be retroactively enrolled in password reset. They will need to self-enroll before administrators can reset their master password.</value>
+    <value>Users already in the team will not be retroactively enrolled in password reset. They will need to self-enroll before administrators can reset their master password.</value>
   </data>
   <data name="ResetPasswordAutoEnrollCheckbox" xml:space="preserve">
     <value>Require new users to be enrolled automatically</value>

@@ -215,7 +215,7 @@ namespace Bit.Core.Services
                 {
                     return IdentityResult.Failed(new IdentityError
                     {
-                        Description = "Cannot delete this user because it is the sole owner of at least one organization. Please delete these organizations or upgrade another user.",
+                        Description = "Cannot delete this user because it is the sole owner of at least one team. Please delete these teams or upgrade another user.",
                     });
                 }
             }
@@ -694,7 +694,7 @@ namespace Bit.Core.Services
             if (_currentContext.Organizations.Any(u =>
                     u.Type is OrganizationUserType.Owner or OrganizationUserType.Admin))
             {
-                throw new BadRequestException("Cannot use Key Connector when admin or owner of an organization.");
+                throw new BadRequestException("Cannot use Key Connector when admin or owner of an team.");
             }
 
             return null;
@@ -706,7 +706,7 @@ namespace Bit.Core.Services
             var org = await _organizationRepository.GetByIdAsync(orgId);
             if (org == null || !org.UseResetPassword)
             {
-                throw new BadRequestException("Organization does not allow password reset.");
+                throw new BadRequestException("Team does not allow password reset.");
             }
 
             // Enterprise policy must be enabled
@@ -714,7 +714,7 @@ namespace Bit.Core.Services
                 await _policyRepository.GetByOrganizationIdTypeAsync(orgId, PolicyType.ResetPassword);
             if (resetPasswordPolicy == null || !resetPasswordPolicy.Enabled)
             {
-                throw new BadRequestException("Organization does not have the password reset policy enabled.");
+                throw new BadRequestException("Team does not have the password reset policy enabled.");
             }
 
             // Org User must be confirmed and have a ResetPasswordKey
@@ -723,7 +723,7 @@ namespace Bit.Core.Services
                 orgUser.OrganizationId != orgId || string.IsNullOrEmpty(orgUser.ResetPasswordKey) ||
                 !orgUser.UserId.HasValue)
             {
-                throw new BadRequestException("Organization User not valid");
+                throw new BadRequestException("Team User not valid");
             }
 
             // Calling User must be of higher/equal user type to reset user's password

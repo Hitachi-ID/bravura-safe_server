@@ -67,13 +67,13 @@ namespace Bit.Core.Services
         {
             if (!organization.UseKeyConnector)
             {
-                throw new BadRequestException("Organization cannot use Key Connector.");
+                throw new BadRequestException("Team cannot use Key Connector.");
             }
 
             var singleOrgPolicy = await _policyRepository.GetByOrganizationIdTypeAsync(config.OrganizationId, PolicyType.SingleOrg);
             if (singleOrgPolicy is not { Enabled: true })
             {
-                throw new BadRequestException("Key Connector requires the Single Organization policy to be enabled.");
+                throw new BadRequestException("Key Connector requires the Single Team policy to be enabled.");
             }
 
             var ssoPolicy = await _policyRepository.GetByOrganizationIdTypeAsync(config.OrganizationId, PolicyType.RequireSso);

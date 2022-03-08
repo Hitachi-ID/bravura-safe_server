@@ -336,7 +336,7 @@ namespace Bit.Core.Services
                 var org = await _organizationRepository.GetByIdAsync(send.OrganizationId.Value);
                 if (!org.MaxStorageGb.HasValue)
                 {
-                    throw new BadRequestException("This organization cannot use file sends.");
+                    throw new BadRequestException("This team cannot use file sends.");
                 }
 
                 storageBytesRemaining = org.StorageBytesRemaining();

@@ -183,7 +183,7 @@ namespace Bit.Api.Controllers
                 (Guid?)null : new Guid(model.OrganizationId);
             if (cipher.OrganizationId != modelOrgId)
             {
-                throw new BadRequestException("Organization mismatch. Re-sync if you recently moved this item, " +
+                throw new BadRequestException("Team mismatch. Re-sync if you recently moved this item, " +
                     "then try again.");
             }
 

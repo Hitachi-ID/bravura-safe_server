@@ -189,11 +189,11 @@ namespace Bit.Admin.Controllers
             var user = orgUsers.FirstOrDefault(u => u.UserId == model.UserId.Value);
             if (user == null)
             {
-                ModelState.AddModelError(nameof(model.UserId), "User Id not found in this organization.");
+                ModelState.AddModelError(nameof(model.UserId), "User Id not found in this team.");
             }
             else if (user.Type != Core.Enums.OrganizationUserType.Admin)
             {
-                ModelState.AddModelError(nameof(model.UserId), "User is not an admin of this organization.");
+                ModelState.AddModelError(nameof(model.UserId), "User is not an admin of this team.");
             }
 
             if (!ModelState.IsValid)
@@ -235,11 +235,11 @@ namespace Bit.Admin.Controllers
                 organization = await _organizationRepository.GetByIdAsync(model.OrganizationId.Value);
                 if (organization == null)
                 {
-                    ModelState.AddModelError(nameof(model.OrganizationId), "Organization not found.");
+                    ModelState.AddModelError(nameof(model.OrganizationId), "Team not found.");
                 }
                 else if (!organization.Enabled)
                 {
-                    ModelState.AddModelError(nameof(model.OrganizationId), "Organization is disabled.");
+                    ModelState.AddModelError(nameof(model.OrganizationId), "Team is disabled.");
                 }
             }
             if (model.InstallationId.HasValue)

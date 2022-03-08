@@ -24,8 +24,8 @@ namespace Bit.Core.Repositories.SqlServer
             authKey = Convert.FromBase64String(globalSettings.SqlServer.AuthKey);
         }
 
-            public UserRepository(string connectionString, string readOnlyConnectionString)
-            : base(connectionString, readOnlyConnectionString)
+        public UserRepository(string connectionString, string readOnlyConnectionString)
+        : base(connectionString, readOnlyConnectionString)
         { }
 
         public override async Task<User> GetByIdAsync(Guid id)
@@ -197,7 +197,7 @@ namespace Bit.Core.Repositories.SqlServer
                     commandType: CommandType.StoredProcedure);
 
                 var resultList = results.ToList();
-                foreach(var result in resultList)
+                foreach (var result in resultList)
                 {
                     result.Decrypt(cryptKey, authKey);
                 }

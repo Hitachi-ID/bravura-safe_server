@@ -40,12 +40,12 @@ namespace Bit.Core.Services
             var org = await _organizationRepository.GetByIdAsync(policy.OrganizationId);
             if (org == null)
             {
-                throw new BadRequestException("Organization not found");
+                throw new BadRequestException("Team not found");
             }
 
             if (!org.UsePolicies)
             {
-                throw new BadRequestException("This organization cannot use policies.");
+                throw new BadRequestException("This team cannot use policies.");
             }
 
             // Handle dependent policy checks
@@ -140,7 +140,7 @@ namespace Bit.Core.Services
             var singleOrg = await _policyRepository.GetByOrganizationIdTypeAsync(org.Id, PolicyType.SingleOrg);
             if (singleOrg?.Enabled != true)
             {
-                throw new BadRequestException("Single Organization policy not enabled.");
+                throw new BadRequestException("Single Team policy not enabled.");
             }
         }
 

@@ -364,7 +364,7 @@ namespace Bit.Core.Test.Services
                 sutProvider.Sut.SaveFileSendAsync(send, null, 1)
             );
 
-            Assert.Contains("organization cannot use file sends", badRequest.Message, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("team cannot use file sends", badRequest.Message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Theory]
@@ -390,7 +390,7 @@ namespace Bit.Core.Test.Services
                 sutProvider.Sut.SaveFileSendAsync(send, null, 1)
             );
 
-            Assert.Contains("organization cannot use file sends", badRequest.Message, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("team cannot use file sends", badRequest.Message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Theory]

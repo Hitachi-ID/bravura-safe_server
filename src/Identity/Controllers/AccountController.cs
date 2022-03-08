@@ -116,13 +116,13 @@ namespace Bit.Identity.Controllers
         {
             if (string.IsNullOrWhiteSpace(organizationIdentifier))
             {
-                throw new Exception("Invalid organization reference id.");
+                throw new Exception("Invalid team reference id.");
             }
 
             var ssoConfig = await _ssoConfigRepository.GetByIdentifierAsync(organizationIdentifier);
             if (ssoConfig == null || !ssoConfig.Enabled)
             {
-                throw new Exception("Organization not found or SSO configuration not enabled");
+                throw new Exception("Team not found or SSO configuration not enabled");
             }
             var domainHint = ssoConfig.OrganizationId.ToString();
 

@@ -71,7 +71,7 @@ namespace Bit.Api.Test.Controllers
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RedeemSponsorship(sponsorshipToken, model));
 
-            Assert.Contains("Can only redeem sponsorship for an organization you own.", exception.Message);
+            Assert.Contains("Can only redeem sponsorship for an team you own.", exception.Message);
             await sutProvider.GetDependency<IOrganizationSponsorshipService>()
                 .DidNotReceiveWithAnyArgs()
                 .SetUpSponsorshipAsync(default, default);
@@ -120,7 +120,7 @@ namespace Bit.Api.Test.Controllers
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RemoveSponsorship(sponsoredOrg.Id));
 
-            Assert.Contains("Only the owner of an organization can remove sponsorship.", exception.Message);
+            Assert.Contains("Only the owner of an team can remove sponsorship.", exception.Message);
             await sutProvider.GetDependency<IOrganizationSponsorshipService>()
                 .DidNotReceiveWithAnyArgs()
                 .RemoveSponsorshipAsync(default, default);

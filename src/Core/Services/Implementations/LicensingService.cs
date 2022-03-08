@@ -85,7 +85,7 @@ namespace Bit.Core.Services
         private async Task DisableOrganizationAsync(Organization org, ILicense license, string reason)
         {
             _logger.LogInformation(Constants.BypassFiltersEventId, null,
-                "Organization {0} ({1}) has an invalid license and is being disabled. Reason: {2}",
+                "Team {0} ({1}) has an invalid license and is being disabled. Reason: {2}",
                 org.Id, org.Name, reason);
             org.Enabled = false;
             org.ExpirationDate = license?.Expires ?? DateTime.UtcNow;
