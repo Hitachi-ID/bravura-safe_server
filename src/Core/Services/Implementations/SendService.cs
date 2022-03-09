@@ -82,7 +82,7 @@ namespace Bit.Core.Services
         {
             if (send.Type != SendType.File)
             {
-                throw new BadRequestException("Send is not of type \"file\".");
+                throw new BadRequestException("Share is not of type \"file\".");
             }
 
             if (fileLength < 1)
@@ -121,12 +121,12 @@ namespace Bit.Core.Services
         {
             if (send?.Data == null)
             {
-                throw new BadRequestException("Send does not have file data");
+                throw new BadRequestException("Share does not have file data");
             }
 
             if (send.Type != SendType.File)
             {
-                throw new BadRequestException("Not a File Type Send.");
+                throw new BadRequestException("Not a File Type Share.");
             }
 
             var data = JsonConvert.DeserializeObject<SendFileData>(send.Data);
@@ -216,7 +216,7 @@ namespace Bit.Core.Services
         {
             if (send.Type != SendType.File)
             {
-                throw new BadRequestException("Can only get a download URL for a file type of Send");
+                throw new BadRequestException("Can only get a download URL for a file type of Share");
             }
 
             var (grantAccess, passwordRequired, passwordInvalid) = SendCanBeAccessed(send, password);
@@ -285,7 +285,7 @@ namespace Bit.Core.Services
                 PolicyType.DisableSend);
             if (disableSendPolicyCount > 0)
             {
-                throw new BadRequestException("Due to an Enterprise Policy, you are only able to delete an existing Send.");
+                throw new BadRequestException("Due to an Enterprise Policy, you are only able to delete an existing Share.");
             }
 
             if (send.HideEmail.GetValueOrDefault())
@@ -296,7 +296,7 @@ namespace Bit.Core.Services
                     var data = CoreHelpers.LoadClassFromJsonData<SendOptionsPolicyData>(policy.Data);
                     if (data?.DisableHideEmail ?? false)
                     {
-                        throw new BadRequestException("Due to an Enterprise Policy, you are not allowed to hide your email address from recipients when creating or editing a Send.");
+                        throw new BadRequestException("Due to an Enterprise Policy, you are not allowed to hide your email address from recipients when creating or editing a Share.");
                     }
 
                 }
@@ -311,12 +311,12 @@ namespace Bit.Core.Services
                 var user = await _userRepository.GetByIdAsync(send.UserId.Value);
                 if (!await _userService.CanAccessPremium(user))
                 {
-                    throw new BadRequestException("You must have premium status to use file Sends.");
+                    throw new BadRequestException("You must have premium status to use file Share.");
                 }
 
                 if (!user.EmailVerified)
                 {
-                    throw new BadRequestException("You must confirm your email to use file Sends.");
+                    throw new BadRequestException("You must confirm your email to use file Share.");
                 }
 
                 if (user.Premium)
@@ -336,7 +336,7 @@ namespace Bit.Core.Services
                 var org = await _organizationRepository.GetByIdAsync(send.OrganizationId.Value);
                 if (!org.MaxStorageGb.HasValue)
                 {
-                    throw new BadRequestException("This team cannot use file sends.");
+                    throw new BadRequestException("This team cannot use file shares.");
                 }
 
                 storageBytesRemaining = org.StorageBytesRemaining();

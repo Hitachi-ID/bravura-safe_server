@@ -107,7 +107,7 @@ namespace Bit.Api.Controllers
 
             if (send == null)
             {
-                throw new BadRequestException("Could not locate send");
+                throw new BadRequestException("Could not locate share");
             }
 
             var (url, passwordRequired, passwordInvalid) = await _sendService.GetSendFileDownloadUrlAsync(send, fileId,
