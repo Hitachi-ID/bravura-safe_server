@@ -88,7 +88,7 @@ namespace Bit.Api.Models.Request
             var nowPlus1Minute = now.AddMinutes(1);
             if (ExpirationDate.HasValue && ExpirationDate.Value <= nowPlus1Minute)
             {
-                throw new BadRequestException("You cannot create a Send that is already expired. " +
+                throw new BadRequestException("You cannot create a Share that is already expired. " +
                     "Adjust the expiration date and try again.");
             }
             ValidateEdit();
@@ -103,12 +103,12 @@ namespace Bit.Api.Models.Request
             {
                 if (DeletionDate.Value <= nowPlus1Minute)
                 {
-                    throw new BadRequestException("You cannot have a Send with a deletion date in the past. " +
+                    throw new BadRequestException("You cannot have a Share with a deletion date in the past. " +
                         "Adjust the deletion date and try again.");
                 }
                 if (DeletionDate.Value > now.AddDays(31))
                 {
-                    throw new BadRequestException("You cannot have a Send with a deletion date that far " +
+                    throw new BadRequestException("You cannot have a Share with a deletion date that far " +
                         "into the future. Adjust the Deletion Date to a value less than 31 days from now " +
                         "and try again.");
                 }

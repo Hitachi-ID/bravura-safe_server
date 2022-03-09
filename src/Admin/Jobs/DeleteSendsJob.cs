@@ -30,7 +30,7 @@ namespace Bit.Admin.Jobs
         protected async override Task ExecuteJobAsync(IJobExecutionContext context)
         {
             var sends = await _sendRepository.GetManyByDeletionDateAsync(DateTime.UtcNow);
-            _logger.LogInformation(Constants.BypassFiltersEventId, "Deleting {0} sends.", sends.Count);
+            _logger.LogInformation(Constants.BypassFiltersEventId, "Deleting {0} shares.", sends.Count);
             if (!sends.Any())
             {
                 return;
