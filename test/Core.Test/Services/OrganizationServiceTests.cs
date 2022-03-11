@@ -929,7 +929,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.DeleteAsync(organization));
 
-            Assert.Contains("You cannot delete an Team that is using Key Connector.", exception.Message);
+            Assert.Contains("You cannot delete a Team that is using Key Connector.", exception.Message);
 
             await organizationRepository.DidNotReceiveWithAnyArgs().DeleteAsync(default);
             await applicationCacheService.DidNotReceiveWithAnyArgs().DeleteOrganizationAbilityAsync(default);

@@ -694,7 +694,7 @@ namespace Bit.Core.Services
             if (_currentContext.Organizations.Any(u =>
                     u.Type is OrganizationUserType.Owner or OrganizationUserType.Admin))
             {
-                throw new BadRequestException("Cannot use Key Connector when admin or owner of an team.");
+                throw new BadRequestException("Cannot use Key Connector when admin or owner of a team.");
             }
 
             return null;

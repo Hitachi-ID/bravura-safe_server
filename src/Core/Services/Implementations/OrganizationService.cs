@@ -646,7 +646,7 @@ namespace Bit.Core.Services
             var singleOrgPolicyCount = await _policyRepository.GetCountByTypeApplicableToUserIdAsync(ownerId, PolicyType.SingleOrg);
             if (singleOrgPolicyCount > 0)
             {
-                throw new BadRequestException("You may not create an team. You belong to an team " +
+                throw new BadRequestException("You may not create a team. You belong to a team " +
                     "which has a policy that prohibits you from being a member of any other team.");
             }
         }
@@ -1023,7 +1023,7 @@ namespace Bit.Core.Services
         {
             if (!type.ToString().Contains("Organization"))
             {
-                throw new ArgumentException("Not an team provider type.");
+                throw new ArgumentException("Not a team provider type.");
             }
 
             if (!organization.Use2fa)
@@ -1046,7 +1046,7 @@ namespace Bit.Core.Services
         {
             if (!type.ToString().Contains("Organization"))
             {
-                throw new ArgumentException("Not an team provider type.");
+                throw new ArgumentException("Not a team provider type.");
             }
 
             var providers = organization.GetTwoFactorProviders();
@@ -2132,7 +2132,7 @@ namespace Bit.Core.Services
             var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(organization.Id);
             if (ssoConfig?.GetData()?.KeyConnectorEnabled == true)
             {
-                throw new BadRequestException("You cannot delete an Team that is using Key Connector.");
+                throw new BadRequestException("You cannot delete a Team that is using Key Connector.");
             }
         }
     }

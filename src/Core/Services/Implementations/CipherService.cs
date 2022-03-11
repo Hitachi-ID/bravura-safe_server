@@ -281,7 +281,7 @@ namespace Bit.Core.Services
 
                 if (cipher.OrganizationId.HasValue)
                 {
-                    throw new BadRequestException("Cipher belongs to an team already.");
+                    throw new BadRequestException("Cipher belongs to a team already.");
                 }
 
                 var org = await _organizationRepository.GetByIdAsync(organizationId);
@@ -510,7 +510,7 @@ namespace Bit.Core.Services
 
                 if (cipher.OrganizationId.HasValue)
                 {
-                    throw new BadRequestException("Already belongs to an team.");
+                    throw new BadRequestException("Already belongs to a team.");
                 }
 
                 if (!cipher.UserId.HasValue || cipher.UserId.Value != sharingUserId)
@@ -604,7 +604,7 @@ namespace Bit.Core.Services
 
                 if (cipher.OrganizationId.HasValue)
                 {
-                    throw new BadRequestException("One or more ciphers already belong to an team.");
+                    throw new BadRequestException("One or more ciphers already belong to a team.");
                 }
 
                 if (!cipher.UserId.HasValue || cipher.UserId.Value != sharingUserId)
@@ -645,7 +645,7 @@ namespace Bit.Core.Services
 
             if (!cipher.OrganizationId.HasValue)
             {
-                throw new BadRequestException("Cipher must belong to an team.");
+                throw new BadRequestException("Cipher must belong to a team.");
             }
 
             cipher.RevisionDate = DateTime.UtcNow;
@@ -685,7 +685,7 @@ namespace Bit.Core.Services
             if (personalOwnershipPolicyCount > 0)
             {
                 throw new BadRequestException("You cannot import items into your personal vault because you are " +
-                    "a member of an team which forbids it.");
+                    "a member of a team which forbids it.");
             }
 
             foreach (var cipher in ciphers)
