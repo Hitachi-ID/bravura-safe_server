@@ -512,7 +512,7 @@
     <value>team not found or SSO configuration not enabled</value>
   </data>
   <data name="SSOProviderIsNotAnOrgId" xml:space="preserve">
-    <value>SSO provider, {0} is not an team id</value>
+    <value>SSO provider, {0} is not a team id</value>
   </data>
   <data name="CannotFindEmailClaim" xml:space="preserve">
     <value>Cannot find email claim</value>
@@ -582,7 +582,7 @@
     <value>Personal Ownership</value>
   </data>
   <data name="PersonalOwnershipDescription" xml:space="preserve">
-    <value>Require users to save vault items to an team by removing the personal ownership option.</value>
+    <value>Require users to save vault items to a team by removing the personal ownership option.</value>
   </data>
   <data name="PersonalOwnershipExemption" xml:space="preserve">
     <value>Team users that can manage the team's policies are exempt from this policy's enforcement.</value>

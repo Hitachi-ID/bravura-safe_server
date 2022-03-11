@@ -177,7 +177,7 @@ namespace Bit.Core.Services
                 .GetBySponsoredOrganizationIdAsync(sponsoredOrganization.Id);
             if (existingOrgSponsorship != null)
             {
-                throw new BadRequestException("Cannot redeem a sponsorship offer for an team that is already sponsored. Revoke existing sponsorship first.");
+                throw new BadRequestException("Cannot redeem a sponsorship offer for a team that is already sponsored. Revoke existing sponsorship first.");
             }
 
             if (sponsorship.PlanSponsorshipType == null)
@@ -248,7 +248,7 @@ namespace Bit.Core.Services
         {
             if (sponsorship == null)
             {
-                throw new BadRequestException("You are not currently sponsoring an team.");
+                throw new BadRequestException("You are not currently sponsoring a team.");
             }
 
             if (sponsorship.SponsoredOrganizationId == null)

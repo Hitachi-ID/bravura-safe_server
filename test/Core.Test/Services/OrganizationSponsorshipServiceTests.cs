@@ -309,7 +309,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.SetUpSponsorshipAsync(sponsorship, org));
 
-            Assert.Contains("Cannot redeem a sponsorship offer for an team that is already sponsored. Revoke existing sponsorship first.", exception.Message);
+            Assert.Contains("Cannot redeem a sponsorship offer for a team that is already sponsored. Revoke existing sponsorship first.", exception.Message);
             await sutProvider.GetDependency<IPaymentService>()
                 .DidNotReceiveWithAnyArgs()
                 .SponsorOrganizationAsync(default, default);
@@ -558,7 +558,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RevokeSponsorshipAsync(org, null));
 
-            Assert.Contains("You are not currently sponsoring an team.", exception.Message);
+            Assert.Contains("You are not currently sponsoring a team.", exception.Message);
             await AssertDidNotRemoveSponsoredPaymentAsync(sutProvider);
             await AssertDidNotRemoveSponsorshipAsync(sutProvider);
         }
