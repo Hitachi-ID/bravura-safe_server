@@ -150,7 +150,7 @@ namespace Bit.Core.Entities
 
                 return _twoFactorProviders;
             }
-            catch (JsonException)
+            catch (System.Text.Json.JsonException)
             {
                 return null;
             }

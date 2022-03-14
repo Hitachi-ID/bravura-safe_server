@@ -1035,8 +1035,8 @@ namespace Bit.Core.Services
 
             if (license?.LicenseType != null && license.LicenseType != LicenseType.User)
             {
-                throw new BadRequestException("Organization licenses cannot be applied to a user. "
-                    + "Upload this license from the Organization settings page.");
+                throw new BadRequestException("Team licenses cannot be applied to a user. "
+                    + "Upload this license from the Team settings page.");
             }
 
             if (license == null || !_licenseService.VerifyLicense(license))
