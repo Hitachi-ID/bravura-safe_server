@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Net.Http;
+using System.Net.Http.Json;
 using Bit.Migrator;
-using Newtonsoft.Json;
 
 namespace Bit.Setup
 {
@@ -285,6 +285,11 @@ namespace Bit.Setup
 
                 _context.Parameters.Add(_context.Args[i].Substring(1), _context.Args[i + 1]);
             }
+        }
+
+        class InstallationValidationResponseModel
+        {
+            public bool Enabled { get; init; }
         }
     }
 }

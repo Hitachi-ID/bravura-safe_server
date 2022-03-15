@@ -7,6 +7,7 @@ using Bit.Core.Context;
 using Bit.Core.Identity;
 using Bit.Core.Settings;
 using Bit.Core.Utilities;
+using Bit.SharedWeb.Utilities;
 using IdentityModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -215,10 +216,10 @@ namespace Bit.Api
                 });
                 app.UseSwaggerUI(config =>
                 {
-                    config.DocumentTitle = "Bravura Safe API Documentation";
+                    config.DocumentTitle = "Bitwarden API Documentation";
                     config.RoutePrefix = "docs";
                     config.SwaggerEndpoint($"{globalSettings.BaseServiceUri.Api}/specs/public/swagger.json",
-                        "Bravura Safe Public API");
+                        "Bitwarden Public API");
                     config.OAuthClientId("accountType.id");
                     config.OAuthClientSecret("secretKey");
                 });

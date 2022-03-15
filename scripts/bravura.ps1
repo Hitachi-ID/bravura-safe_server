@@ -10,6 +10,7 @@ param (
     [switch] $updatedb,
     [switch] $updaterun,
     [switch] $updateself,
+    [switch] $uninstall,
     [switch] $help,
     [string] $output = ""
 )
@@ -28,7 +29,7 @@ $githubBaseUrl = "https://gitlab.hitachi-id.com/bravura-vault/server"
 # Please do not create pull requests modifying the version numbers.
 $coreVersion = "latest"
 $webVersion = "latest"
-$keyConnectorVersion = "1.0.0"
+$keyConnectorVersion = "1.0.1"
 
 # Functions
 
@@ -70,6 +71,7 @@ Available commands:
 -updaterun
 -updateself
 -updateconf
+-uninstall
 -renewcert
 -rebuild
 -help
@@ -150,6 +152,10 @@ elseif ($updateself) {
     # Download-Self
     # Write-Line "Updated self."
     Write-Line "Please manually retrieve latest file."
+}
+elseif ($uninstall) {
+    Test-Output-Dir-Exists
+    Invoke-Expression "& `"$scriptsDir\run.ps1`" -uninstall -outputDir `"$output`" "
 }
 elseif ($help) {
     Show-Commands
