@@ -656,7 +656,7 @@ namespace Bit.Core.Services
         {
             if (license?.LicenseType != null && license.LicenseType != LicenseType.Organization)
             {
-                throw new BadRequestException("Premium licenses cannot be applied to an organization. "
+                throw new BadRequestException("Premium licenses cannot be applied to a team. "
                                               + "Upload this license from your personal account settings page.");
             }
 
@@ -807,7 +807,7 @@ namespace Bit.Core.Services
 
             if (license?.LicenseType != null && license.LicenseType != LicenseType.Organization)
             {
-                throw new BadRequestException("Premium licenses cannot be applied to an organization. "
+                throw new BadRequestException("Premium licenses cannot be applied to a team. "
                                               + "Upload this license from your personal account settings page.");
             }
 
@@ -1766,7 +1766,7 @@ namespace Bit.Core.Services
             // Block the user from withdrawal if auto enrollment is enabled
             if (resetPasswordKey == null && resetPasswordPolicy.Data != null)
             {
-                var data = JsonSerializer.Deserialize<ResetPasswordDataModel>(resetPasswordPolicy.Data);
+                var data = JsonSerializer.Deserialize<ResetPasswordDataModel>(resetPasswordPolicy.Data, JsonHelpers.IgnoreCase);
 
                 if (data?.AutoEnrollEnabled ?? false)
                 {

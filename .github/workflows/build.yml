@@ -28,6 +28,21 @@ jobs:
         run: cloc --include-lang C#,SQL,Razor,"Bourne Shell",PowerShell,HTML,CSS,Sass,JavaScript,TypeScript --vcs git
 
 
+  lint:
+    name: Lint
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846
+
+      # TODO: This can be removed when upgrading to .NET 6
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Verify Format
+        run: dotnet tool run dotnet-format --check
+
+
   testing:
     name: Testing
     runs-on: windows-2019
@@ -73,10 +88,6 @@ jobs:
         run: dotnet tool restore
         shell: pwsh
 
-      - name: Verify Format
-        run: dotnet tool run dotnet-format --check
-        shell: pwsh
-
       - name: Test OSS solution
         run: dotnet test ./test --configuration Debug --no-build
         shell: pwsh
@@ -96,7 +107,7 @@ jobs:
         include:
           - service_name: Admin
             base_path: ./src
-            gulp: true
+            node: true
           - service_name: Api
             base_path: ./src
           - service_name: Billing
@@ -117,18 +128,17 @@ jobs:
             base_path: ./util
           - service_name: Sso
             base_path: ./bitwarden_license/src
-            gulp: true
+            node: true
     steps:
       - name: Checkout repo
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
 
       - name: Set up Node
-        uses: actions/setup-node@46071b5c7a2e0c34e49c3cb8a0e792e86e18d5ea
+        uses: actions/setup-node@9ced9a43a244f3ac94f13bfd896db8c8f30da67a  # v3.0.0
         with:
-          node-version: '14'
-
-      - name: Update NPM
-        run: npm install -g npm@7
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+          node-version: '16'
 
       - name: Print environment
         run: |
@@ -136,14 +146,8 @@ jobs:
           dotnet --info
           node --version
           npm --version
-          gulp --version
           echo "GitHub ref: $GITHUB_REF"
           echo "GitHub event: $GITHUB_EVENT"
-
-      - name: Set up Gulp
-        if: ${{ matrix.gulp }}
-        working-directory: ${{ matrix.base_path }}/${{ matrix.service_name }}
-        run: npm install -g gulp
 
       - name: Restore/Clean service
         working-directory: ${{ matrix.base_path }}/${{ matrix.service_name }}
@@ -153,12 +157,12 @@ jobs:
           echo "Clean"
           dotnet clean -c "Release" -o obj/build-output/publish
 
-      - name: Execute Gulp
-        if: ${{ matrix.gulp }}
+      - name: Build node
+        if: ${{ matrix.node }}
         working-directory: ${{ matrix.base_path }}/${{ matrix.service_name }}
         run: |
-          npm install
-          gulp --gulpfile gulpfile.js build
+          npm ci
+          npm run build
 
       - name: Publish service
         working-directory: ${{ matrix.base_path }}/${{ matrix.service_name }}
@@ -455,6 +459,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
       - cloc
+      - lint
       - testing
       - build-artifacts
       - build-docker
@@ -467,12 +472,15 @@ jobs:
           || github.ref == 'refs/heads/hotfix-rc'
         env:
           CLOC_STATUS: ${{ needs.cloc.result }}
+          LINT_STATUS: ${{ needs.lint.result }}
           TESTING_STATUS: ${{ needs.testing.result }}
           BUILD_ARTIFACTS_STATUS: ${{ needs.build-artifacts.result }}
           BUILD_DOCKER_STATUS: ${{ needs.build-docker.result }}
           UPLOAD_STATUS: ${{ needs.upload.result }}
         run: |
           if [ "$CLOC_STATUS" = "failure" ]; then
+              exit 1
+          elif [ "$LINT_STATUS" = "failure" ]; then
               exit 1
           elif [ "$TESTING_STATUS" = "failure" ]; then
               exit 1
