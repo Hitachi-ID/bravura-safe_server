@@ -29,6 +29,7 @@
                 <th>Name</th>
                 <th style="width: 150px;">Created</th>
                 <th style="width: 170px; min-width: 170px;">Details</th>
+                <th style="width: 50px;"></th>
             </tr>
         </thead>
         <tbody>
@@ -79,6 +80,9 @@
                             {
                                 <i class="fa fa-unlock fa-lg fa-fw text-muted" title="2FA Not Enabled"></i>
                             }
+                        </td>
+                        <td class="d-flex justify-content-center pt-2 border-top-0">
+                            <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@org.Id">Edit</a>
                         </td>
                     </tr>
                 }
