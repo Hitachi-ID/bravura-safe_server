@@ -52,7 +52,9 @@ namespace Bit.Admin.Controllers
                 Email = string.IsNullOrWhiteSpace(email) ? null : email,
                 Page = page,
                 Count = count,
-                Action = _globalSettings.SelfHosted ? "View" : "Edit"
+                // no matter globalSettings.SelfHosted or not, display users/view page
+                // Action = _globalSettings.SelfHosted ? "View" : "Edit"
+                Action = "View"
             });
         }
 
@@ -79,7 +81,9 @@ namespace Bit.Admin.Controllers
 
             var ciphers = await _cipherRepository.GetManyByUserIdAsync(id);
             var billingInfo = await _paymentService.GetBillingAsync(user);
-            return View(new UserEditModel(user, ciphers, billingInfo, _globalSettings));
+            // Tempory disable users/edit page according to Ian requirement
+            // return View(new UserEditModel(user, ciphers, billingInfo, _globalSettings));
+            return NotFound();
         }
 
         [HttpPost]
@@ -95,7 +99,8 @@ namespace Bit.Admin.Controllers
 
             model.ToUser(user);
             await _userRepository.ReplaceAsync(user);
-            return RedirectToAction("Edit", new { id });
+            // return RedirectToAction("Edit", new { id });
+            return NotFound();
         }
 
         [HttpPost]
