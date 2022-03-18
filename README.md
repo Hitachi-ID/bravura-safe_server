@@ -6,9 +6,6 @@ The original work is available at [https://github.com/bitwarden/server].
 The original documentation is available at [https://bitwarden.com/help/].
 A complete list of all changes is available in the git history of this project.
 
-This project contains the APIs, database, and other core infrastructure items needed for the "backend" of all bitwarden client applications.
-
-The server project is written in C# using .NET Core with ASP.NET Core. The database is written in T-SQL/SQL Server. The codebase can be developed, built, run, and deployed cross-platform on Windows, macOS, and Linux distributions.
 
 ## Build/Run
 
@@ -91,7 +88,6 @@ Invoke-RestMethod -OutFile bitwarden.ps1 `
 
 Code contributions to this fork are not required.  Please consider contributing to the original project.
 
-No grant of any rights in the trademarks, service marks, or logos of Bitwarden is made (except as may be necessary to comply with the notice requirements as applicable), and use of any Bitwarden trademarks must comply with [Bitwarden Trademark Guidelines](https://github.com/bitwarden/server/blob/master/TRADEMARK_GUIDELINES.md).
 
 ### Dotnet-format
 
