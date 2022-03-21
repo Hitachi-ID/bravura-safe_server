@@ -1,7 +1,7 @@
 -------------------
 
-**Hitachi ID Bravura Safe is a modified version of Bitwarden®. It was developed using Bitwarden open source software.
-Hitachi ID Systems, Inc. and Bravura Safe are not affiliated with or endorsed by Bitwarden or Bitwarden, Inc.
+**Hitachi ID Bravura Safe is a modified version of Bitwarden®. It was developed using Bitwarden open source software.  
+Hitachi ID Systems, Inc. and Bravura Safe are not affiliated with or endorsed by Bitwarden or Bitwarden, Inc.  
 Bitwarden is a trademark or registered trademark of Bitwarden, Inc. in the United States and/or other countries.**
 
 
@@ -51,12 +51,6 @@ dotnet run
 visit http://localhost:33657/.well-known/openid-configuration
 
 ## Deploy
-
-<p align="center">
-  <a href="https://hub.docker.com/u/bitwarden/" target="_blank">
-    <img src="https://i.imgur.com/SZc8JnH.png" alt="docker" />
-  </a>
-</p>
 
 
 ### Requirements
