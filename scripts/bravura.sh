@@ -17,7 +17,9 @@ SCRIPT_PATH="$DIR/$SCRIPT_NAME"
 OUTPUT="$DIR/bvdata"
 if [ $# -eq 2 ]
 then
+    OUTPUT=$2
 fi
+
 if command -v docker-compose &> /dev/null
 then
     dccmd='docker-compose'
