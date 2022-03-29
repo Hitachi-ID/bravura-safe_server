@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bit.Core.Entities;
+using Bit.Core.Entities.Provider;
 using Bit.Core.Models.Business;
 using Bit.Core.Models.Mail;
-using Bit.Core.Models.Table;
-using Bit.Core.Models.Table.Provider;
 
 namespace Bit.Core.Services
 {
@@ -217,6 +217,16 @@ namespace Bit.Core.Services
         }
 
         public Task SendOTPEmailAsync(string email, string token)
+        {
+            return Task.FromResult(0);
+        }
+
+        public Task SendFailedLoginAttemptsEmailAsync(string email, DateTime utcNow, string ip)
+        {
+            return Task.FromResult(0);
+        }
+
+        public Task SendFailedTwoFactorAttemptsEmailAsync(string email, DateTime utcNow, string ip)
         {
             return Task.FromResult(0);
         }

@@ -46,14 +46,20 @@ server {
     proxy_pass http://localhost:5009/;
     include /etc/nginx/security-headers-ssl.conf;
     include /etc/nginx/security-headers.conf;
-    add_header Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://haveibeenpwned.com https://www.gravatar.com; child-src 'self' https://*.duosecurity.com https://*.duofederal.com; frame-src 'self' https://*.duosecurity.com https://*.duofederal.com; connect-src 'self' wss://*.test.hitachi-id.net https://api.pwnedpasswords.com https://2fa.directory; object-src 'self' blob:;";
+    add_header Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://haveibeenpwned.com; child-src 'self' https://*.duosecurity.com https://*.duofederal.com; frame-src 'self' https://*.duosecurity.com https://*.duofederal.com; connect-src 'self' wss://*.test.hitachi-id.net https://api.pwnedpasswords.com https://2fa.directory; object-src 'self' blob:;";
     add_header X-Frame-Options SAMEORIGIN;
-
     add_header X-Robots-Tag "noindex, nofollow";
 
     # Matches the Angular root index.html
     location = / {
       proxy_pass http://web:5000/;
+
+      # Add headers from parent (any add_header in nested blocks clears inherited headers)
+      include /etc/nginx/security-headers-ssl.conf;
+      include /etc/nginx/security-headers.conf;
+      add_header Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://haveibeenpwned.com; child-src 'self' https://*.duosecurity.com https://*.duofederal.com; frame-src 'self' https://*.duosecurity.com https://*.duofederal.com; connect-src 'self' wss://*.test.hitachi-id.net https://api.pwnedpasswords.com https://2fa.directory; object-src 'self' blob:;";
+      add_header X-Frame-Options SAMEORIGIN;
+      add_header X-Robots-Tag "noindex, nofollow";
 
       # Set a predictable cache length for the Angular root to streamline pushing updates.
       add_header Cache-Control max-age=1800;
@@ -66,6 +72,13 @@ server {
     location ~* ^(.+\.[a-f0-9]+\.(css|eot|gif|ico|jpe?g|js|otf|png|svg|ttf|woff|woff2?))$ {
       proxy_pass http://web:5000/$1;
 
+      # Add headers from parent (any add_header in nested blocks clears inherited headers)
+      include /etc/nginx/security-headers-ssl.conf;
+      include /etc/nginx/security-headers.conf;
+      add_header Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://haveibeenpwned.com; child-src 'self' https://*.duosecurity.com https://*.duofederal.com; frame-src 'self' https://*.duosecurity.com https://*.duofederal.com; connect-src 'self' wss://*.test.hitachi-id.net https://api.pwnedpasswords.com https://2fa.directory; object-src 'self' blob:;";
+      add_header X-Frame-Options SAMEORIGIN;
+      add_header X-Robots-Tag "noindex, nofollow";
+
       # Cache hashed static resources for up to a year. Resources with hashes
       # in their file names don't need to check for updates because the hash
       # will be different whenever the file contents change.
@@ -75,6 +88,13 @@ server {
     # Matches all other static resources
     location ~* ^(.+\.(css|eot|gif|ico|jpe?g|js|otf|png|svg|ttf|woff|woff2?))$ {
       proxy_pass http://web:5000/$1;
+
+      # Add headers from parent (any add_header in nested blocks clears inherited headers)
+      include /etc/nginx/security-headers-ssl.conf;
+      include /etc/nginx/security-headers.conf;
+      add_header Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://haveibeenpwned.com; child-src 'self' https://*.duosecurity.com https://*.duofederal.com; frame-src 'self' https://*.duosecurity.com https://*.duofederal.com; connect-src 'self' wss://*.test.hitachi-id.net https://api.pwnedpasswords.com https://2fa.directory; object-src 'self' blob:;";
+      add_header X-Frame-Options SAMEORIGIN;
+      add_header X-Robots-Tag "noindex, nofollow";
 
       # Set a predictable short cache length for these non-cache-busted static
       # resources like fonts.

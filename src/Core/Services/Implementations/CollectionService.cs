@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.Business;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 
 namespace Bit.Core.Services
@@ -44,7 +44,7 @@ namespace Bit.Core.Services
             var org = await _organizationRepository.GetByIdAsync(collection.OrganizationId);
             if (org == null)
             {
-                throw new BadRequestException("Organization not found");
+                throw new BadRequestException("Team not found");
             }
 
             if (collection.Id == default(Guid))
@@ -55,7 +55,7 @@ namespace Bit.Core.Services
                     if (org.MaxCollections.Value <= collectionCount)
                     {
                         throw new BadRequestException("You have reached the maximum number of collections " +
-                        $"({org.MaxCollections.Value}) for this organization.");
+                        $"({org.MaxCollections.Value}) for this team.");
                     }
                 }
 

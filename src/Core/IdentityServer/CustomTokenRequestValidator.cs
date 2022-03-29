@@ -5,9 +5,9 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Bit.Core.Context;
+using Bit.Core.Entities;
 using Bit.Core.Identity;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
 using Bit.Core.Settings;
@@ -41,10 +41,13 @@ namespace Bit.Core.IdentityServer
             ICurrentContext currentContext,
             GlobalSettings globalSettings,
             IPolicyRepository policyRepository,
-            ISsoConfigRepository ssoConfigRepository)
+            ISsoConfigRepository ssoConfigRepository,
+            IUserRepository userRepository,
+            ICaptchaValidationService captchaValidationService)
             : base(userManager, deviceRepository, deviceService, userService, eventService,
                   organizationDuoWebTokenProvider, organizationRepository, organizationUserRepository,
-                  applicationCacheService, mailService, logger, currentContext, globalSettings, policyRepository)
+                  applicationCacheService, mailService, logger, currentContext, globalSettings, policyRepository,
+                  userRepository, captchaValidationService)
         {
             _userManager = userManager;
             _ssoConfigRepository = ssoConfigRepository;

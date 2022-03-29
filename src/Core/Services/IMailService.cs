@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bit.Core.Entities;
+using Bit.Core.Entities.Provider;
 using Bit.Core.Models.Business;
 using Bit.Core.Models.Mail;
-using Bit.Core.Models.Table;
-using Bit.Core.Models.Table.Provider;
 
 namespace Bit.Core.Services
 {
@@ -53,5 +53,7 @@ namespace Bit.Core.Services
         Task SendFamiliesForEnterpriseRedeemedEmailsAsync(string familyUserEmail, string sponsorEmail);
         Task SendFamiliesForEnterpriseSponsorshipRevertingEmailAsync(string email, string familyOrgName);
         Task SendOTPEmailAsync(string email, string token);
+        Task SendFailedLoginAttemptsEmailAsync(string email, DateTime utcNow, string ip);
+        Task SendFailedTwoFactorAttemptsEmailAsync(string email, DateTime utcNow, string ip);
     }
 }

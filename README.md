@@ -1,14 +1,14 @@
 -------------------
 
-Hitachi ID Bravura Safe is a modified version of Bitwarden®. It was developed using Bitwarden open source software. Hitachi ID Systems, Inc. and Bravura Safe are not affiliated with or endorsed by Bitwarden or Bitwarden, Inc. Bitwarden is a trademark or registered trademark of Bitwarden, Inc. in the United States and/or other countries. 
+**Hitachi ID Bravura Safe is a modified version of Bitwarden®. It was developed using Bitwarden open source software.  
+Hitachi ID Systems, Inc. and Bravura Safe are not affiliated with or endorsed by Bitwarden or Bitwarden, Inc.  
+Bitwarden is a trademark or registered trademark of Bitwarden, Inc. in the United States and/or other countries.**
+
 
 The original work is available at [https://github.com/bitwarden/server]. 
 The original documentation is available at [https://bitwarden.com/help/].
 A complete list of all changes is available in the git history of this project.
 
-This project contains the APIs, database, and other core infrastructure items needed for the "backend" of all bitwarden client applications.
-
-The server project is written in C# using .NET Core with ASP.NET Core. The database is written in T-SQL/SQL Server. The codebase can be developed, built, run, and deployed cross-platform on Windows, macOS, and Linux distributions.
 
 ## Build/Run
 
@@ -52,12 +52,6 @@ visit http://localhost:33657/.well-known/openid-configuration
 
 ## Deploy
 
-<p align="center">
-  <a href="https://hub.docker.com/u/bitwarden/" target="_blank">
-    <img src="https://i.imgur.com/SZc8JnH.png" alt="docker" />
-  </a>
-</p>
-
 
 ### Requirements
 
@@ -68,7 +62,7 @@ visit http://localhost:33657/.well-known/openid-configuration
 
 ### Linux & macOS
 
-Bitwarden name in the following refers to scripts contained within the repositor and do not imply any use of their trademark.
+Bitwarden name in the following refers to scripts contained within the repository and do not imply any use of their trademark.
 
 ```
 curl -s -o bitwarden.sh \
@@ -89,13 +83,12 @@ Invoke-RestMethod -OutFile bitwarden.ps1 `
 
 ## Contribute
 
-Code contributions are welcome! Visual Studio or VS Code is highly recommended if you are working on this project. Please commit any pull requests against the `master` branch. Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for more info (and feel free to contribute to that guide as well).
+Code contributions to this fork are not required.  Please consider contributing to the original project.
 
-No grant of any rights in the trademarks, service marks, or logos of Bitwarden is made (except as may be necessary to comply with the notice requirements as applicable), and use of any Bitwarden trademarks must comply with [Bitwarden Trademark Guidelines](https://github.com/bitwarden/server/blob/master/TRADEMARK_GUIDELINES.md).
 
 ### Dotnet-format
 
-We recently migrated to using dotnet-foormat as code formatter. All previous branches will need to updated to avoid large merge conflicts using the following steps:
+We recently migrated to using dotnet-format as code formatter. All previous branches will need to updated to avoid large merge conflicts using the following steps:
 
 1. Check out your local Branch
 2. Run `git merge 61dc65aa598b1f492d2f0222bb7bf0dd15d116f5`

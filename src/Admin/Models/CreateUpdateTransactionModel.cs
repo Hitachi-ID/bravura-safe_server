@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Bit.Core.Entities;
 using Bit.Core.Enums;
-using Bit.Core.Models.Table;
 
 namespace Bit.Admin.Models
 {
@@ -30,7 +30,7 @@ namespace Bit.Admin.Models
 
         [Display(Name = "User Id")]
         public Guid? UserId { get; set; }
-        [Display(Name = "Organization Id")]
+        [Display(Name = "Team Id")]
         public Guid? OrganizationId { get; set; }
         [Required]
         public decimal? Amount { get; set; }
@@ -54,7 +54,7 @@ namespace Bit.Admin.Models
         {
             if ((!UserId.HasValue && !OrganizationId.HasValue) || (UserId.HasValue && OrganizationId.HasValue))
             {
-                yield return new ValidationResult("Must provide either User Id, or Organization Id.");
+                yield return new ValidationResult("Must provide either User Id, or Team Id.");
             }
         }
 

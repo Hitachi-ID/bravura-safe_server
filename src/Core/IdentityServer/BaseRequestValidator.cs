@@ -7,12 +7,12 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Bit.Core.Context;
+using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Identity;
 using Bit.Core.Models;
 using Bit.Core.Models.Api;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
 using Bit.Core.Settings;
@@ -39,6 +39,8 @@ namespace Bit.Core.IdentityServer
         private readonly ICurrentContext _currentContext;
         private readonly GlobalSettings _globalSettings;
         private readonly IPolicyRepository _policyRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ICaptchaValidationService _captchaValidationService;
 
         public BaseRequestValidator(
             UserManager<User> userManager,
@@ -54,7 +56,9 @@ namespace Bit.Core.IdentityServer
             ILogger<ResourceOwnerPasswordValidator> logger,
             ICurrentContext currentContext,
             GlobalSettings globalSettings,
-            IPolicyRepository policyRepository)
+            IPolicyRepository policyRepository,
+            IUserRepository userRepository,
+            ICaptchaValidationService captchaValidationService)
         {
             _userManager = userManager;
             _deviceRepository = deviceRepository;
@@ -70,9 +74,11 @@ namespace Bit.Core.IdentityServer
             _currentContext = currentContext;
             _globalSettings = globalSettings;
             _policyRepository = policyRepository;
+            _userRepository = userRepository;
+            _captchaValidationService = captchaValidationService;
         }
 
-        protected async Task ValidateAsync(T context, ValidatedTokenRequest request)
+        protected async Task ValidateAsync(T context, ValidatedTokenRequest request, bool unknownDevice = false)
         {
             var twoFactorToken = request.Raw["TwoFactorToken"]?.ToString();
             var twoFactorProvider = request.Raw["TwoFactorProvider"]?.ToString();
@@ -83,6 +89,7 @@ namespace Bit.Core.IdentityServer
             var (user, valid) = await ValidateContextAsync(context);
             if (!valid)
             {
+                await UpdateFailedAuthDetailsAsync(user, false, unknownDevice);
                 await BuildErrorResultAsync("Username or password is incorrect. Try again.", false, context, user);
                 return;
             }
@@ -102,6 +109,7 @@ namespace Bit.Core.IdentityServer
                     twoFactorProviderType, twoFactorToken);
                 if (!verified && twoFactorProviderType != TwoFactorProviderType.Remember)
                 {
+                    await UpdateFailedAuthDetailsAsync(user, true, unknownDevice);
                     await BuildErrorResultAsync("Two-step token is invalid. Try again.", true, context, user);
                     return;
                 }
@@ -176,6 +184,7 @@ namespace Bit.Core.IdentityServer
                 customResponse.Add("TwoFactorToken", token);
             }
 
+            await ResetFailedAuthDetailsAsync(user);
             await SetSuccessResult(context, user, claims, customResponse);
         }
 
@@ -375,7 +384,6 @@ namespace Bit.Core.IdentityServer
                 case TwoFactorProviderType.Email:
                 case TwoFactorProviderType.Duo:
                 case TwoFactorProviderType.YubiKey:
-                case TwoFactorProviderType.U2f:
                 case TwoFactorProviderType.WebAuthn:
                 case TwoFactorProviderType.Remember:
                     if (type != TwoFactorProviderType.Remember &&
@@ -403,7 +411,6 @@ namespace Bit.Core.IdentityServer
             switch (type)
             {
                 case TwoFactorProviderType.Duo:
-                case TwoFactorProviderType.U2f:
                 case TwoFactorProviderType.WebAuthn:
                 case TwoFactorProviderType.Email:
                 case TwoFactorProviderType.YubiKey:
@@ -420,16 +427,6 @@ namespace Bit.Core.IdentityServer
                         {
                             ["Host"] = provider.MetaData["Host"],
                             ["Signature"] = token
-                        };
-                    }
-                    else if (type == TwoFactorProviderType.U2f)
-                    {
-                        // TODO: Remove "Challenges" in a future update. Deprecated.
-                        var tokens = token?.Split('|');
-                        return new Dictionary<string, object>
-                        {
-                            ["Challenge"] = tokens != null && tokens.Length > 0 ? tokens[0] : null,
-                            ["Challenges"] = tokens != null && tokens.Length > 1 ? tokens[1] : null
                         };
                     }
                     else if (type == TwoFactorProviderType.WebAuthn)
@@ -513,6 +510,44 @@ namespace Bit.Core.IdentityServer
             }
 
             return null;
+        }
+
+        private async Task ResetFailedAuthDetailsAsync(User user)
+        {
+            // Early escape if db hit not necessary
+            if (user == null || user.FailedLoginCount == 0)
+            {
+                return;
+            }
+
+            user.FailedLoginCount = 0;
+            user.RevisionDate = DateTime.UtcNow;
+            await _userRepository.ReplaceAsync(user);
+        }
+
+        private async Task UpdateFailedAuthDetailsAsync(User user, bool twoFactorInvalid, bool unknownDevice)
+        {
+            if (user == null)
+            {
+                return;
+            }
+
+            var utcNow = DateTime.UtcNow;
+            user.FailedLoginCount = ++user.FailedLoginCount;
+            user.LastFailedLoginDate = user.RevisionDate = utcNow;
+            await _userRepository.ReplaceAsync(user);
+
+            if (_captchaValidationService.ValidateFailedAuthEmailConditions(unknownDevice, user.FailedLoginCount))
+            {
+                if (twoFactorInvalid)
+                {
+                    await _mailService.SendFailedTwoFactorAttemptsEmailAsync(user.Email, utcNow, _currentContext.IpAddress);
+                }
+                else
+                {
+                    await _mailService.SendFailedLoginAttemptsEmailAsync(user.Email, utcNow, _currentContext.IpAddress);
+                }
+            }
         }
     }
 }

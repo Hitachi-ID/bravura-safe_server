@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.Business;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 
 namespace Bit.Core.Services
@@ -37,12 +37,12 @@ namespace Bit.Core.Services
             var org = await _organizationRepository.GetByIdAsync(group.OrganizationId);
             if (org == null)
             {
-                throw new BadRequestException("Organization not found");
+                throw new BadRequestException("Team not found");
             }
 
             if (!org.UseGroups)
             {
-                throw new BadRequestException("This organization cannot use groups.");
+                throw new BadRequestException("This team cannot use groups.");
             }
 
             if (group.Id == default(Guid))

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Bit.Api.Models.Request;
 using Bit.Api.Models.Response;
 using Bit.Core.Context;
+using Bit.Core.Entities;
 using Bit.Core.Exceptions;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -87,8 +87,9 @@ namespace Bit.Api.Controllers
                 throw new NotFoundException();
             }
 
-            var collections = await _collectionRepository.GetManyByOrganizationIdAsync(orgIdGuid);
-            var responses = collections.Select(c => new CollectionResponseModel(c));
+            var collections = await _collectionRepository.GetManyByUserIdAsync(_currentContext.UserId.Value);
+            var orgCollections = collections.Where(c => c.OrganizationId == orgIdGuid);
+            var responses = orgCollections.Select(c => new CollectionResponseModel(c));
             return new ListResponseModel<CollectionResponseModel>(responses);
         }
 
@@ -148,6 +149,11 @@ namespace Bit.Api.Controllers
         [HttpPut("{id}/users")]
         public async Task PutUsers(string orgId, string id, [FromBody] IEnumerable<SelectionReadOnlyRequestModel> model)
         {
+            if (!await CanEditCollectionAsync(orgId, id))
+            {
+                throw new NotFoundException();
+            }
+
             var collection = await GetCollectionAsync(new Guid(id), new Guid(orgId));
             await _collectionRepository.UpdateUsersAsync(collection.Id, model?.Select(g => g.ToSelectionReadOnly()));
         }
@@ -220,7 +226,7 @@ namespace Bit.Api.Controllers
 
             if (await _currentContext.EditAssignedCollections(orgId))
             {
-                return null != _collectionRepository.GetByIdAsync(collectionId, _currentContext.UserId.Value);
+                return null != await _collectionRepository.GetByIdAsync(collectionId, _currentContext.UserId.Value);
             }
 
             return false;

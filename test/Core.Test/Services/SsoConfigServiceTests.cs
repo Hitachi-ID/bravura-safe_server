@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Bit.Core.Entities;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
 using Bit.Test.Common.AutoFixture;
@@ -174,7 +174,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.SaveAsync(ssoConfig, organization));
 
-            Assert.Contains("Key Connector requires the Single Organization policy to be enabled.", exception.Message);
+            Assert.Contains("Key Connector requires the Single Team policy to be enabled.", exception.Message);
 
             await sutProvider.GetDependency<ISsoConfigRepository>().DidNotReceiveWithAnyArgs()
                 .UpsertAsync(default);
@@ -277,7 +277,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.SaveAsync(ssoConfig, organization));
 
-            Assert.Contains("Organization cannot use Key Connector.", exception.Message);
+            Assert.Contains("Team cannot use Key Connector.", exception.Message);
 
             await sutProvider.GetDependency<ISsoConfigRepository>().DidNotReceiveWithAnyArgs()
                 .UpsertAsync(default);

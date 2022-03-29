@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.Business;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Settings;
 using Bit.Core.Utilities;
 using Core.Models.Data;
-using Newtonsoft.Json;
 
 namespace Bit.Core.Services
 {
@@ -128,7 +128,7 @@ namespace Bit.Core.Services
                     var existingCollectionIds = (await _collectionRepository.GetManyByOrganizationIdAsync(cipher.OrganizationId.Value)).Select(c => c.Id);
                     if (collectionIds.Except(existingCollectionIds).Any())
                     {
-                        throw new BadRequestException("Specified CollectionId does not exist on the specified Organization.");
+                        throw new BadRequestException("Specified CollectionId does not exist on the specified Team.");
                     }
                     await _cipherRepository.CreateAsync(cipher, collectionIds);
                 }
@@ -208,7 +208,7 @@ namespace Bit.Core.Services
                 UserId = cipher.UserId,
                 OrganizationId = cipher.OrganizationId,
                 AttachmentId = attachmentId,
-                AttachmentData = JsonConvert.SerializeObject(data)
+                AttachmentData = JsonSerializer.Serialize(data)
             });
             cipher.AddAttachment(attachmentId, data);
             await _pushService.PushSyncCipherUpdateAsync(cipher, null);
@@ -241,7 +241,7 @@ namespace Bit.Core.Services
                     UserId = cipher.UserId,
                     OrganizationId = cipher.OrganizationId,
                     AttachmentId = attachmentId,
-                    AttachmentData = JsonConvert.SerializeObject(data)
+                    AttachmentData = JsonSerializer.Serialize(data)
                 };
 
                 await _cipherRepository.UpdateAttachmentAsync(attachment);
@@ -281,19 +281,19 @@ namespace Bit.Core.Services
 
                 if (cipher.OrganizationId.HasValue)
                 {
-                    throw new BadRequestException("Cipher belongs to an organization already.");
+                    throw new BadRequestException("Cipher belongs to a team already.");
                 }
 
                 var org = await _organizationRepository.GetByIdAsync(organizationId);
                 if (org == null || !org.MaxStorageGb.HasValue)
                 {
-                    throw new BadRequestException("This organization cannot use attachments.");
+                    throw new BadRequestException("This team cannot use attachments.");
                 }
 
                 var storageBytesRemaining = org.StorageBytesRemaining();
                 if (storageBytesRemaining < requestLength)
                 {
-                    throw new BadRequestException("Not enough storage available for this organization.");
+                    throw new BadRequestException("Not enough storage available for this team.");
                 }
 
                 var attachments = cipher.GetAttachments();
@@ -312,7 +312,7 @@ namespace Bit.Core.Services
                     UserId = cipher.UserId,
                     OrganizationId = cipher.OrganizationId,
                     AttachmentId = attachmentId,
-                    AttachmentData = JsonConvert.SerializeObject(attachments[attachmentId])
+                    AttachmentData = JsonSerializer.Serialize(attachments[attachmentId])
                 };
 
                 await _cipherRepository.UpdateAttachmentAsync(updatedAttachment);
@@ -347,7 +347,7 @@ namespace Bit.Core.Services
                 UserId = cipher.UserId,
                 OrganizationId = cipher.OrganizationId,
                 AttachmentId = attachmentData.AttachmentId,
-                AttachmentData = JsonConvert.SerializeObject(attachmentData)
+                AttachmentData = JsonSerializer.Serialize(attachmentData)
             };
 
 
@@ -495,7 +495,6 @@ namespace Bit.Core.Services
             IEnumerable<Guid> collectionIds, Guid sharingUserId, DateTime? lastKnownRevisionDate)
         {
             var attachments = cipher.GetAttachments();
-            var hasAttachments = attachments?.Any() ?? false;
             var hasOldAttachments = attachments?.Any(a => a.Key == null) ?? false;
             var updatedCipher = false;
             var migratedAttachments = false;
@@ -503,34 +502,7 @@ namespace Bit.Core.Services
 
             try
             {
-                if (cipher.Id == default(Guid))
-                {
-                    throw new BadRequestException(nameof(cipher.Id));
-                }
-
-                if (cipher.OrganizationId.HasValue)
-                {
-                    throw new BadRequestException("Already belongs to an organization.");
-                }
-
-                if (!cipher.UserId.HasValue || cipher.UserId.Value != sharingUserId)
-                {
-                    throw new NotFoundException();
-                }
-
-                var org = await _organizationRepository.GetByIdAsync(organizationId);
-                if (hasAttachments && !org.MaxStorageGb.HasValue)
-                {
-                    throw new BadRequestException("This organization cannot use attachments.");
-                }
-
-                var storageAdjustment = attachments?.Sum(a => a.Value.Size) ?? 0;
-                if (org.StorageBytesRemaining() < storageAdjustment)
-                {
-                    throw new BadRequestException("Not enough storage available for this organization.");
-                }
-
-                ValidateCipherLastKnownRevisionDateAsync(cipher, lastKnownRevisionDate);
+                await ValidateCipherCanBeShared(cipher, sharingUserId, organizationId, lastKnownRevisionDate);
 
                 // Sproc will not save this UserId on the cipher. It is used limit scope of the collectionIds.
                 cipher.UserId = sharingUserId;
@@ -597,22 +569,7 @@ namespace Bit.Core.Services
             var cipherIds = new List<Guid>();
             foreach (var (cipher, lastKnownRevisionDate) in cipherInfos)
             {
-                if (cipher.Id == default(Guid))
-                {
-                    throw new BadRequestException("All ciphers must already exist.");
-                }
-
-                if (cipher.OrganizationId.HasValue)
-                {
-                    throw new BadRequestException("One or more ciphers already belong to an organization.");
-                }
-
-                if (!cipher.UserId.HasValue || cipher.UserId.Value != sharingUserId)
-                {
-                    throw new BadRequestException("One or more ciphers do not belong to you.");
-                }
-
-                ValidateCipherLastKnownRevisionDateAsync(cipher, lastKnownRevisionDate);
+                await ValidateCipherCanBeShared(cipher, sharingUserId, organizationId, lastKnownRevisionDate);
 
                 cipher.UserId = null;
                 cipher.OrganizationId = organizationId;
@@ -645,7 +602,7 @@ namespace Bit.Core.Services
 
             if (!cipher.OrganizationId.HasValue)
             {
-                throw new BadRequestException("Cipher must belong to an organization.");
+                throw new BadRequestException("Cipher must belong to a team.");
             }
 
             cipher.RevisionDate = DateTime.UtcNow;
@@ -685,7 +642,7 @@ namespace Bit.Core.Services
             if (personalOwnershipPolicyCount > 0)
             {
                 throw new BadRequestException("You cannot import items into your personal vault because you are " +
-                    "a member of an organization which forbids it.");
+                    "a member of a team which forbids it.");
             }
 
             foreach (var cipher in ciphers)
@@ -744,7 +701,7 @@ namespace Bit.Core.Services
                 var collectionCount = await _collectionRepository.GetCountByOrganizationIdAsync(org.Id);
                 if (org.MaxCollections.Value < (collectionCount + collections.Count))
                 {
-                    throw new BadRequestException("This organization can only have a maximum of " +
+                    throw new BadRequestException("This team can only have a maximum of " +
                         $"{org.MaxCollections.Value} collections.");
                 }
             }
@@ -991,13 +948,57 @@ namespace Bit.Core.Services
                 var org = await _organizationRepository.GetByIdAsync(cipher.OrganizationId.Value);
                 if (!org.MaxStorageGb.HasValue)
                 {
-                    throw new BadRequestException("This organization cannot use attachments.");
+                    throw new BadRequestException("This team cannot use attachments.");
                 }
 
                 storageBytesRemaining = org.StorageBytesRemaining();
             }
 
             return storageBytesRemaining;
+        }
+
+        private async Task ValidateCipherCanBeShared(
+            Cipher cipher,
+            Guid sharingUserId,
+            Guid organizationId,
+            DateTime? lastKnownRevisionDate)
+        {
+            if (cipher.Id == default(Guid))
+            {
+                throw new BadRequestException("Cipher must already exist.");
+            }
+
+            if (cipher.OrganizationId.HasValue)
+            {
+                throw new BadRequestException("One or more ciphers already belong to an team.");
+            }
+
+            if (!cipher.UserId.HasValue || cipher.UserId.Value != sharingUserId)
+            {
+                throw new BadRequestException("One or more ciphers do not belong to you.");
+            }
+
+            var attachments = cipher.GetAttachments();
+            var hasAttachments = attachments?.Any() ?? false;
+            var org = await _organizationRepository.GetByIdAsync(organizationId);
+
+            if (org == null)
+            {
+                throw new BadRequestException("Could not find team.");
+            }
+
+            if (hasAttachments && !org.MaxStorageGb.HasValue)
+            {
+                throw new BadRequestException("This team cannot use attachments.");
+            }
+
+            var storageAdjustment = attachments?.Sum(a => a.Value.Size) ?? 0;
+            if (org.StorageBytesRemaining() < storageAdjustment)
+            {
+                throw new BadRequestException("Not enough storage available for this tean.");
+            }
+
+            ValidateCipherLastKnownRevisionDateAsync(cipher, lastKnownRevisionDate);
         }
     }
 }

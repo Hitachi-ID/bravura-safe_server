@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using AutoFixture.Xunit2;
 using Bit.Api.Controllers;
 using Bit.Core.Context;
+using Bit.Core.Entities;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
 using Bit.Core.Settings;
@@ -77,7 +77,7 @@ namespace Bit.Api.Test.Controllers
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => _sut.Leave(orgId.ToString()));
 
-            Assert.Contains("Your organization's Single Sign-On settings prevent you from leaving.",
+            Assert.Contains("Your team's Single Sign-On settings prevent you from leaving.",
                 exception.Message);
 
             await _organizationService.DidNotReceiveWithAnyArgs().DeleteUserAsync(default, default);

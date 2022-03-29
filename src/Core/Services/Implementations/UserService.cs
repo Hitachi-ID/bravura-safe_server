@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Bit.Core.Context;
+using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Exceptions;
 using Bit.Core.Models;
 using Bit.Core.Models.Business;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Settings;
 using Bit.Core.Utilities;
@@ -19,9 +20,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using File = System.IO.File;
-using U2fLib = U2F.Core.Crypto.U2F;
 
 namespace Bit.Core.Services
 {
@@ -215,7 +214,7 @@ namespace Bit.Core.Services
                 {
                     return IdentityResult.Failed(new IdentityError
                     {
-                        Description = "Cannot delete this user because it is the sole owner of at least one organization. Please delete these organizations or upgrade another user.",
+                        Description = "Cannot delete this user because it is the sole owner of at least one team. Please delete these teams or upgrade another user.",
                     });
                 }
             }
@@ -484,25 +483,6 @@ namespace Bit.Core.Services
                 return false;
             }
 
-            // Delete U2F token is this is a migrated WebAuthn token.
-            var entry = new TwoFactorProvider.WebAuthnData(provider.MetaData[keyName]);
-            if (entry?.Migrated ?? false)
-            {
-                var u2fProvider = user.GetTwoFactorProvider(TwoFactorProviderType.U2f);
-                if (u2fProvider?.MetaData?.ContainsKey(keyName) ?? false)
-                {
-                    u2fProvider.MetaData.Remove(keyName);
-                    if (u2fProvider.MetaData.Count > 0)
-                    {
-                        providers[TwoFactorProviderType.U2f] = u2fProvider;
-                    }
-                    else
-                    {
-                        providers.Remove(TwoFactorProviderType.U2f);
-                    }
-                }
-            }
-
             provider.MetaData.Remove(keyName);
             providers[TwoFactorProviderType.WebAuthn] = provider;
             user.SetTwoFactorProviders(providers);
@@ -694,7 +674,7 @@ namespace Bit.Core.Services
             if (_currentContext.Organizations.Any(u =>
                     u.Type is OrganizationUserType.Owner or OrganizationUserType.Admin))
             {
-                throw new BadRequestException("Cannot use Key Connector when admin or owner of an organization.");
+                throw new BadRequestException("Cannot use Key Connector when admin or owner of a team.");
             }
 
             return null;
@@ -706,7 +686,7 @@ namespace Bit.Core.Services
             var org = await _organizationRepository.GetByIdAsync(orgId);
             if (org == null || !org.UseResetPassword)
             {
-                throw new BadRequestException("Organization does not allow password reset.");
+                throw new BadRequestException("Team does not allow password reset.");
             }
 
             // Enterprise policy must be enabled
@@ -714,7 +694,7 @@ namespace Bit.Core.Services
                 await _policyRepository.GetByOrganizationIdTypeAsync(orgId, PolicyType.ResetPassword);
             if (resetPasswordPolicy == null || !resetPasswordPolicy.Enabled)
             {
-                throw new BadRequestException("Organization does not have the password reset policy enabled.");
+                throw new BadRequestException("Team does not have the password reset policy enabled.");
             }
 
             // Org User must be confirmed and have a ResetPasswordKey
@@ -723,7 +703,7 @@ namespace Bit.Core.Services
                 orgUser.OrganizationId != orgId || string.IsNullOrEmpty(orgUser.ResetPasswordKey) ||
                 !orgUser.UserId.HasValue)
             {
-                throw new BadRequestException("Organization User not valid");
+                throw new BadRequestException("Team User not valid");
             }
 
             // Calling User must be of higher/equal user type to reset user's password
@@ -902,13 +882,6 @@ namespace Bit.Core.Services
                 return;
             }
 
-            // Since the user can no longer directly manipulate U2F tokens, we should
-            // disable them when the user disables WebAuthn.
-            if (type == TwoFactorProviderType.WebAuthn)
-            {
-                providers.Remove(TwoFactorProviderType.U2f);
-            }
-
             providers.Remove(type);
             user.SetTwoFactorProviders(providers);
             await SaveUserAsync(user);
@@ -986,7 +959,8 @@ namespace Bit.Core.Services
 
                 var dir = $"{_globalSettings.LicenseDirectory}/user";
                 Directory.CreateDirectory(dir);
-                File.WriteAllText($"{dir}/{user.Id}.json", JsonConvert.SerializeObject(license, Formatting.Indented));
+                using var fs = File.OpenWrite(Path.Combine(dir, $"{user.Id}.json"));
+                await JsonSerializer.SerializeAsync(fs, license, JsonHelpers.Indented);
             }
             else
             {
@@ -1059,6 +1033,12 @@ namespace Bit.Core.Services
                 throw new InvalidOperationException("Licenses require self hosting.");
             }
 
+            if (license?.LicenseType != null && license.LicenseType != LicenseType.User)
+            {
+                throw new BadRequestException("Team licenses cannot be applied to a user. "
+                    + "Upload this license from the Team settings page.");
+            }
+
             if (license == null || !_licenseService.VerifyLicense(license))
             {
                 throw new BadRequestException("Invalid license.");
@@ -1071,7 +1051,8 @@ namespace Bit.Core.Services
 
             var dir = $"{_globalSettings.LicenseDirectory}/user";
             Directory.CreateDirectory(dir);
-            File.WriteAllText($"{dir}/{user.Id}.json", JsonConvert.SerializeObject(license, Formatting.Indented));
+            using var fs = File.OpenWrite(Path.Combine(dir, $"{user.Id}.json"));
+            await JsonSerializer.SerializeAsync(fs, license, JsonHelpers.Indented);
 
             user.Premium = license.Premium;
             user.RevisionDate = DateTime.UtcNow;

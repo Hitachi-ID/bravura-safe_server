@@ -18,7 +18,7 @@ namespace Bit.Core.Utilities.Crypto
 
         public static string SimpleEncrypt(string secretMessage, byte[] cryptKey, byte[] authKey, byte[] nonSecretPayload = null)
         {
-            if(string.IsNullOrEmpty(secretMessage))
+            if (string.IsNullOrEmpty(secretMessage))
             {
                 throw new ArgumentException("Secret Message Required!", "secretMessage");
             }
@@ -57,11 +57,11 @@ namespace Bit.Core.Utilities.Crypto
                 aes.GenerateIV();
                 iv = aes.IV;
 
-                using(var encrypter = aes.CreateEncryptor(cryptKey,iv))
-                using(var cipherStream = new MemoryStream()) 
+                using (var encrypter = aes.CreateEncryptor(cryptKey, iv))
+                using (var cipherStream = new MemoryStream())
                 {
-                    using(var cryptoStream = new CryptoStream(cipherStream, encrypter, CryptoStreamMode.Write))
-                    using(var binaryWriter = new BinaryWriter(cryptoStream))
+                    using (var cryptoStream = new CryptoStream(cipherStream, encrypter, CryptoStreamMode.Write))
+                    using (var binaryWriter = new BinaryWriter(cryptoStream))
                     {
                         // Encrypt data
                         binaryWriter.Write(secretMessage);
@@ -119,7 +119,7 @@ namespace Bit.Core.Utilities.Crypto
             if (encryptedMessage == null || encryptedMessage.Length == 0)
                 throw new ArgumentException("Encrypted message required");
 
-            using(var hmac = new HMACSHA256(authKey))
+            using (var hmac = new HMACSHA256(authKey))
             {
                 var sentTag = new byte[hmac.HashSize / 8];
 
@@ -140,7 +140,7 @@ namespace Bit.Core.Utilities.Crypto
                 if (compare != 0)
                     return null;
 
-                using(var aes = new AesManaged
+                using (var aes = new AesManaged
                 {
                     KeySize = KeyBitSize,
                     BlockSize = BlockBitSize,

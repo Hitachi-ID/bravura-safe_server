@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Exceptions;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Utilities;
 using Microsoft.AspNetCore.DataProtection;
@@ -37,11 +37,11 @@ namespace Bit.Core.Services
             _dataProtector = dataProtectionProvider.CreateProtector("OrganizationSponsorshipServiceDataProtector");
         }
 
-        public async Task<bool> ValidateRedemptionTokenAsync(string encryptedToken, string sponsoredUserEmail)
+        public async Task<(bool valid, OrganizationSponsorship sponsorship)> ValidateRedemptionTokenAsync(string encryptedToken, string sponsoredUserEmail)
         {
             if (!encryptedToken.StartsWith(TokenClearTextPrefix) || sponsoredUserEmail == null)
             {
-                return false;
+                return (false, null);
             }
 
             var decryptedToken = _dataProtector.Unprotect(encryptedToken[TokenClearTextPrefix.Length..]);
@@ -49,7 +49,7 @@ namespace Bit.Core.Services
 
             if (dataParts.Length != 3)
             {
-                return false;
+                return (false, null);
             }
 
             if (dataParts[0].Equals(FamiliesForEnterpriseTokenName))
@@ -57,7 +57,7 @@ namespace Bit.Core.Services
                 if (!Guid.TryParse(dataParts[1], out Guid sponsorshipId) ||
                     !Enum.TryParse<PlanSponsorshipType>(dataParts[2], true, out var sponsorshipType))
                 {
-                    return false;
+                    return (false, null);
                 }
 
                 var sponsorship = await _organizationSponsorshipRepository.GetByIdAsync(sponsorshipId);
@@ -65,13 +65,13 @@ namespace Bit.Core.Services
                     sponsorship.PlanSponsorshipType != sponsorshipType ||
                     sponsorship.OfferedToEmail != sponsoredUserEmail)
                 {
-                    return false;
+                    return (false, sponsorship);
                 }
 
-                return true;
+                return (true, sponsorship);
             }
 
-            return false;
+            return (false, null);
         }
 
         private string RedemptionToken(Guid sponsorshipId, PlanSponsorshipType sponsorshipType) =>
@@ -88,19 +88,19 @@ namespace Bit.Core.Services
                 sponsoringOrg == null ||
                 StaticStore.GetPlan(sponsoringOrg.PlanType).Product != requiredSponsoringProductType.Value)
             {
-                throw new BadRequestException("Specified Organization cannot sponsor other organizations.");
+                throw new BadRequestException("Specified Team cannot sponsor other teams.");
             }
 
             if (sponsoringOrgUser == null || sponsoringOrgUser.Status != OrganizationUserStatusType.Confirmed)
             {
-                throw new BadRequestException("Only confirmed users can sponsor other organizations.");
+                throw new BadRequestException("Only confirmed users can sponsor other teams.");
             }
 
             var existingOrgSponsorship = await _organizationSponsorshipRepository
                 .GetBySponsoringOrganizationUserIdAsync(sponsoringOrgUser.Id);
             if (existingOrgSponsorship?.SponsoredOrganizationId != null)
             {
-                throw new BadRequestException("Can only sponsor one organization per Organization User.");
+                throw new BadRequestException("Can only sponsor one team per Team User.");
             }
 
             var sponsorship = new OrganizationSponsorship
@@ -140,17 +140,17 @@ namespace Bit.Core.Services
         {
             if (sponsoringOrg == null)
             {
-                throw new BadRequestException("Cannot find the requested sponsoring organization.");
+                throw new BadRequestException("Cannot find the requested sponsoring team.");
             }
 
             if (sponsoringOrgUser == null || sponsoringOrgUser.Status != OrganizationUserStatusType.Confirmed)
             {
-                throw new BadRequestException("Only confirmed users can sponsor other organizations.");
+                throw new BadRequestException("Only confirmed users can sponsor other teams.");
             }
 
             if (sponsorship == null || sponsorship.OfferedToEmail == null)
             {
-                throw new BadRequestException("Cannot find an outstanding sponsorship offer for this organization.");
+                throw new BadRequestException("Cannot find an outstanding sponsorship offer for this team.");
             }
 
             await SendSponsorshipOfferAsync(sponsorship, sponsoringUserEmail);
@@ -177,7 +177,7 @@ namespace Bit.Core.Services
                 .GetBySponsoredOrganizationIdAsync(sponsoredOrganization.Id);
             if (existingOrgSponsorship != null)
             {
-                throw new BadRequestException("Cannot redeem a sponsorship offer for an organization that is already sponsored. Revoke existing sponsorship first.");
+                throw new BadRequestException("Cannot redeem a sponsorship offer for a team that is already sponsored. Revoke existing sponsorship first.");
             }
 
             if (sponsorship.PlanSponsorshipType == null)
@@ -191,7 +191,7 @@ namespace Bit.Core.Services
                 sponsoredOrganization == null ||
                 StaticStore.GetPlan(sponsoredOrganization.PlanType).Product != requiredSponsoredProductType.Value)
             {
-                throw new BadRequestException("Can only redeem sponsorship offer on families organizations.");
+                throw new BadRequestException("Can only redeem sponsorship offer on families teams.");
             }
 
             await _paymentService.SponsorOrganizationAsync(sponsoredOrganization, sponsorship);
@@ -248,7 +248,7 @@ namespace Bit.Core.Services
         {
             if (sponsorship == null)
             {
-                throw new BadRequestException("You are not currently sponsoring an organization.");
+                throw new BadRequestException("You are not currently sponsoring a team.");
             }
 
             if (sponsorship.SponsoredOrganizationId == null)
@@ -259,7 +259,7 @@ namespace Bit.Core.Services
 
             if (sponsoredOrg == null)
             {
-                throw new BadRequestException("Unable to find the sponsored Organization.");
+                throw new BadRequestException("Unable to find the sponsored Team.");
             }
 
             await DoRemoveSponsorshipAsync(sponsoredOrg, sponsorship);
@@ -269,12 +269,12 @@ namespace Bit.Core.Services
         {
             if (sponsorship == null || sponsorship.SponsoredOrganizationId == null)
             {
-                throw new BadRequestException("The requested organization is not currently being sponsored.");
+                throw new BadRequestException("The requested team is not currently being sponsored.");
             }
 
             if (sponsoredOrg == null)
             {
-                throw new BadRequestException("Unable to find the sponsored Organization.");
+                throw new BadRequestException("Unable to find the sponsored Team.");
             }
 
             await DoRemoveSponsorshipAsync(sponsoredOrg, sponsorship);

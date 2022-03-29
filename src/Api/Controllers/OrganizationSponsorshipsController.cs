@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Bit.Api.Models.Request.Organizations;
 using Bit.Core.Context;
+using Bit.Core.Entities;
 using Bit.Core.Exceptions;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
 using Bit.Core.Utilities;
@@ -68,26 +68,27 @@ namespace Bit.Api.Controllers
         [SelfHosted(NotSelfHostedOnly = true)]
         public async Task<bool> PreValidateSponsorshipToken([FromQuery] string sponsorshipToken)
         {
-            return await _organizationsSponsorshipService.ValidateRedemptionTokenAsync(sponsorshipToken, (await CurrentUser).Email);
+            return (await _organizationsSponsorshipService.ValidateRedemptionTokenAsync(sponsorshipToken, (await CurrentUser).Email)).valid;
         }
 
         [HttpPost("redeem")]
         [SelfHosted(NotSelfHostedOnly = true)]
         public async Task RedeemSponsorship([FromQuery] string sponsorshipToken, [FromBody] OrganizationSponsorshipRedeemRequestModel model)
         {
-            if (!await _organizationsSponsorshipService.ValidateRedemptionTokenAsync(sponsorshipToken, (await CurrentUser).Email))
+            var (valid, sponsorship) = await _organizationsSponsorshipService.ValidateRedemptionTokenAsync(sponsorshipToken, (await CurrentUser).Email);
+
+            if (!valid)
             {
                 throw new BadRequestException("Failed to parse sponsorship token.");
             }
 
             if (!await _currentContext.OrganizationOwner(model.SponsoredOrganizationId))
             {
-                throw new BadRequestException("Can only redeem sponsorship for an organization you own.");
+                throw new BadRequestException("Can only redeem sponsorship for a team you own.");
             }
 
             await _organizationsSponsorshipService.SetUpSponsorshipAsync(
-                await _organizationSponsorshipRepository
-                    .GetByOfferedToEmailAsync((await CurrentUser).Email),
+                sponsorship,
                 // Check org to sponsor's product type
                 await _organizationRepository.GetByIdAsync(model.SponsoredOrganizationId));
         }
@@ -121,7 +122,7 @@ namespace Bit.Api.Controllers
 
             if (!await _currentContext.OrganizationOwner(sponsoredOrgId))
             {
-                throw new BadRequestException("Only the owner of an organization can remove sponsorship.");
+                throw new BadRequestException("Only the owner of a team can remove sponsorship.");
             }
 
             var existingOrgSponsorship = await _organizationSponsorshipRepository

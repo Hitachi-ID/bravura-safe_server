@@ -72,6 +72,15 @@ server {
     location = / {
       proxy_pass http://web:5000/;
 
+      # Add headers from parent (any add_header in nested blocks clears inherited headers)
+{{#if Ssl}}
+      include /etc/nginx/security-headers-ssl.conf;
+{{/if}}
+      include /etc/nginx/security-headers.conf;
+      add_header Content-Security-Policy "{{{ContentSecurityPolicy}}}";
+      add_header X-Frame-Options SAMEORIGIN;
+      add_header X-Robots-Tag "noindex, nofollow";
+
       # Set a predictable cache length for the Angular root to streamline pushing updates.
       add_header Cache-Control max-age=1800;
     }
@@ -83,6 +92,15 @@ server {
     location ~* ^(.+\.[a-f0-9]+\.(css|eot|gif|ico|jpe?g|js|otf|png|svg|ttf|woff|woff2?))$ {
       proxy_pass http://web:5000/$1;
 
+      # Add headers from parent (any add_header in nested blocks clears inherited headers)
+{{#if Ssl}}
+      include /etc/nginx/security-headers-ssl.conf;
+{{/if}}
+      include /etc/nginx/security-headers.conf;
+      add_header Content-Security-Policy "{{{ContentSecurityPolicy}}}";
+      add_header X-Frame-Options SAMEORIGIN;
+      add_header X-Robots-Tag "noindex, nofollow";
+
       # Cache hashed static resources for up to a year. Resources with hashes
       # in their file names don't need to check for updates because the hash
       # will be different whenever the file contents change.
@@ -92,6 +110,15 @@ server {
     # Matches all other static resources
     location ~* ^(.+\.(css|eot|gif|ico|jpe?g|js|otf|png|svg|ttf|woff|woff2?))$ {
       proxy_pass http://web:5000/$1;
+
+      # Add headers from parent (any add_header in nested blocks clears inherited headers)
+{{#if Ssl}}
+      include /etc/nginx/security-headers-ssl.conf;
+{{/if}}
+      include /etc/nginx/security-headers.conf;
+      add_header Content-Security-Policy "{{{ContentSecurityPolicy}}}";
+      add_header X-Frame-Options SAMEORIGIN;
+      add_header X-Robots-Tag "noindex, nofollow";
 
       # Set a predictable short cache length for these non-cache-busted static
       # resources like fonts.
@@ -116,10 +143,6 @@ server {
 
   location = /duo-connector.html {
     proxy_pass http://web:5000/duo-connector.html;
-  }
-
-  location = /u2f-connector.html {
-    proxy_pass http://web:5000/u2f-connector.html;
   }
 
   location = /webauthn-connector.html {

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Bit.Core.Context;
+using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.Business;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
 using Bit.Core.Settings;
@@ -19,9 +19,9 @@ using Bit.Test.Common.AutoFixture;
 using Bit.Test.Common.AutoFixture.Attributes;
 using NSubstitute;
 using Xunit;
-using Organization = Bit.Core.Models.Table.Organization;
-using OrganizationUser = Bit.Core.Models.Table.OrganizationUser;
-using Policy = Bit.Core.Models.Table.Policy;
+using Organization = Bit.Core.Entities.Organization;
+using OrganizationUser = Bit.Core.Entities.OrganizationUser;
+using Policy = Bit.Core.Entities.Policy;
 
 namespace Bit.Core.Test.Services
 {
@@ -213,7 +213,7 @@ namespace Bit.Core.Test.Services
             sutProvider.GetDependency<ICurrentContext>().ManageUsers(organization.Id).Returns(true);
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.InviteUsersAsync(organization.Id, invitor.UserId, new (OrganizationUserInvite, string)[] { (invite, null) }));
-            Assert.Contains("Organization must have at least one confirmed owner.", exception.Message);
+            Assert.Contains("Team must have at least one confirmed owner.", exception.Message);
         }
 
         [Theory]
@@ -467,7 +467,7 @@ namespace Bit.Core.Test.Services
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.DeleteUserAsync(deletingUser.OrganizationId, organizationUser.Id, null));
-            Assert.Contains("Organization must have at least one confirmed owner.", exception.Message);
+            Assert.Contains("Team must have at least one confirmed owner.", exception.Message);
         }
 
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
@@ -552,7 +552,7 @@ namespace Bit.Core.Test.Services
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.DeleteUsersAsync(orgUser.OrganizationId, organizationUserIds, null));
-            Assert.Contains("Organization must have at least one confirmed owner.", exception.Message);
+            Assert.Contains("Team must have at least one confirmed owner.", exception.Message);
         }
 
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
@@ -629,7 +629,7 @@ namespace Bit.Core.Test.Services
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.ConfirmUserAsync(orgUser.OrganizationId, orgUser.Id, key, confirmingUser.Id, userService));
-            Assert.Contains("User can only be an admin of one free organization.", exception.Message);
+            Assert.Contains("User can only be an admin of one free team.", exception.Message);
         }
 
         [Theory]
@@ -705,7 +705,7 @@ namespace Bit.Core.Test.Services
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.ConfirmUserAsync(orgUser.OrganizationId, orgUser.Id, key, confirmingUser.Id, userService));
-            Assert.Contains("User is a member of another organization.", exception.Message);
+            Assert.Contains("User is a member of another team.", exception.Message);
         }
 
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
@@ -795,7 +795,7 @@ namespace Bit.Core.Test.Services
             var result = await sutProvider.Sut.ConfirmUsersAsync(confirmingUser.OrganizationId, keys, confirmingUser.Id, userService);
             Assert.Contains("", result[0].Item2);
             Assert.Contains("User does not have two-step login enabled.", result[1].Item2);
-            Assert.Contains("User is a member of another organization.", result[2].Item2);
+            Assert.Contains("User is a member of another team.", result[2].Item2);
         }
 
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
@@ -821,7 +821,7 @@ namespace Bit.Core.Test.Services
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.UpdateOrganizationKeysAsync(org.Id, publicKey, privateKey));
-            Assert.Contains("Organization Keys already exist", exception.Message);
+            Assert.Contains("Team Keys already exist", exception.Message);
         }
 
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
@@ -929,7 +929,7 @@ namespace Bit.Core.Test.Services
             var exception = await Assert.ThrowsAsync<BadRequestException>(
                 () => sutProvider.Sut.DeleteAsync(organization));
 
-            Assert.Contains("You cannot delete an Organization that is using Key Connector.", exception.Message);
+            Assert.Contains("You cannot delete a Team that is using Key Connector.", exception.Message);
 
             await organizationRepository.DidNotReceiveWithAnyArgs().DeleteAsync(default);
             await applicationCacheService.DidNotReceiveWithAnyArgs().DeleteOrganizationAbilityAsync(default);

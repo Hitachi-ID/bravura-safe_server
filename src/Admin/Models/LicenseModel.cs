@@ -8,7 +8,7 @@ namespace Bit.Admin.Models
     {
         [Display(Name = "User Id")]
         public Guid? UserId { get; set; }
-        [Display(Name = "Organization Id")]
+        [Display(Name = "Team Id")]
         public Guid? OrganizationId { get; set; }
         [Display(Name = "Installation Id")]
         public Guid? InstallationId { get; set; }
@@ -20,17 +20,17 @@ namespace Bit.Admin.Models
         {
             if (UserId.HasValue && OrganizationId.HasValue)
             {
-                yield return new ValidationResult("Use either User Id or Organization Id. Not both.");
+                yield return new ValidationResult("Use either User Id or Team Id. Not both.");
             }
 
             if (!UserId.HasValue && !OrganizationId.HasValue)
             {
-                yield return new ValidationResult("User Id or Organization Id is required.");
+                yield return new ValidationResult("User Id or Team Id is required.");
             }
 
             if (OrganizationId.HasValue && !InstallationId.HasValue)
             {
-                yield return new ValidationResult("Installation Id is required for organization licenses.");
+                yield return new ValidationResult("Installation Id is required for team licenses.");
             }
         }
     }

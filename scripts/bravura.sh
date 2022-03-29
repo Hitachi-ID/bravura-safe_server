@@ -4,16 +4,12 @@ set -e
 cat << "EOF"
 HITACHI-ID
 Bravura Safe
-
 EOF
 
 cat << EOF
 Open source password management solutions
 ===================================================
-
 EOF
-
-# Setup
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SCRIPT_NAME=$(basename "$0")
@@ -24,17 +20,28 @@ then
     OUTPUT=$2
 fi
 
+if command -v docker-compose &> /dev/null
+then
+    dccmd='docker-compose'
+else
+    dccmd='docker compose'
+fi
+
 SCRIPTS_DIR="$OUTPUT/scripts"
 GITHUB_BASE_URL="https://gitlab.hitachi-id.com/bravura-vault/server"
 
 # Please do not create pull requests modifying the version numbers.
 COREVERSION="latest"
 WEBVERSION="latest"
-KEYCONNECTORVERSION="1.0.0"
+KEYCONNECTORVERSION="1.0.1"
 
 echo "bravura.sh version $COREVERSION"
 docker --version
-docker-compose --version
+if [[ "$dccmd" == "docker compose" ]]; then
+    $dccmd version
+else
+    $dccmd --version
+fi
 
 echo ""
 
@@ -93,6 +100,7 @@ updatedb
 updaterun
 updateself
 updateconf
+uninstall
 renewcert
 rebuild
 help
@@ -146,6 +154,10 @@ case $1 in
         # Until we have a published, public place to stash this, manually retrieve bravura.sh
         # downloadSelf && echo "Updated self." && exit
         echo "Please manually retrieve latest file." && exit
+        ;;
+    "uninstall")
+        checkOutputDirExists
+        $SCRIPTS_DIR/run.sh uninstall $OUTPUT
         ;;
     "help")
         listCommands

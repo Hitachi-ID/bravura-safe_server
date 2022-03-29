@@ -5,17 +5,16 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Bit.Core.Context;
+using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.Business;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Settings;
 using Bit.Core.Utilities;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Stripe;
 
 namespace Bit.Core.Services
@@ -178,7 +177,7 @@ namespace Bit.Core.Services
 
             if (existingPlan.Type == newPlan.Type)
             {
-                throw new BadRequestException("Organization is already on this plan.");
+                throw new BadRequestException("Team is already on this plan.");
             }
 
             if (existingPlan.UpgradeSortOrder >= newPlan.UpgradeSortOrder)
@@ -200,7 +199,7 @@ namespace Bit.Core.Services
                 var userCount = await _organizationUserRepository.GetCountByOrganizationIdAsync(organization.Id);
                 if (userCount > newPlanSeats)
                 {
-                    throw new BadRequestException($"Your organization currently has {userCount} seats filled. " +
+                    throw new BadRequestException($"Your team currently has {userCount} seats filled. " +
                         $"Your new plan only has ({newPlanSeats}) seats. Remove some users.");
                 }
             }
@@ -211,7 +210,7 @@ namespace Bit.Core.Services
                 var collectionCount = await _collectionRepository.GetCountByOrganizationIdAsync(organization.Id);
                 if (collectionCount > newPlan.MaxCollections.Value)
                 {
-                    throw new BadRequestException($"Your organization currently has {collectionCount} collections. " +
+                    throw new BadRequestException($"Your team currently has {collectionCount} collections. " +
                         $"Your new plan allows for a maximum of ({newPlan.MaxCollections.Value}) collections. " +
                         "Remove some collections.");
                 }
@@ -436,7 +435,7 @@ namespace Bit.Core.Services
         {
             if (organization.Seats == null)
             {
-                throw new BadRequestException("Organization has no seat limit, no need to adjust seats");
+                throw new BadRequestException("Team has no seat limit, no need to adjust seats");
             }
 
             if (string.IsNullOrWhiteSpace(organization.GatewayCustomerId))
@@ -474,7 +473,7 @@ namespace Bit.Core.Services
             var additionalSeats = newSeatTotal - plan.BaseSeats;
             if (plan.MaxAdditionalSeats.HasValue && additionalSeats > plan.MaxAdditionalSeats.Value)
             {
-                throw new BadRequestException($"Organization plan allows a maximum of " +
+                throw new BadRequestException($"Team plan allows a maximum of " +
                     $"{plan.MaxAdditionalSeats.Value} additional seats.");
             }
 
@@ -483,7 +482,7 @@ namespace Bit.Core.Services
                 var userCount = await _organizationUserRepository.GetCountByOrganizationIdAsync(organization.Id);
                 if (userCount > newSeatTotal)
                 {
-                    throw new BadRequestException($"Your organization currently has {userCount} seats filled. " +
+                    throw new BadRequestException($"Your team currently has {userCount} seats filled. " +
                         $"Your new plan only has ({newSeatTotal}) seats. Remove some users.");
                 }
             }
@@ -513,7 +512,7 @@ namespace Bit.Core.Services
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error encountered notifying organization owners of seat limit reached.");
+                    _logger.LogError(e, "Error encountered notifying team owners of seat limit reached.");
                 }
             }
 
@@ -624,7 +623,7 @@ namespace Bit.Core.Services
                     await _organizationUserRepository.GetCountByFreeOrganizationAdminUserAsync(signup.Owner.Id);
                 if (adminCount > 0)
                 {
-                    throw new BadRequestException("You can only be an admin of one free organization.");
+                    throw new BadRequestException("You can only be an admin of one free team.");
                 }
             }
 
@@ -646,8 +645,8 @@ namespace Bit.Core.Services
             var singleOrgPolicyCount = await _policyRepository.GetCountByTypeApplicableToUserIdAsync(ownerId, PolicyType.SingleOrg);
             if (singleOrgPolicyCount > 0)
             {
-                throw new BadRequestException("You may not create an organization. You belong to an organization " +
-                    "which has a policy that prohibits you from being a member of any other organization.");
+                throw new BadRequestException("You may not create a team. You belong to a team " +
+                    "which has a policy that prohibits you from being a member of any other team.");
             }
         }
 
@@ -655,6 +654,12 @@ namespace Bit.Core.Services
             OrganizationLicense license, User owner, string ownerKey, string collectionName, string publicKey,
             string privateKey)
         {
+            if (license?.LicenseType != null && license.LicenseType != LicenseType.Organization)
+            {
+                throw new BadRequestException("Premium licenses cannot be applied to a team. "
+                                              + "Upload this license from your personal account settings page.");
+            }
+
             if (license == null || !_licensingService.VerifyLicense(license))
             {
                 throw new BadRequestException("Invalid license.");
@@ -663,7 +668,7 @@ namespace Bit.Core.Services
             if (!license.CanUse(_globalSettings))
             {
                 throw new BadRequestException("Invalid license. Make sure your license allows for on-premise " +
-                    "hosting of organizations and that the installation id matches your current installation.");
+                    "hosting of teams and that the installation id matches your current installation.");
             }
 
             if (license.PlanType != PlanType.Custom &&
@@ -675,7 +680,7 @@ namespace Bit.Core.Services
             var enabledOrgs = await _organizationRepository.GetManyByEnabledAsync();
             if (enabledOrgs.Any(o => o.LicenseKey.Equals(license.LicenseKey)))
             {
-                throw new BadRequestException("License is already in use by another organization.");
+                throw new BadRequestException("License is already in use by another team.");
             }
 
             await ValidateSignUpPoliciesAsync(owner.Id);
@@ -720,8 +725,8 @@ namespace Bit.Core.Services
 
             var dir = $"{_globalSettings.LicenseDirectory}/organization";
             Directory.CreateDirectory(dir);
-            System.IO.File.WriteAllText($"{dir}/{organization.Id}.json",
-                JsonConvert.SerializeObject(license, Formatting.Indented));
+            using var fs = System.IO.File.OpenWrite(Path.Combine(dir, $"{organization.Id}.json"));
+            await JsonSerializer.SerializeAsync(fs, license, JsonHelpers.Indented);
             return result;
         }
 
@@ -800,6 +805,12 @@ namespace Bit.Core.Services
                 throw new InvalidOperationException("Licenses require self hosting.");
             }
 
+            if (license?.LicenseType != null && license.LicenseType != LicenseType.Organization)
+            {
+                throw new BadRequestException("Premium licenses cannot be applied to a team. "
+                                              + "Upload this license from your personal account settings page.");
+            }
+
             if (license == null || !_licensingService.VerifyLicense(license))
             {
                 throw new BadRequestException("Invalid license.");
@@ -808,13 +819,13 @@ namespace Bit.Core.Services
             if (!license.CanUse(_globalSettings))
             {
                 throw new BadRequestException("Invalid license. Make sure your license allows for on-premise " +
-                    "hosting of organizations and that the installation id matches your current installation.");
+                    "hosting of teams and that the installation id matches your current installation.");
             }
 
             var enabledOrgs = await _organizationRepository.GetManyByEnabledAsync();
             if (enabledOrgs.Any(o => o.LicenseKey.Equals(license.LicenseKey) && o.Id != organizationId))
             {
-                throw new BadRequestException("License is already in use by another organization.");
+                throw new BadRequestException("License is already in use by another team.");
             }
 
             if (license.Seats.HasValue &&
@@ -823,7 +834,7 @@ namespace Bit.Core.Services
                 var userCount = await _organizationUserRepository.GetCountByOrganizationIdAsync(organization.Id);
                 if (userCount > license.Seats.Value)
                 {
-                    throw new BadRequestException($"Your organization currently has {userCount} seats filled. " +
+                    throw new BadRequestException($"Your team currently has {userCount} seats filled. " +
                         $"Your new license only has ({ license.Seats.Value}) seats. Remove some users.");
                 }
             }
@@ -834,7 +845,7 @@ namespace Bit.Core.Services
                 var collectionCount = await _collectionRepository.GetCountByOrganizationIdAsync(organization.Id);
                 if (collectionCount > license.MaxCollections.Value)
                 {
-                    throw new BadRequestException($"Your organization currently has {collectionCount} collections. " +
+                    throw new BadRequestException($"Your team currently has {collectionCount} collections. " +
                         $"Your new license allows for a maximum of ({license.MaxCollections.Value}) collections. " +
                         "Remove some collections.");
                 }
@@ -845,7 +856,7 @@ namespace Bit.Core.Services
                 var groups = await _groupRepository.GetManyByOrganizationIdAsync(organization.Id);
                 if (groups.Count > 0)
                 {
-                    throw new BadRequestException($"Your organization currently has {groups.Count} groups. " +
+                    throw new BadRequestException($"Your team currently has {groups.Count} groups. " +
                         $"Your new license does not allow for the use of groups. Remove all groups.");
                 }
             }
@@ -855,7 +866,7 @@ namespace Bit.Core.Services
                 var policies = await _policyRepository.GetManyByOrganizationIdAsync(organization.Id);
                 if (policies.Any(p => p.Enabled))
                 {
-                    throw new BadRequestException($"Your organization currently has {policies.Count} enabled " +
+                    throw new BadRequestException($"Your team currently has {policies.Count} enabled " +
                         $"policies. Your new license does not allow for the use of policies. Disable all policies.");
                 }
             }
@@ -865,7 +876,7 @@ namespace Bit.Core.Services
                 var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(organization.Id);
                 if (ssoConfig != null && ssoConfig.Enabled)
                 {
-                    throw new BadRequestException($"Your organization currently has a SSO configuration. " +
+                    throw new BadRequestException($"Your team currently has a SSO configuration. " +
                         $"Your new license does not allow for the use of SSO. Disable your SSO configuration.");
                 }
             }
@@ -875,7 +886,7 @@ namespace Bit.Core.Services
                 var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(organization.Id);
                 if (ssoConfig != null && ssoConfig.GetData().KeyConnectorEnabled)
                 {
-                    throw new BadRequestException($"Your organization currently has Key Connector enabled. " +
+                    throw new BadRequestException($"Your team currently has Key Connector enabled. " +
                         $"Your new license does not allow for the use of Key Connector. Disable your Key Connector.");
                 }
             }
@@ -893,8 +904,8 @@ namespace Bit.Core.Services
 
             var dir = $"{_globalSettings.LicenseDirectory}/organization";
             Directory.CreateDirectory(dir);
-            System.IO.File.WriteAllText($"{dir}/{organization.Id}.json",
-                JsonConvert.SerializeObject(license, Formatting.Indented));
+            using var fs = System.IO.File.OpenWrite(Path.Combine(dir, $"{organization.Id}.json"));
+            await JsonSerializer.SerializeAsync(fs, license, JsonHelpers.Indented);
 
             organization.Name = license.Name;
             organization.BusinessName = license.BusinessName;
@@ -1002,7 +1013,7 @@ namespace Bit.Core.Services
                 var orgById = await _organizationRepository.GetByIdentifierAsync(organization.Identifier);
                 if (orgById != null && orgById.Id != organization.Id)
                 {
-                    throw new BadRequestException("Identifier already in use by another organization.");
+                    throw new BadRequestException("Identifier already in use by another team.");
                 }
             }
 
@@ -1023,12 +1034,12 @@ namespace Bit.Core.Services
         {
             if (!type.ToString().Contains("Organization"))
             {
-                throw new ArgumentException("Not an organization provider type.");
+                throw new ArgumentException("Not a team provider type.");
             }
 
             if (!organization.Use2fa)
             {
-                throw new BadRequestException("Organization cannot use 2FA.");
+                throw new BadRequestException("Team cannot use 2FA.");
             }
 
             var providers = organization.GetTwoFactorProviders();
@@ -1046,7 +1057,7 @@ namespace Bit.Core.Services
         {
             if (!type.ToString().Contains("Organization"))
             {
-                throw new ArgumentException("Not an organization provider type.");
+                throw new ArgumentException("Not a team provider type.");
             }
 
             var providers = organization.GetTwoFactorProviders();
@@ -1102,7 +1113,7 @@ namespace Bit.Core.Services
             var invitedAreAllOwners = invites.All(i => i.invite.Type == OrganizationUserType.Owner);
             if (!invitedAreAllOwners && !await HasConfirmedOwnersExceptAsync(organizationId, new Guid[] { }))
             {
-                throw new BadRequestException("Organization must have at least one confirmed owner.");
+                throw new BadRequestException("Team must have at least one confirmed owner.");
             }
 
 
@@ -1139,10 +1150,7 @@ namespace Bit.Core.Services
 
                         if (invite.Permissions != null)
                         {
-                            orgUser.Permissions = System.Text.Json.JsonSerializer.Serialize(invite.Permissions, new JsonSerializerOptions
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                            });
+                            orgUser.Permissions = JsonSerializer.Serialize(invite.Permissions, JsonHelpers.CamelCase);
                         }
 
                         if (!orgUser.AccessAll && invite.Collections.Any())
@@ -1180,7 +1188,7 @@ namespace Bit.Core.Services
 
                 if (!await _currentContext.ManageUsers(organization.Id))
                 {
-                    throw new BadRequestException("Cannot add seats. Cannot manage organization users.");
+                    throw new BadRequestException("Cannot add seats. Cannot manage team users.");
                 }
 
                 await AutoAddSeatsAsync(organization, newSeatsRequired, prorationDate);
@@ -1297,9 +1305,9 @@ namespace Bit.Core.Services
             {
                 if (orgUser.Status == OrganizationUserStatusType.Accepted)
                 {
-                    throw new BadRequestException("Invitation already accepted. You will receive an email when your organization membership is confirmed.");
+                    throw new BadRequestException("Invitation already accepted. You will receive an email when your team membership is confirmed.");
                 }
-                throw new BadRequestException("You are already part of this organization.");
+                throw new BadRequestException("You are already part of this team.");
             }
 
             if (string.IsNullOrWhiteSpace(orgUser.Email) ||
@@ -1316,14 +1324,14 @@ namespace Bit.Core.Services
             var org = await _organizationRepository.GetByIdentifierAsync(orgIdentifier);
             if (org == null)
             {
-                throw new BadRequestException("Organization invalid.");
+                throw new BadRequestException("team invalid.");
             }
 
             var usersOrgs = await _organizationUserRepository.GetManyByUserAsync(user.Id);
             var orgUser = usersOrgs.FirstOrDefault(u => u.OrganizationId == org.Id);
             if (orgUser == null)
             {
-                throw new BadRequestException("User not found within organization.");
+                throw new BadRequestException("User not found within team.");
             }
 
             return await AcceptUserAsync(orgUser, user, userService);
@@ -1346,7 +1354,7 @@ namespace Bit.Core.Services
                         user.Id);
                     if (adminCount > 0)
                     {
-                        throw new BadRequestException("You can only be an admin of one free organization.");
+                        throw new BadRequestException("You can only be an admin of one free team.");
                     }
                 }
             }
@@ -1359,8 +1367,8 @@ namespace Bit.Core.Services
 
             if (hasOtherOrgs && invitedSingleOrgPolicies.Any(p => p.OrganizationId == orgUser.OrganizationId))
             {
-                throw new BadRequestException("You may not join this organization until you leave or remove " +
-                    "all other organizations.");
+                throw new BadRequestException("You may not join this team until you leave or remove " +
+                    "all other teams.");
             }
 
             // Enforce Single Organization Policy of other organizations user is a member of
@@ -1368,8 +1376,8 @@ namespace Bit.Core.Services
                 PolicyType.SingleOrg);
             if (singleOrgPolicyCount > 0)
             {
-                throw new BadRequestException("You cannot join this organization because you are a member of " +
-                    "another organization which forbids it");
+                throw new BadRequestException("You cannot join this team because you are a member of " +
+                    "another team which forbids it");
             }
 
             // Enforce Two Factor Authentication Policy of organization user is trying to join
@@ -1379,7 +1387,7 @@ namespace Bit.Core.Services
                     PolicyType.TwoFactorAuthentication, OrganizationUserStatusType.Invited);
                 if (invitedTwoFactorPolicies.Any(p => p.OrganizationId == orgUser.OrganizationId))
                 {
-                    throw new BadRequestException("You cannot join this organization until you enable " +
+                    throw new BadRequestException("You cannot join this team until you enable " +
                         "two-step login on your user account.");
                 }
             }
@@ -1460,7 +1468,7 @@ namespace Bit.Core.Services
                         var adminCount = await _organizationUserRepository.GetCountByFreeOrganizationAdminUserAsync(user.Id);
                         if (adminCount > 0)
                         {
-                            throw new BadRequestException("User can only be an admin of one free organization.");
+                            throw new BadRequestException("User can only be an admin of one free team.");
                         }
                     }
 
@@ -1553,7 +1561,7 @@ namespace Bit.Core.Services
             {
                 if (userOrgs.Any(ou => ou.OrganizationId != organizationId && ou.Status != OrganizationUserStatusType.Invited))
                 {
-                    throw new BadRequestException("User is a member of another organization.");
+                    throw new BadRequestException("User is a member of another team.");
                 }
             }
         }
@@ -1580,7 +1588,7 @@ namespace Bit.Core.Services
             if (user.Type != OrganizationUserType.Owner &&
                 !await HasConfirmedOwnersExceptAsync(user.OrganizationId, new[] { user.Id }))
             {
-                throw new BadRequestException("Organization must have at least one confirmed owner.");
+                throw new BadRequestException("Team must have at least one confirmed owner.");
             }
 
             if (user.AccessAll)
@@ -1613,7 +1621,7 @@ namespace Bit.Core.Services
 
             if (!await HasConfirmedOwnersExceptAsync(organizationId, new[] { organizationUserId }))
             {
-                throw new BadRequestException("Organization must have at least one confirmed owner.");
+                throw new BadRequestException("Team must have at least one confirmed owner.");
             }
 
             await _organizationUserRepository.DeleteAsync(orgUser);
@@ -1635,7 +1643,7 @@ namespace Bit.Core.Services
 
             if (!await HasConfirmedOwnersExceptAsync(organizationId, new[] { orgUser.Id }))
             {
-                throw new BadRequestException("Organization must have at least one confirmed owner.");
+                throw new BadRequestException("Team must have at least one confirmed owner.");
             }
 
             await _organizationUserRepository.DeleteAsync(orgUser);
@@ -1662,7 +1670,7 @@ namespace Bit.Core.Services
 
             if (!await HasConfirmedOwnersExceptAsync(organizationId, organizationUsersId))
             {
-                throw new BadRequestException("Organization must have at least one confirmed owner.");
+                throw new BadRequestException("Team must have at least one confirmed owner.");
             }
 
             var deletingUserIsOwner = false;
@@ -1744,7 +1752,7 @@ namespace Bit.Core.Services
             var org = await _organizationRepository.GetByIdAsync(organizationId);
             if (org == null || !org.UseResetPassword)
             {
-                throw new BadRequestException("Organization does not allow password reset enrollment.");
+                throw new BadRequestException("Team does not allow password reset enrollment.");
             }
 
             // Make sure the organization has the policy enabled
@@ -1752,13 +1760,13 @@ namespace Bit.Core.Services
                 await _policyRepository.GetByOrganizationIdTypeAsync(organizationId, PolicyType.ResetPassword);
             if (resetPasswordPolicy == null || !resetPasswordPolicy.Enabled)
             {
-                throw new BadRequestException("Organization does not have the password reset policy enabled.");
+                throw new BadRequestException("Team does not have the password reset policy enabled.");
             }
 
             // Block the user from withdrawal if auto enrollment is enabled
             if (resetPasswordKey == null && resetPasswordPolicy.Data != null)
             {
-                var data = JsonConvert.DeserializeObject<ResetPasswordDataModel>(resetPasswordPolicy.Data);
+                var data = JsonSerializer.Deserialize<ResetPasswordDataModel>(resetPasswordPolicy.Data, JsonHelpers.IgnoreCase);
 
                 if (data?.AutoEnrollEnabled ?? false)
                 {
@@ -1831,7 +1839,7 @@ namespace Bit.Core.Services
 
             if (!organization.UseDirectory)
             {
-                throw new BadRequestException("Organization cannot use directory syncing.");
+                throw new BadRequestException("Team cannot use directory syncing.");
             }
 
             var newUsersSet = new HashSet<string>(newUsers?.Select(u => u.ExternalId) ?? new List<string>());
@@ -1941,7 +1949,7 @@ namespace Bit.Core.Services
             {
                 if (!organization.UseGroups)
                 {
-                    throw new BadRequestException("Organization cannot use groups.");
+                    throw new BadRequestException("Team cannot use groups.");
                 }
 
                 var groupsDict = groups.ToDictionary(g => g.Group.ExternalId);
@@ -2027,7 +2035,7 @@ namespace Bit.Core.Services
             var org = await _organizationRepository.GetByIdAsync(orgId);
             if (org.PublicKey != null && org.PrivateKey != null)
             {
-                throw new BadRequestException("Organization Keys already exist");
+                throw new BadRequestException("Team Keys already exist");
             }
 
             // Update org with generated public/private key
@@ -2132,7 +2140,7 @@ namespace Bit.Core.Services
             var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(organization.Id);
             if (ssoConfig?.GetData()?.KeyConnectorEnabled == true)
             {
-                throw new BadRequestException("You cannot delete an Organization that is using Key Connector.");
+                throw new BadRequestException("You cannot delete a Team that is using Key Connector.");
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Azure.Messaging.EventGrid;
 using Bit.Api.Models.Request;
@@ -10,9 +11,9 @@ using Bit.Api.Models.Response;
 using Bit.Api.Utilities;
 using Bit.Core;
 using Bit.Core.Context;
+using Bit.Core.Entities;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.Data;
-using Bit.Core.Models.Table;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
 using Bit.Core.Settings;
@@ -21,7 +22,6 @@ using Core.Models.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Bit.Api.Controllers
 {
@@ -183,7 +183,7 @@ namespace Bit.Api.Controllers
                 (Guid?)null : new Guid(model.OrganizationId);
             if (cipher.OrganizationId != modelOrgId)
             {
-                throw new BadRequestException("Organization mismatch. Re-sync if you recently moved this item, " +
+                throw new BadRequestException("Team mismatch. Re-sync if you recently moved this item, " +
                     "then try again.");
             }
 
@@ -224,12 +224,16 @@ namespace Bit.Api.Controllers
                 throw new NotFoundException();
             }
 
-            var ciphers = await _cipherRepository.GetManyByOrganizationIdAsync(orgIdGuid);
+            var ciphers = await _cipherRepository.GetManyByUserIdAsync(userId, true);
+            var orgCiphers = ciphers.Where(c => c.OrganizationId == orgIdGuid);
+            var orgCipherIds = orgCiphers.Select(c => c.Id);
 
             var collectionCiphers = await _collectionCipherRepository.GetManyByOrganizationIdAsync(orgIdGuid);
-            var collectionCiphersGroupDict = collectionCiphers.GroupBy(c => c.CipherId).ToDictionary(s => s.Key);
+            var collectionCiphersGroupDict = collectionCiphers
+                .Where(c => orgCipherIds.Contains(c.CipherId))
+                .GroupBy(c => c.CipherId).ToDictionary(s => s.Key);
 
-            var responses = ciphers.Select(c => new CipherMiniDetailsResponseModel(c, _globalSettings,
+            var responses = orgCiphers.Select(c => new CipherMiniDetailsResponseModel(c, _globalSettings,
                 collectionCiphersGroupDict));
 
             var providerId = await _currentContext.ProviderIdForOrg(orgIdGuid);
@@ -717,7 +721,7 @@ namespace Bit.Api.Controllers
             var userId = _userService.GetProperUserId(User).Value;
             var cipher = await _cipherRepository.GetByIdAsync(new Guid(id), userId);
             var result = await _cipherService.GetAttachmentDownloadDataAsync(cipher, attachmentId);
-            return new AttachmentResponseModel(result.Id, result.Data, result.Cipher, _globalSettings);
+            return new AttachmentResponseModel(result);
         }
 
         [HttpPost("{id}/attachment/{attachmentId}/share")]
@@ -802,7 +806,7 @@ namespace Bit.Api.Controllers
                         }
                         catch (Exception e)
                         {
-                            _logger.LogError(e, $"Uncaught exception occurred while handling event grid event: {JsonConvert.SerializeObject(eventGridEvent)}");
+                            _logger.LogError(e, $"Uncaught exception occurred while handling event grid event: {JsonSerializer.Serialize(eventGridEvent)}");
                             return;
                         }
                     }

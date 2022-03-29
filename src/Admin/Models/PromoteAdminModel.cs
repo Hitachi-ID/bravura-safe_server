@@ -9,7 +9,7 @@ namespace Bit.Admin.Models
         [Display(Name = "Admin User Id")]
         public Guid? UserId { get; set; }
         [Required]
-        [Display(Name = "Organization Id")]
+        [Display(Name = "Team Id")]
         public Guid? OrganizationId { get; set; }
     }
 }

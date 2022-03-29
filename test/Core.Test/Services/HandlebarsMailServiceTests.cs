@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Bit.Core.Entities;
+using Bit.Core.Entities.Provider;
 using Bit.Core.Models.Business;
-using Bit.Core.Models.Table;
-using Bit.Core.Models.Table.Provider;
 using Bit.Core.Services;
 using Bit.Core.Settings;
 using Microsoft.Extensions.Logging;
@@ -55,7 +55,7 @@ namespace Bit.Core.Test.Services
                 { ("toEmail", typeof(string)), "test@bitwarden.com" },
                 { ("newEmailAddress", typeof(string)), "test@bitwarden.com" },
                 { ("hint", typeof(string)), "Test Hint" },
-                { ("organizationName", typeof(string)), "Test Organization Name" },
+                { ("organizationName", typeof(string)), "Test Team Name" },
                 { ("orgUser", typeof(OrganizationUser)), new OrganizationUser
                 {
                     Id = Guid.NewGuid(),
@@ -67,7 +67,7 @@ namespace Bit.Core.Test.Services
                 { ("organization", typeof(Organization)), new Organization
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Test Organization Name",
+                    Name = "Test Team Name",
                     Seats = 5
                 }},
                 { ("initialSeatCount", typeof(int)), 5},

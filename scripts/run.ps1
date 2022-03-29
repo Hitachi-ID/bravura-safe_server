@@ -9,6 +9,7 @@ param (
     [switch] $stop,
     [switch] $pull,
     [switch] $updateconf,
+    [switch] $uninstall,
     [switch] $renewcert,
     [switch] $updatedb,
     [switch] $update
@@ -187,6 +188,38 @@ function Update([switch] $withpull) {
         -keyconnectorv $keyConnectorVersion -q $setupQuiet
 }
 
+function Uninstall() {
+    $keepDatabase = $(Write-Host "(WARNING: UNINSTALL STARTED) Would you like to save the database files? (y/n)" -f red -nonewline) + $(Read-host)
+    if ($keepDatabase -eq "y") {
+        Write-Host "Saving database."
+        Compress-Archive -Path "${outputDir}\mssql" -DestinationPath ".\bitwarden_database.zip"
+        Write-Host "(SAVED DATABASE FILES: YES) `n(WARNING: ALL DATA WILL BE REMOVED, INCLUDING THE FOLDER $outputDir) " -f red -nonewline
+        $uninstallAction = $( Read-Host "Are you sure you want to uninstall Bravura Safe? (y/n)" )
+    } else {
+        Write-Host "(WARNING: ALL DATA WILL BE REMOVED, INCLUDING THE FOLDER $outputDir) " -f red -nonewline
+        $uninstallAction = $( Read-Host "Are you sure you want to uninstall Bravura Safe? (y/n)" )
+    }
+
+    
+    if ($uninstallAction -eq "y") {
+        Write-Host "uninstalling Bravura Safe..."
+        Docker-Compose-Down
+        Write-Host "Removing $outputDir"
+        Remove-Item -Path $outputDir -Force -Recurse
+        Write-Host "Bravura Safe uninstall complete!"
+    } else {
+        Write-Host "Bravura Safe uninstall canceled."
+        Exit
+    }
+
+    Write-Host "(!) " -f red -nonewline
+        $purgeAction = $( Read-Host "Would you like to purge all local Bravura Safe container images? (y/n)" )
+    
+        if ($purgeAction -eq "y") {
+            Docker-Prune
+        }
+}
+
 function Print-Environment {
     Pull-Setup
     docker run -it --rm --name setup -v ${outputDir}:/bitwarden bravura_vault/setup:$coreVersion `
@@ -255,6 +288,10 @@ elseif ($update) {
     Write-Line "Pausing 60 seconds for database to come online. Please wait..."
     Start-Sleep -s 60
     Update-Database
+}
+elseif ($uninstall) {
+    Docker-Compose-Down
+    Uninstall
 }
 elseif ($rebuild) {
     Docker-Compose-Down
