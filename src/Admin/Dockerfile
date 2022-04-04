@@ -9,6 +9,7 @@ RUN set -eux; \
                 ca-certificates \
                 dpkg \
                 gnupg \
+                wget \
         ; \
         \
         dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
@@ -17,7 +18,11 @@ RUN set -eux; \
         \
 # verify the signature
         export GNUPGHOME="$(mktemp -d)"; \
-        gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+        if [ -n "${http_proxy+set}" ]; then \
+            gpg --batch --keyserver hkps://keys.openpgp.org --keyserver-options "http-proxy=$http_proxy" --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+        else \
+            gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+        fi; \
         gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
         command -v gpgconf && gpgconf --kill all || :; \
         rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
@@ -34,7 +39,6 @@ RUN set -eux; \
                 linux-pam \
                 shadow \
                 tzdata
-
 
 ENV ASPNETCORE_URLS http://+:5000
 WORKDIR /app
