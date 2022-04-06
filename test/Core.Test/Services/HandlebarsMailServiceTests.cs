@@ -43,23 +43,23 @@ namespace Bit.Core.Test.Services
             var namedParameters = new Dictionary<(string, Type), object>
             {
                 // TODO: Swith to use env variable
-                { ("email", typeof(string)), "test@bitwarden.com" },
+                { ("email", typeof(string)), "test@safe.hitachi-id.net" },
                 { ("user", typeof(User)), new User
                 {
                     Id = Guid.NewGuid(),
-                    Email = "test@bitwarden.com",
+                    Email = "test@safe.hitachi-id.net",
                 }},
                 { ("userId", typeof(Guid)), Guid.NewGuid() },
                 { ("token", typeof(string)), "test_token" },
-                { ("fromEmail", typeof(string)), "test@bitwarden.com" },
-                { ("toEmail", typeof(string)), "test@bitwarden.com" },
-                { ("newEmailAddress", typeof(string)), "test@bitwarden.com" },
+                { ("fromEmail", typeof(string)), "test@safe.hitachi-id.net" },
+                { ("toEmail", typeof(string)), "test@safe.hitachi-id.net" },
+                { ("newEmailAddress", typeof(string)), "test@safe.hitachi-id.net" },
                 { ("hint", typeof(string)), "Test Hint" },
                 { ("organizationName", typeof(string)), "Test Team Name" },
                 { ("orgUser", typeof(OrganizationUser)), new OrganizationUser
                 {
                     Id = Guid.NewGuid(),
-                    Email = "test@bitwarden.com",
+                    Email = "test@safe.hitachi-id.net",
                     OrganizationId = Guid.NewGuid(),
 
                 }},
@@ -71,25 +71,25 @@ namespace Bit.Core.Test.Services
                     Seats = 5
                 }},
                 { ("initialSeatCount", typeof(int)), 5},
-                { ("ownerEmails", typeof(IEnumerable<string>)), new [] { "test@bitwarden.com" }},
+                { ("ownerEmails", typeof(IEnumerable<string>)), new [] { "test@safe.hitachi-id.net" }},
                 { ("maxSeatCount", typeof(int)), 5 },
                 { ("userIdentifier", typeof(string)), "test_user" },
-                { ("adminEmails", typeof(IEnumerable<string>)), new [] { "test@bitwarden.com" }},
-                { ("returnUrl", typeof(string)), "https://bitwarden.com/" },
+                { ("adminEmails", typeof(IEnumerable<string>)), new [] { "test@safe.hitachi-id.net" }},
+                { ("returnUrl", typeof(string)), "https://safe.hitachi-id.net/" },
                 { ("amount", typeof(decimal)), 1.00M },
                 { ("dueDate", typeof(DateTime)), DateTime.UtcNow.AddDays(1) },
-                { ("items", typeof(List<string>)), new List<string> { "test@bitwarden.com" }},
+                { ("items", typeof(List<string>)), new List<string> { "test@safe.hitachi-id.net" }},
                 { ("mentionInvoices", typeof(bool)), true },
-                { ("emails", typeof(IEnumerable<string>)), new [] { "test@bitwarden.com" }},
+                { ("emails", typeof(IEnumerable<string>)), new [] { "test@safe.hitachi-id.net" }},
                 { ("deviceType", typeof(string)), "Mobile" },
                 { ("timestamp", typeof(DateTime)), DateTime.UtcNow.AddDays(1)},
                 { ("ip", typeof(string)), "127.0.0.1" },
                 { ("emergencyAccess", typeof(EmergencyAccess)), new EmergencyAccess
                 {
                     Id = Guid.NewGuid(),
-                    Email = "test@bitwarden.com",
+                    Email = "test@safe.hitachi-id.net",
                 }},
-                { ("granteeEmail", typeof(string)), "test@bitwarden.com" },
+                { ("granteeEmail", typeof(string)), "test@safe.hitachi-id.net" },
                 { ("grantorName", typeof(string)), "Test User" },
                 { ("initiatingName", typeof(string)), "Test" },
                 { ("approvingName", typeof(string)), "Test Name" },
@@ -102,7 +102,7 @@ namespace Bit.Core.Test.Services
                 { ("ea", typeof(EmergencyAccess)), new EmergencyAccess
                 {
                     Id = Guid.NewGuid(),
-                    Email = "test@bitwarden.com",
+                    Email = "test@safe.hitachi-id.net",
                 }},
                 { ("userName", typeof(string)), "testUser" },
                 { ("orgName", typeof(string)), "Test Org Name" },
@@ -112,8 +112,8 @@ namespace Bit.Core.Test.Services
                     ProviderId = Guid.NewGuid(),
                     Id = Guid.NewGuid(),
                 }},
-                { ("familyUserEmail", typeof(string)), "test@bitwarden.com" },
-                { ("sponsorEmail", typeof(string)), "test@bitwarden.com" },
+                { ("familyUserEmail", typeof(string)), "test@safe.hitachi-id.net" },
+                { ("sponsorEmail", typeof(string)), "test@safe.hitachi-id.net" },
                 { ("familyOrgName", typeof(string)), "Test Org Name" },
                 { ("orgCanSponsor", typeof(bool)), true },
                 { ("existingAccount", typeof(bool)), true },
@@ -130,7 +130,7 @@ namespace Bit.Core.Test.Services
                         TrustServer = true,
                         Port = 10250,
                     },
-                    ReplyToEmail = "noreply@bitwarden.com",
+                    ReplyToEmail = "noreply@safe.hitachi-id.net",
                 },
                 SiteName = "Bitwarden",
             };

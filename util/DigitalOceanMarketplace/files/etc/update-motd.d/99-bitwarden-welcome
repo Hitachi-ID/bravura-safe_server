@@ -6,11 +6,11 @@ myip=$(hostname -I | awk '{print$1}')
 cat <<EOF
 ********************************************************************************
 
-Welcome to your Bitwarden server
-  https://bitwarden.com
+Welcome to your Nravura Safe server
+  https://safe.hitachi-id.net
 
 Complete documentation:
-  https://help.bitwarden.com/hosting/
+  https://help.safe.hitachi-id.net/hosting/
 
 Configuration:
   Configuration changes can be made in /root/bwdata/config.yml and

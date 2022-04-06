@@ -2,7 +2,7 @@
 
 #
 # Install Bitwarden
-# ref: https://help.bitwarden.com/article/install-on-premise/
+# ref: https://help.safe.hitachi-id.net/article/install-on-premise/
 #
 
 echo -e ''
@@ -33,7 +33,7 @@ echo -e ''
 
 #
 # Setup Bitwarden update cron
-# ref: https://help.bitwarden.com/article/updating-on-premise/
+# ref: https://help.safe.hitachi-id.net/article/updating-on-premise/
 #
 
 echo -e '#!/usr/bin/env bash\n/root/bitwarden.sh updateself\n/root/bitwarden.sh update' \

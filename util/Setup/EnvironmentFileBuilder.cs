@@ -24,7 +24,7 @@ namespace Bit.Setup
                 ["ASPNETCORE_ENVIRONMENT"] = "Production",
                 ["globalSettings__selfHosted"] = "true",
                 ["globalSettings__baseServiceUri__vault"] = "http://localhost",
-                ["globalSettings__pushRelayBaseUri"] = "https://push.bitwarden.com",
+                ["globalSettings__pushRelayBaseUri"] = "https://push.safe.hitachi-id.net",
             };
             _mssqlValues = new Dictionary<string, string>
             {
