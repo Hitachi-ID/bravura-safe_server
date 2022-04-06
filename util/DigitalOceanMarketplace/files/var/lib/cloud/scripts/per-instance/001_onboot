@@ -6,12 +6,12 @@
 
 #
 # Setup Bitwarden Installer
-# ref: https://help.bitwarden.com/article/install-on-premise/
+# ref: https://help.safe.hitachi-id.net/article/install-on-premise/
 #
 
 docker pull bravura_vault/setup
 
 curl -s -o /root/bravura.sh \
-    https://raw.githubusercontent.com/bitwarden/server/master/scripts/bitwarden.sh
+    https://raw.githubusercontent.com/Hitachi-ID/bravura-safe_server/master/scripts/bravura.sh
 
 chmod +x /root/bravura.sh
