@@ -6,7 +6,7 @@ myip=$(hostname -I | awk '{print$1}')
 cat <<EOF
 ********************************************************************************
 
-Welcome to your Nravura Safe server
+Welcome to your Bravura Safe server
   https://safe.hitachi-id.net
 
 Complete documentation:
@@ -17,9 +17,9 @@ Configuration:
   /root/bwdata/env/global.override.env
 
 Common commands:
-  /root/bitwarden.sh stop
-  /root/bitwarden.sh restart
-  /root/bitwarden.sh rebuild
+  /root/bravura.sh stop
+  /root/bravura.sh restart
+  /root/bravura.sh rebuild
 
 ********************************************************************************
 To delete this message of the day: rm -rf $(readlink -f ${0})
