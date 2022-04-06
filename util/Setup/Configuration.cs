@@ -85,7 +85,7 @@ namespace Bit.Setup
             "connect-src 'self' wss://{0} https://api.pwnedpasswords.com " +
             "https://2fa.directory; object-src 'self' blob:;";
 
-        [Description("Communicate with the Bitwarden push relay service (push.bitwarden.com) for mobile\n" +
+        [Description("Communicate with the Bitwarden push relay service (push.safe.hitachi-id.net) for mobile\n" +
             "app live sync.")]
         public bool PushNotifications { get; set; } = true;
 
@@ -103,7 +103,7 @@ namespace Bit.Setup
             "Learn more: https://nginx.org/en/docs/http/ngx_http_realip_module.html")]
         public List<string> RealIps { get; set; }
 
-        [Description("Enable Key Connector (https://bitwarden.com/help/article/deploy-key-connector)")]
+        [Description("Enable Key Connector (https://safe.hitachi-id.net/help/article/deploy-key-connector)")]
         public bool EnableKeyConnector { get; set; } = false;
 
         [YamlIgnore]

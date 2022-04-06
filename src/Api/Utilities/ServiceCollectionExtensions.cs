@@ -20,14 +20,14 @@ namespace Bit.Api.Utilities
                     Contact = new OpenApiContact
                     {
                         Name = "Bravura Safe Support",
-                        Url = new Uri("https://bitwarden.com"),
-                        Email = "support@bitwarden.com"
+                        Url = new Uri("https://safe.hitachi-id.net"),
+                        Email = "support@hitachi-id.com"
                     },
                     Description = "The Bravura Safe public APIs.",
                     License = new OpenApiLicense
                     {
                         Name = "GNU Affero General Public License v3.0",
-                        Url = new Uri("https://github.com/bitwarden/server/blob/master/LICENSE.txt")
+                        Url = new Uri("https://github.com/Hitachi-ID/bravura-safe_server/blob/master/LICENSE.txt")
                     }
                 });
                 config.SwaggerDoc("internal", new OpenApiInfo { Title = "Bravura Safe Internal API", Version = "latest" });
