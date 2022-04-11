@@ -14,6 +14,8 @@ $theme-colors: (
   "secondary-alt": $secondary-alt,
 );
 
+$navbar-bg: rgba(0, 0, 0, 0.6);
+
 $font-family-sans-serif: 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 
 $h1-font-size: 2rem;
@@ -54,4 +56,45 @@ h3 {
 
 .form-check-input {
     margin-top: .45rem;
+}
+
+.navbar {
+    background-color: $secondary-alt;
+    height: 50px;
+    padding: 0;
+    .container {
+        margin: 0 auto;
+        max-width: none !important;
+        padding: 0;
+        width: 980px;
+        ul.navbar-nav {
+            height: 50px;
+            line-height: 28px;
+            padding: 0 10px;
+            li.nav-item {
+                border-bottom: 3px solid transparent;
+                border-top: 3px solid transparent;
+                a.nav-link {
+                    font-size: 14px;
+                    font-weight: 600;
+                }
+                &:hover {
+                  background-color: $navbar-bg;
+                }
+                &.active {
+                  background-color: $navbar-bg;
+                  border-bottom-color: $primary-accent;
+                }
+                .dropdown-item-text {
+                    line-height: 1.3;
+                }
+                .dropdown-item {
+                    color: #333;
+                    &:hover {
+                        background-color: rgba(0,0,0,.06);
+                    }
+                }
+            }
+        }
+    }
 }
