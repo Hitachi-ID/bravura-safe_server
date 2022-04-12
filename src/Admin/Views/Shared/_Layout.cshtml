@@ -76,9 +76,29 @@
                 </ul>
                 @if(SignInManager.IsSignedIn(User))
                 {
-                    <form asp-controller="Login" asp-action="Logout" method="post">
-                        <button type="submit" class="btn btn-sm btn-secondary">Log Out</button>
-                    </form>
+                    <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+                        <li class="nav-item dropdown">
+                            <a class="nav-item nav-link dropdown-toggle" href="#" id="nav-profile" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user-circle fa-lg" aria-hidden="true"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="nav-profile">
+                                <div class="dropdown-item-text d-flex align-items-center">
+                                    <div class="overflow-hidden">
+                                        <span>Logged in as</span>
+                                        <small class="text-muted text-nowrap">@(SignInManager.UserManager.GetUserName(User))</small>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <form asp-controller="Login" asp-action="Logout" method="post">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fa fa-fw fa-sign-out" aria-hidden="true"></i>
+                                        Log Out
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
                 }
                 else
                 {
