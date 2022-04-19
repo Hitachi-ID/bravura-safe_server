@@ -98,3 +98,42 @@ h3 {
         }
     }
 }
+
+table {
+    tbody {
+        tr {
+            td {
+                vertical-align: middle;
+                height: 50px;
+            }
+            td.dropdown-cell {
+                div.dropdown {
+                    button.btn-outline-secondary {
+                        background-color: #fbfbfb;
+                        border-color: #ced4da;
+                        color: rgba(0,0,0,.8);
+                        padding-top: 3px;
+                        &:hover {
+                            background-color: #ced4da;
+                            border-color: #ced4da;
+                            color: #333;
+                        }
+                    }
+                    ul.dropdown-menu {
+                        li {
+                            a.dropdown-item:hover,
+                            button.dropdown-item:hover {
+                                background-color: rgba(0,0,0,.06);
+                            }
+                        }
+                    }
+                }
+            }
+            &:first-child {
+                td.dropdown-cell {
+                    border-top: none;
+                }
+            }
+        }
+    }
+}
