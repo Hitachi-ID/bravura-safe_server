@@ -147,6 +147,8 @@ table {
                 height: 50px;
             }
             td.dropdown-cell {
+                padding-bottom: 6px;
+                padding-top: 6px;
                 div.dropdown {
                     button.btn-outline-secondary {
                         background-color: #fbfbfb;
@@ -167,11 +169,6 @@ table {
                             }
                         }
                     }
-                }
-            }
-            &:first-child {
-                td.dropdown-cell {
-                    border-top: none;
                 }
             }
         }
