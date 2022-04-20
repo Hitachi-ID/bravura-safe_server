@@ -67,6 +67,18 @@ h3 {
         max-width: none !important;
         padding: 0;
         width: 980px;
+        img.logo {
+            display: block;
+            height: 46px;
+            margin: 0 auto;
+            width: 240px;
+            &.logo-themed-nav-bar {
+                height: 26px;
+                pointer-events: none;
+                width: 136px;
+                content: url("/images/hitachi-id-logo-white.svg");
+            }
+        }
         ul.navbar-nav {
             height: 50px;
             line-height: 28px;
