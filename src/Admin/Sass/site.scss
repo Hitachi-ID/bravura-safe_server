@@ -79,32 +79,59 @@ h3 {
                 content: url("/images/hitachi-id-logo-white.svg");
             }
         }
-        ul.navbar-nav {
-            height: 50px;
-            line-height: 28px;
-            padding: 0 10px;
-            li.nav-item {
-                border-bottom: 3px solid transparent;
-                border-top: 3px solid transparent;
-                a.nav-link {
-                    font-size: 14px;
-                    font-weight: 600;
-                }
-                &:hover {
-                  background-color: $navbar-bg;
-                }
-                &.active {
-                  background-color: $navbar-bg;
-                  border-bottom-color: $primary-accent;
-                }
-                .dropdown-item-text {
-                    line-height: 1.3;
-                }
-                .dropdown-item {
-                    color: #333;
-                    &:hover {
-                        background-color: rgba(0,0,0,.06);
+        div.navbar-collapse {
+            ul.navbar-nav {
+                height: 50px;
+                line-height: 28px;
+                padding: 0 10px;
+                li.nav-item {
+                    border-bottom: 3px solid transparent;
+                    border-top: 3px solid transparent;
+                    a.nav-link {
+                        font-size: 14px;
+                        font-weight: 600;
                     }
+                    &:hover {
+                      background-color: $navbar-bg;
+                    }
+                    &.active {
+                      background-color: $navbar-bg;
+                      border-bottom-color: $primary-accent;
+                    }
+                    .dropdown-item-text {
+                        line-height: 1.3;
+                        span {
+                            font-size: 14px;
+                        }
+                    }
+                    .dropdown-item {
+                        color: #333;
+                        &:hover {
+                            background-color: rgba(0,0,0,.06);
+                        }
+                    }
+                    button.dropdown-item {
+                        font-size: 14px;
+                    }
+                }
+                li.nav-item:last-child {
+                    margin-left: auto;
+                }
+            }
+        }
+    }
+}
+.navbar.narrow-down {
+    height: inherit;
+    padding-top: 5px;
+    .container {
+        div.navbar-collapse {
+            ul.navbar-nav {
+                height: inherit;
+                line-height: inherit;
+                padding: 5px 0 0 0;
+                li.nav-item.dropdown {
+                    margin-left: inherit;
                 }
             }
         }
