@@ -226,7 +226,7 @@ namespace Bit.Setup
             }
             else
             {
-                installationId = Helpers.ReadInput("Enter your installation id (get at https://bitwarden.com/host)");
+                installationId = Helpers.ReadInput("Enter your installation id (get at https://<somewhere>/host)");
             }
 
             if (!Guid.TryParse(installationId.Trim(), out var installationidGuid))

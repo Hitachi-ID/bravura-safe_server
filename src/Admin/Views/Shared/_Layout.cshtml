@@ -22,16 +22,16 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                Admin
+        <div class="container align-items-stretch">
+            <a class="navbar-brand d-flex align-items-center cursor-pointer mt-0 mr-3 mb-0" asp-controller="Home" asp-action="Index">
+                <img class="logo logo-themed-nav-bar" alt="Hitachi ID" />
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
                     aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav mr-auto">
+                <ul class="navbar-nav d-flex flex-grow-1">
                     @if(SignInManager.IsSignedIn(User))
                     {
                         <li class="nav-item" active-controller="Users">
@@ -73,17 +73,37 @@
                             </li>
                         }
                     }
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-item nav-link dropdown-toggle" href="#" id="nav-profile" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                                <i class="fa fa-user-circle fa-lg" aria-hidden="true"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="nav-profile">
+                                <div class="dropdown-item-text d-flex align-items-center">
+                                    <div class="overflow-hidden">
+                                        <span>Logged in as</span>
+                                        <small class="text-muted text-nowrap">@(SignInManager.UserManager.GetUserName(User))</small>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <form asp-controller="Login" asp-action="Logout" method="post">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fa fa-fw fa-sign-out" aria-hidden="true"></i>
+                                        Log Out
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item align-self-center">
+                            <a class="btn btn-sm btn-secondary" asp-controller="Login" asp-action="Index">Log In</a>
+                        </li>
+                    }
                 </ul>
-                @if(SignInManager.IsSignedIn(User))
-                {
-                    <form asp-controller="Login" asp-action="Logout" method="post">
-                        <button type="submit" class="btn btn-sm btn-secondary">Log Out</button>
-                    </form>
-                }
-                else
-                {
-                    <a class="btn btn-sm btn-secondary" asp-controller="Login" asp-action="Index">Log In</a>
-                }
             </div>
         </div>
     </nav>
@@ -119,6 +139,33 @@
         </script>
     }
 
+    <script>
+        $(document).ready(() => {
+            // solve click hamburger button event
+            // update the styles for navbar collapse
+            $('button.navbar-toggler').click(() => {
+                if ($('div.navbar-collapse.collapse').hasClass('show')) {
+                    $('nav.navbar').removeClass("narrow-down");
+                } else {
+                    $('nav.navbar').addClass("narrow-down");
+                }
+            });
+            // solve the window change size event
+            $(window).resize(() => {
+                if ($('button.navbar-toggler').css('display') === 'none') {
+                    $('nav.navbar').removeClass("narrow-down");
+                } else {
+                    if ($('div.navbar-collapse.collapse').hasClass('show')) {
+                        $('nav.navbar').addClass("narrow-down");  
+                    } else {
+                        $('nav.navbar').removeClass("narrow-down");
+                    }        
+                }
+            });
+        });
+    </script>
+
     @RenderSection("Scripts", required: false)
+    
 </body>
 </html>

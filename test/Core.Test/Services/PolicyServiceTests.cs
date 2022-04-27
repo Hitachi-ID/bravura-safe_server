@@ -282,7 +282,7 @@ namespace Bit.Core.Test.Services
                 Status = OrganizationUserStatusType.Accepted,
                 Type = OrganizationUserType.User,
                 // Needs to be different from what is passed in as the savingUserId to Sut.SaveAsync
-                Email = "test@bitwarden.com",
+                Email = "test@safe.hitachi-id.net",
                 Name = "TEST",
                 UserId = Guid.NewGuid(),
             };
@@ -351,7 +351,7 @@ namespace Bit.Core.Test.Services
                 Status = OrganizationUserStatusType.Accepted,
                 Type = OrganizationUserType.User,
                 // Needs to be different from what is passed in as the savingUserId to Sut.SaveAsync
-                Email = "test@bitwarden.com",
+                Email = "test@safe.hitachi-id.net",
                 Name = "TEST",
                 UserId = Guid.NewGuid(),
             };

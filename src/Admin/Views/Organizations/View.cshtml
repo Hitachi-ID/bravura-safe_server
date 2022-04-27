@@ -3,6 +3,13 @@
     ViewData["Title"] = "Team: " + Model.Organization.Name;
 }
 
+<div class="row">
+    <a class="nav-link" asp-controller="Organizations" asp-action="Index">
+        <i class="fa fa-fw fa-angle-double-left" aria-hidden="true"></i>
+        Back to Teams
+    </a>
+</div>
+
 <h1>Team <small>@Model.Organization.Name</small></h1>
 
 <h2>Information</h2>

@@ -432,7 +432,7 @@ namespace Bit.Core.Settings
             public string Key { get; set; }
             public string IdentityUri
             {
-                get => string.IsNullOrWhiteSpace(_identityUri) ? "https://identity.bitwarden.com" : _identityUri;
+                get => string.IsNullOrWhiteSpace(_identityUri) ? "https://identity.safe.hitachi-id.net" : _identityUri;
                 set => _identityUri = value;
             }
         }
