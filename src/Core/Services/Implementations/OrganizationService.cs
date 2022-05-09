@@ -590,7 +590,7 @@ namespace Bit.Core.Services
                 Name = signup.Name,
                 BillingEmail = signup.BillingEmail,
                 PlanType = PlanType.Custom,
-                Seats = 32767,
+                Seats = 1000000,
                 MaxCollections = 32767,
                 MaxStorageGb = 10240,
                 UsePolicies = true,

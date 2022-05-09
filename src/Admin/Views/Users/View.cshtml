@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "User: " + Model.User.Email;
 }
+<div class="row">
+    <a class="nav-link" asp-controller="Users" asp-action="Index">
+        <i class="fa fa-fw fa-angle-double-left" aria-hidden="true"></i>
+        Back to Users
+    </a>
+</div>
 
 <h1>User <small>@Model.User.Email</small></h1>
 
