@@ -427,6 +427,7 @@ namespace Bit.Core.Settings
         public class InstallationSettings
         {
             private string _identityUri;
+            private string _apiUri;
 
             public Guid Id { get; set; }
             public string Key { get; set; }
@@ -434,6 +435,10 @@ namespace Bit.Core.Settings
             {
                 get => string.IsNullOrWhiteSpace(_identityUri) ? "https://identity.safe.hitachi-id.net" : _identityUri;
                 set => _identityUri = value;
+            }
+            public string ApiUri
+            {
+                get => string.IsNullOrWhiteSpace(_apiUri) ? "https://api.biwarden.com" : _apiUri;
             }
         }
 
