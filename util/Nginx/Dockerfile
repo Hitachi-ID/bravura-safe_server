@@ -2,7 +2,7 @@ FROM nginx:stable-alpine
 
 LABEL com.hitachi.product="bravura_vault"
 
-ENV GOSU_VERSION 1.14
+ENV GOSU_VERSION 1.12
 RUN set -eux; \
         \
         apk add --no-cache --virtual .gosu-deps \
