@@ -37,7 +37,8 @@ RUN set -eux; \
 # add packages for alpine container
         apk add --upgrade --no-cache \
                 linux-pam \
-                shadow
+                shadow \
+                freetype
 
 COPY nginx.conf /etc/nginx
 COPY proxy.conf /etc/nginx
