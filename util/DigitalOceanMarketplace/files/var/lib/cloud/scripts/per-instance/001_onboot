@@ -15,3 +15,10 @@ curl -s -o /root/bravura.sh \
     https://raw.githubusercontent.com/Hitachi-ID/bravura-safe_server/master/scripts/bravura.sh
 
 chmod +x /root/bravura.sh
+
+# Remove the ssh force logout command
+sed -e '/Match User root/d' \
+    -e '/.*ForceCommand.*droplet.*/d' \
+    -i /etc/ssh/sshd_config
+
+systemctl restart ssh
