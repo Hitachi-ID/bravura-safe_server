@@ -21,15 +21,13 @@ namespace Bit.Api.Models.Request.Organizations
         public Permissions Permissions { get; set; }
         public OrganizationKeysRequestModel Keys { get; set; }
 
-        public virtual Organization ToOrganization(Organization existingOrganization, GlobalSettings globalSettings)
+        public virtual Organization ToOrganization(Organization existingOrganization)
         {
-            if (!globalSettings.SelfHosted)
-            {
-                // These items come from the license file
-                existingOrganization.Name = Name;
-                existingOrganization.BusinessName = BusinessName;
-                existingOrganization.BillingEmail = BillingEmail?.ToLowerInvariant()?.Trim();
-            }
+            // These items come from the license file
+            existingOrganization.Name = Name;
+            existingOrganization.BusinessName = BusinessName;
+            existingOrganization.BillingEmail = BillingEmail?.ToLowerInvariant()?.Trim();
+
             existingOrganization.Identifier = Identifier;
             Keys?.ToOrganization(existingOrganization);
             return existingOrganization;
