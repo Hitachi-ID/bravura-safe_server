@@ -28,6 +28,8 @@ namespace Bit.Admin.Controllers
         private readonly GlobalSettings _globalSettings;
         private readonly IReferenceEventService _referenceEventService;
         private readonly IUserService _userService;
+        [TempData]
+        public string item { get; set; }
 
         public OrganizationsController(
             IOrganizationRepository organizationRepository,
@@ -70,6 +72,7 @@ namespace Bit.Admin.Controllers
 
             var skip = (page - 1) * count;
             var organizations = await _organizationRepository.SearchAsync(name, userEmail, paid, skip, count);
+
             return View(new OrganizationsModel
             {
                 Items = organizations as List<Organization>,
@@ -161,6 +164,8 @@ namespace Bit.Admin.Controllers
                 await _organizationRepository.DeleteAsync(organization);
                 await _applicationCacheService.DeleteOrganizationAbilityAsync(organization.Id);
             }
+
+            item = organization.Name;
 
             return RedirectToAction("Index");
         }
