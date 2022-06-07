@@ -19,6 +19,8 @@ namespace Bit.Admin.Controllers
         private readonly ICipherRepository _cipherRepository;
         private readonly IPaymentService _paymentService;
         private readonly GlobalSettings _globalSettings;
+        [TempData]
+        public string item { get; set; }
 
         public UsersController(
             IUserRepository userRepository,
@@ -112,6 +114,8 @@ namespace Bit.Admin.Controllers
             {
                 await _userRepository.DeleteAsync(user);
             }
+
+            TempData["Item"] = user.Name;
 
             return RedirectToAction("Index");
         }

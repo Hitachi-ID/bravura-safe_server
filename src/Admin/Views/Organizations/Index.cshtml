@@ -93,10 +93,12 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <form asp-controller="Organizations" asp-action="Delete" asp-route-id="@org.Id" onsubmit="return confirm('Are you sure you want to delete this team?')">
-                                        <button class="btn text-danger dropdown-item" type="submit">
-                                            <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
-                                            Delete
+                                    <button id="deleteModalButton" type="button" class="btn text-danger dropdown-item" data-toggle="modal" data-target="#deleteModal" data-id="@org.Id" data-type="team">
+                                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+                                        Delete
+                                    </button>
+                                    <form asp-controller="Organizations" asp-action="Delete" asp-route-id="@org.Id" onsubmit="return" data-id="@org.Id">
+                                        <button class="btn text-danger dropdown-item d-none" type="submit">
                                         </button>
                                     </form>
                                 </li>
@@ -141,3 +143,10 @@
         }
     </ul>
 </nav>
+
+@if(TempData["item"] != null) 
+{
+    <h2 id="toast" class="d-none">@TempData["item"]</h2>
+}
+
+@await Html.PartialAsync("_DeleteModal")

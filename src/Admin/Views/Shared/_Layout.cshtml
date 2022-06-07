@@ -162,6 +162,37 @@
                     }        
                 }
             });
+
+            
+            // add delete modal for user and team index page
+            // realize the modal confirmation function, and delete item function
+            $(document).on('click', '#deleteModalButton', function () {
+                var id = $(this).data('id');
+                var type = $(this).data('type');
+                $('#deleteButton').attr('data-id', id);
+                $('#deleteModal div.modal-dialog div.modal-content div.modal-body p').text('Are you sure you want to delete this ' + type + '?');
+            });
+
+            var modalConfirm = function (callback) {
+                $('#deleteButton').on('click', function () {
+                    var id = $(this).data('id');
+                    callback(id);
+                    $('#deleteModal').modal('hide');
+                });
+            }
+
+            modalConfirm(function (id) {
+                if (id) {
+                    $('form[data-id=' + id + '] > button').click();
+                }
+            });
+
+            // display toast message
+            var toastMessage = $('#toast').text();
+            if (toastMessage) {
+                toastMessage += ' has been deleted';
+                toastr.success(toastMessage);
+            }
         });
     </script>
 
