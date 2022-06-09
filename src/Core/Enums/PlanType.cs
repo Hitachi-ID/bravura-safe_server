@@ -29,8 +29,8 @@ namespace Bit.Core.Enums
         [Display(Name = "Enterprise (Annually)")]
         EnterpriseAnnually = 11,
         [Display(Name = "Bravura Teams")]
-        BravuraTeams = 11,
+        BravuraTeams = 12,
         [Display(Name = "Bravura Enterprise (Primary)")]
-        BravuraEnterprise = 11
+        BravuraEnterprise = 13
     }
 }
