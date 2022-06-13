@@ -20,7 +20,9 @@ namespace Bit.Admin.Controllers
         private readonly IPaymentService _paymentService;
         private readonly GlobalSettings _globalSettings;
         [TempData]
-        public string item { get; set; }
+        public string status { get; set; }
+        [TempData]
+        public string message { get; set; }
 
         public UsersController(
             IUserRepository userRepository,
@@ -115,7 +117,8 @@ namespace Bit.Admin.Controllers
                 await _userRepository.DeleteAsync(user);
             }
 
-            TempData["Item"] = user.Name;
+            TempData["status"] = "success";
+            TempData["message"] = $"{user.Name} has been deleted!";
 
             return RedirectToAction("Index");
         }

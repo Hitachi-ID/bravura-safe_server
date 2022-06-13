@@ -130,9 +130,9 @@
     </ul>
 </nav>
 
-@if(TempData["item"] != null)
+@if(TempData["message"] != null)
 {
-    <h2 id="toast" class="d-none">@TempData["item"]</h2>
+    <h2 id="toast" class="d-none" data-status="@TempData["status"]" data-message="@TempData["message"]"></h2>
 }
 
 @await Html.PartialAsync("_DeleteModal")

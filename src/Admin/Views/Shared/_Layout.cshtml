@@ -188,9 +188,9 @@
             });
 
             // display toast message
-            var toastMessage = $('#toast').text();
-            if (toastMessage) {
-                toastMessage += ' has been deleted';
+            var toastStatus = $('#toast').data('status');
+            var toastMessage = $('#toast').data('message');
+            if (toastMessage && toastStatus === 'success') {
                 toastr.success(toastMessage);
             }
         });
