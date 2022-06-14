@@ -594,7 +594,7 @@ namespace Bit.Core.Services
                 BillingEmail = signup.BillingEmail,
                 BusinessName = signup.BusinessName,
                 PlanType = plan.Type,
-                Seats = plan.BaseSeats + signup.AdditionalSeats,
+                Seats = plan.BaseSeats,
                 MaxCollections = plan.MaxCollections,
                 MaxStorageGb = !plan.BaseStorageGb.HasValue ?
                     (short?)null : (short)(plan.BaseStorageGb.Value + signup.AdditionalStorageGb),
