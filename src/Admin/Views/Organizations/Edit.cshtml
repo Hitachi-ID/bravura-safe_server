@@ -111,6 +111,13 @@
     </script>
 }
 
+<div class="row">
+    <a class="nav-link" asp-controller="Organizations" asp-action="Index">
+        <i class="fa fa-fw fa-angle-double-left" aria-hidden="true"></i>
+        Back to Teams
+    </a>
+</div>
+
 <h1>Team <small>@Model.Organization.Name</small></h1>
 
 <h2>Team Information</h2>
@@ -322,9 +329,20 @@
                 Enterprise Trial
             </button>
         </div>
-        <form asp-action="Delete" asp-route-id="@Model.Organization.Id"
-              onsubmit="return confirm('Are you sure you want to delete this team?')">
-            <button class="btn btn-danger" type="submit">Delete</button>
+        <button id="deleteModalButton" type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal"
+            data-id="@Model.Organization.Id" data-type="team">
+            <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
+            Delete
+        </button>
+        <form asp-action="Delete" asp-route-id="@Model.Organization.Id" data-id="@Model.Organization.Id">
+            <button class="btn btn-danger d-none" type="submit"></button>
         </form>
     </div>
 </div>
+
+@if(TempData["message"] != null) 
+{
+    <h2 id="toast" class="d-none" data-status="@TempData["status"]" data-message="@TempData["message"]"></h2>
+}
+
+@await Html.PartialAsync("_DeleteModal")
