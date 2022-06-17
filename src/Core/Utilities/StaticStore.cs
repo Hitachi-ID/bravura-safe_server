@@ -475,6 +475,72 @@ namespace Bit.Core.Utilities
 
                     AllowSeatAutoscale = true,
                 },
+                new Plan
+                {
+                    Type = PlanType.BravuraTeams,
+                    Product = ProductType.Teams,
+                    Name = "Teams",
+                    NameLocalizationKey = "bravuraPlanNameTeams",
+                    DescriptionLocalizationKey = "bravuraPlanDescTeams",
+                    BaseSeats = 32767,
+                    BaseStorageGb = 1,
+
+                    MaxCollections = 32767,
+
+                    HasAdditionalSeatsOption = false,
+                    HasAdditionalStorageOption = false,
+
+                    HasPolicies = true,
+                    HasGroups = true,
+                    HasDirectory = true,
+                    HasEvents = true,
+                    HasTotp = false,
+                    Has2fa = false,
+                    HasApi = true,
+                    HasSelfHost = true,
+                    HasSso = false,
+                    HasKeyConnector = false,
+                    HasResetPassword = false,
+                    UsersGetPremium = true,
+
+                    UpgradeSortOrder = 7,
+                    DisplaySortOrder = 7,
+
+                    AllowSeatAutoscale = true,
+                },
+                new Plan
+                {
+                    Type = PlanType.BravuraEnterprise,
+                    Product = ProductType.Enterprise,
+                    Name = "Enterprise",
+                    NameLocalizationKey = "bravuraPlanNameEnterprise",
+                    DescriptionLocalizationKey = "bravuraPlanDescEnterprise",
+                    BaseSeats = 1000000,
+                    BaseStorageGb = 1,
+
+                    MaxCollections = 32767,
+
+                    HasAdditionalSeatsOption = false,
+                    HasAdditionalStorageOption = false,
+
+                    HasPolicies = true,
+                    HasGroups = true,
+                    HasDirectory = true,
+                    HasEvents = true,
+                    HasTotp = true,
+                    Has2fa = true,
+                    HasApi = true,
+                    HasSelfHost = true,
+                    HasSso = true,
+                    HasKeyConnector = false,
+                    HasResetPassword = true,
+                    UsersGetPremium = true,
+
+                    UpgradeSortOrder = 8,
+                    DisplaySortOrder = 8,
+
+                    AllowSeatAutoscale = true,
+                },
             };
 
             #endregion

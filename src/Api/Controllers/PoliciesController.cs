@@ -140,7 +140,7 @@ namespace Bit.Api.Controllers
             {
                 throw new NotFoundException();
             }
-            var policy = await _policyRepository.GetByOrganizationIdTypeAsync(new Guid(orgId), (PolicyType)type);
+            var policy = await _policyRepository.GetByOrganizationIdTypeAsync(orgIdGuid, (PolicyType)type);
             if (policy == null)
             {
                 policy = model.ToPolicy(orgIdGuid);
