@@ -113,7 +113,7 @@ then
     docker tag $REPO1/events:$TAG1 $REPO2/events:$TAG2
     docker tag $REPO1/admin:$TAG1 $REPO2/admin:$TAG2
     docker tag $REPO1/nginx:$TAG1 $REPO2/nginx:$TAG2
-    docker tag $REPO1/mssql:$TAG1 $REPO2/sso:$TAG2
+    docker tag $REPO1/sso:$TAG1 $REPO2/sso:$TAG2
     docker tag $REPO1/mssql:$TAG1 $REPO2/mssql:$TAG2
     docker tag $REPO1/setup:$TAG1 $REPO2/setup:$TAG2
 else
