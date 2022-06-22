@@ -64,7 +64,7 @@ case "$PROJECT" in
   "identity" | "Identity") docker_build Identity $PWD/src/Identity $TAG $PUSH ;;
   "events" | "Events") docker_build Events $PWD/src/Events $TAG $PUSH ;;
   #"billing" | "Billing") docker_build Billing $PWD/src/Billing $TAG $PUSH ;;
-  #"sso" | "Sso") docker_build Sso $PWD/bitwarden_license/src/Sso $TAG $PUSH ;;
+  "sso" | "Sso") docker_build sso $PWD/bravura_src/server/sso $TAG $PUSH ;;
   "server" | "Server") docker_build Server $PWD/util/Server $TAG $PUSH ;;
   "nginx" | "Nginx") docker_build Nginx $PWD/util/Nginx $TAG $PUSH ;;
   "k8s-proxy" | "K8s-Proxy") docker_build K8s-Proxy $PWD/util/Nginx $TAG $PUSH ;;
@@ -80,7 +80,7 @@ case "$PROJECT" in
     docker_build Identity $PWD/src/Identity $TAG $PUSH
     docker_build Events $PWD/src/Events $TAG $PUSH
     #docker_build Billing $PWD/src/Billing $TAG $PUSH
-    #docker_build Sso $PWD/bitwarden_license/src/Sso $TAG $PUSH
+    docker_build sso $PWD/bravura_src/server/sso $TAG $PUSH
     docker_build Server $PWD/util/Server $TAG $PUSH
     docker_build Nginx $PWD/util/Nginx $TAG $PUSH
     docker_build Attachments $PWD/util/Attachments $TAG $PUSH
