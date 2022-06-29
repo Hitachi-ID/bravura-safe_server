@@ -28,6 +28,10 @@ namespace Bit.Admin.Controllers
         private readonly GlobalSettings _globalSettings;
         private readonly IReferenceEventService _referenceEventService;
         private readonly IUserService _userService;
+        [TempData]
+        public string status { get; set; }
+        [TempData]
+        public string message { get; set; }
 
         public OrganizationsController(
             IOrganizationRepository organizationRepository,
@@ -70,6 +74,7 @@ namespace Bit.Admin.Controllers
 
             var skip = (page - 1) * count;
             var organizations = await _organizationRepository.SearchAsync(name, userEmail, paid, skip, count);
+
             return View(new OrganizationsModel
             {
                 Items = organizations as List<Organization>,
@@ -148,6 +153,10 @@ namespace Bit.Admin.Controllers
                 EventRaisedByUser = _userService.GetUserName(User),
                 SalesAssistedTrialStarted = model.SalesAssistedTrialStarted,
             });
+        
+            TempData["status"] = "success";
+            TempData["message"] = $"{organization.Name} has been updated!";
+
             return RedirectToAction("Edit", new { id });
         }
 
@@ -161,6 +170,9 @@ namespace Bit.Admin.Controllers
                 await _organizationRepository.DeleteAsync(organization);
                 await _applicationCacheService.DeleteOrganizationAbilityAsync(organization.Id);
             }
+
+            TempData["status"] = "success";
+            TempData["message"] = $"{organization.Name} has been deleted!";
 
             return RedirectToAction("Index");
         }
