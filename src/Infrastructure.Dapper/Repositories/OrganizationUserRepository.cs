@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Models.Data;
+using Bit.Core.Models.Data.Organizations.OrganizationUsers;
 using Bit.Core.Repositories;
 using Bit.Core.Settings;
-using Bit.Core.Utilities;
 using Dapper;
 
 namespace Bit.Infrastructure.Dapper.Repositories
@@ -407,6 +407,28 @@ namespace Bit.Infrastructure.Dapper.Repositories
                     commandType: CommandType.StoredProcedure);
 
                 return results.ToList();
+            }
+        }
+
+        public async Task DeactivateAsync(Guid id)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var results = await connection.ExecuteAsync(
+                    $"[{Schema}].[{Table}_Deactivate]",
+                    new { Id = id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task ActivateAsync(Guid id, OrganizationUserStatusType status)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var results = await connection.ExecuteAsync(
+                    $"[{Schema}].[{Table}_Activate]",
+                    new { Id = id, Status = status },
+                    commandType: CommandType.StoredProcedure);
             }
         }
     }

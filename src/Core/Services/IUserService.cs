@@ -43,7 +43,7 @@ namespace Bit.Core.Services
         Task<IdentityResult> UpdateKeyAsync(User user, string masterPassword, string key, string privateKey,
             IEnumerable<Cipher> ciphers, IEnumerable<Folder> folders, IEnumerable<Send> sends);
         Task<IdentityResult> RefreshSecurityStampAsync(User user, string masterPasswordHash);
-        Task UpdateTwoFactorProviderAsync(User user, TwoFactorProviderType type, bool setEnabled = true);
+        Task UpdateTwoFactorProviderAsync(User user, TwoFactorProviderType type, bool setEnabled = true, bool logEvent = true);
         Task DisableTwoFactorProviderAsync(User user, TwoFactorProviderType type,
             IOrganizationService organizationService);
         Task<bool> RecoverTwoFactorAsync(string email, string masterPassword, string recoveryCode,
@@ -70,6 +70,7 @@ namespace Bit.Core.Services
             int? version = null);
         Task<bool> CheckPasswordAsync(User user, string password);
         Task<bool> CanAccessPremium(ITwoFactorProvidersUser user);
+        Task<bool> HasPremiumFromOrganization(ITwoFactorProvidersUser user);
         Task<bool> TwoFactorIsEnabledAsync(ITwoFactorProvidersUser user);
         Task<bool> TwoFactorProviderIsEnabledAsync(TwoFactorProviderType provider, ITwoFactorProvidersUser user);
         Task<string> GenerateSignInTokenAsync(User user, string purpose);
@@ -78,5 +79,7 @@ namespace Bit.Core.Services
         Task SendOTPAsync(User user);
         Task<bool> VerifyOTPAsync(User user, string token);
         Task<bool> VerifySecretAsync(User user, string secret);
+        Task<bool> Needs2FABecauseNewDeviceAsync(User user, string deviceIdentifier, string grantType);
+        bool CanEditDeviceVerificationSettings(User user);
     }
 }

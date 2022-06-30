@@ -9,6 +9,7 @@ using Bit.Core.Enums;
 using Bit.Core.Exceptions;
 using Bit.Core.Models.Business;
 using Bit.Core.Models.Data;
+using Bit.Core.Models.Data.Organizations.OrganizationUsers;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
 using Bit.Core.Settings;
@@ -66,7 +67,6 @@ namespace Bit.Core.Test.Services
                 .CreateManyAsync(Arg.Is<IEnumerable<OrganizationUser>>(users => users.Count() == expectedNewUsersCount));
             await sutProvider.GetDependency<IMailService>().Received(1)
                 .BulkSendOrganizationInviteEmailAsync(org.Name,
-                Arg.Any<bool>(),
                 Arg.Is<IEnumerable<(OrganizationUser, ExpiringToken)>>(messages => messages.Count() == expectedNewUsersCount));
 
             // Send events
@@ -125,7 +125,6 @@ namespace Bit.Core.Test.Services
                 .CreateManyAsync(Arg.Is<IEnumerable<OrganizationUser>>(users => users.Count() == expectedNewUsersCount));
             await sutProvider.GetDependency<IMailService>().Received(1)
                 .BulkSendOrganizationInviteEmailAsync(org.Name,
-                Arg.Any<bool>(),
                 Arg.Is<IEnumerable<(OrganizationUser, ExpiringToken)>>(messages => messages.Count() == expectedNewUsersCount));
 
             // Sent events
@@ -362,7 +361,7 @@ namespace Bit.Core.Test.Services
             await sutProvider.Sut.InviteUsersAsync(organization.Id, invitor.UserId, invites);
 
             await sutProvider.GetDependency<IMailService>().Received(1)
-                .BulkSendOrganizationInviteEmailAsync(organization.Name, Arg.Any<bool>(),
+                .BulkSendOrganizationInviteEmailAsync(organization.Name,
                     Arg.Is<IEnumerable<(OrganizationUser, ExpiringToken)>>(v => v.Count() == invites.SelectMany(i => i.invite.Emails).Count()));
         }
 
@@ -870,7 +869,7 @@ namespace Bit.Core.Test.Services
         [InlinePaidOrganizationAutoData(0, null, 100, true, "")]
         [InlinePaidOrganizationAutoData(1, 100, null, true, "")]
         [InlinePaidOrganizationAutoData(1, 100, 100, false, "Cannot invite new users. Seat limit has been reached")]
-        public async Task CanScale(int seatsToAdd, int? currentSeats, int? maxAutoscaleSeats,
+        public void CanScale(int seatsToAdd, int? currentSeats, int? maxAutoscaleSeats,
             bool expectedResult, string expectedFailureMessage, Organization organization,
             SutProvider<OrganizationService> sutProvider)
         {
@@ -892,7 +891,7 @@ namespace Bit.Core.Test.Services
         }
 
         [Theory, PaidOrganizationAutoData]
-        public async Task CanScale_FailsOnSelfHosted(Organization organization,
+        public void CanScale_FailsOnSelfHosted(Organization organization,
             SutProvider<OrganizationService> sutProvider)
         {
             sutProvider.GetDependency<IGlobalSettings>().SelfHosted.Returns(true);

@@ -25,8 +25,8 @@ namespace Bit.Core.Services
         private readonly GlobalSettings _globalSettings;
         private readonly IMailDeliveryService _mailDeliveryService;
         private readonly IMailEnqueuingService _mailEnqueuingService;
-        private readonly Dictionary<string, Func<object, string>> _templateCache =
-            new Dictionary<string, Func<object, string>>();
+        private readonly Dictionary<string, HandlebarsTemplate<object, object>> _templateCache =
+            new Dictionary<string, HandlebarsTemplate<object, object>>();
 
         private bool _registeredHelpersAndPartials = false;
 
@@ -124,7 +124,7 @@ namespace Bit.Core.Services
             var message = CreateDefaultMessage("Your Master Password Hint", email);
             var model = new MasterPasswordHintViewModel
             {
-                Hint = CoreHelpers.SanitizeForEmail(hint),
+                Hint = CoreHelpers.SanitizeForEmail(hint, false),
                 WebVaultUrl = _globalSettings.BaseServiceUri.VaultWithHash,
                 SiteName = _globalSettings.SiteName
             };
@@ -206,10 +206,10 @@ namespace Bit.Core.Services
             await _mailDeliveryService.SendEmailAsync(message);
         }
 
-        public Task SendOrganizationInviteEmailAsync(string organizationName, bool orgCanSponsor, OrganizationUser orgUser, ExpiringToken token) =>
-            BulkSendOrganizationInviteEmailAsync(organizationName, orgCanSponsor, new[] { (orgUser, token) });
+        public Task SendOrganizationInviteEmailAsync(string organizationName, OrganizationUser orgUser, ExpiringToken token) =>
+            BulkSendOrganizationInviteEmailAsync(organizationName, new[] { (orgUser, token) });
 
-        public async Task BulkSendOrganizationInviteEmailAsync(string organizationName, bool organizationCanSponsor, IEnumerable<(OrganizationUser orgUser, ExpiringToken token)> invites)
+        public async Task BulkSendOrganizationInviteEmailAsync(string organizationName, IEnumerable<(OrganizationUser orgUser, ExpiringToken token)> invites)
         {
             MailQueueMessage CreateMessage(string email, object model)
             {
@@ -229,7 +229,6 @@ namespace Bit.Core.Services
                     OrganizationNameUrlEncoded = WebUtility.UrlEncode(organizationName),
                     WebVaultUrl = _globalSettings.BaseServiceUri.VaultWithHash,
                     SiteName = _globalSettings.SiteName,
-                    OrganizationCanSponsor = organizationCanSponsor,
                 }
             ));
 
@@ -404,7 +403,7 @@ namespace Bit.Core.Services
             var message = CreateDefaultMessage("Master Password Has Been Changed", email);
             var model = new AdminResetPasswordViewModel()
             {
-                UserName = CoreHelpers.SanitizeForEmail(userName),
+                UserName = GetUserIdentifier(email, userName),
                 OrgName = CoreHelpers.SanitizeForEmail(orgName),
             };
             await AddMessageContentAsync(message, "AdminResetPassword", model);
@@ -566,35 +565,6 @@ namespace Bit.Core.Services
                 var clickTrackingText = (clickTrackingOff ? "clicktracking=off" : string.Empty);
                 writer.WriteSafeString($"<a href=\"{href}\" target=\"_blank\" {clickTrackingText}>{text}</a>");
             });
-
-            Handlebars.RegisterHelper("jsonIf", (output, options, context, arguments) =>
-            {
-                // Special case for JsonElement
-                if (arguments[0] is JsonElement jsonElement
-                    && (jsonElement.ValueKind == JsonValueKind.True || jsonElement.ValueKind == JsonValueKind.False))
-                {
-                    if (jsonElement.GetBoolean())
-                    {
-                        options.Template(output, context);
-                    }
-                    else
-                    {
-                        options.Inverse(output, context);
-                    }
-
-                    return;
-                }
-
-                // Fallback to normal
-                if (HandlebarsUtils.IsTruthy(arguments[0]))
-                {
-                    options.Template(output, context);
-                }
-                else
-                {
-                    options.Inverse(output, context);
-                }
-            });
         }
 
         public async Task SendEmergencyAccessInviteEmailAsync(EmergencyAccess emergencyAccess, string name, string token)
@@ -619,7 +589,7 @@ namespace Bit.Core.Services
             var message = CreateDefaultMessage($"Accepted Emergency Access", email);
             var model = new EmergencyAccessAcceptedViewModel
             {
-                GranteeEmail = CoreHelpers.SanitizeForEmail(granteeEmail),
+                GranteeEmail = granteeEmail,
                 WebVaultUrl = _globalSettings.BaseServiceUri.VaultWithHash,
                 SiteName = _globalSettings.SiteName
             };
@@ -781,46 +751,39 @@ namespace Bit.Core.Services
             var message = CreateDefaultMessage("Master Password Has Been Changed", email);
             var model = new UpdateTempPasswordViewModel()
             {
-                UserName = CoreHelpers.SanitizeForEmail(userName)
+                UserName = GetUserIdentifier(email, userName)
             };
             await AddMessageContentAsync(message, "UpdatedTempPassword", model);
             message.Category = "UpdatedTempPassword";
             await _mailDeliveryService.SendEmailAsync(message);
         }
 
-        public async Task SendFamiliesForEnterpriseOfferEmailAsync(string email, string sponsorEmail, bool existingAccount, string token)
+        public async Task SendFamiliesForEnterpriseOfferEmailAsync(string sponsorOrgName, string email, bool existingAccount, string token) =>
+            await BulkSendFamiliesForEnterpriseOfferEmailAsync(sponsorOrgName, new[] { (email, existingAccount, token) });
+
+        public async Task BulkSendFamiliesForEnterpriseOfferEmailAsync(string sponsorOrgName, IEnumerable<(string Email, bool ExistingAccount, string Token)> invites)
         {
-            var message = CreateDefaultMessage("Accept Your Free Families Subscription", email);
-
-            if (existingAccount)
+            MailQueueMessage CreateMessage((string Email, bool ExistingAccount, string Token) invite)
             {
-                var model = new FamiliesForEnterpriseOfferExistingAccountViewModel
+                var message = CreateDefaultMessage("Accept Your Free Families Subscription", invite.Email);
+                message.Category = "FamiliesForEnterpriseOffer";
+                var model = new FamiliesForEnterpriseOfferViewModel
                 {
-                    SponsorEmail = CoreHelpers.ObfuscateEmail(sponsorEmail),
-                    SponsoredEmail = WebUtility.UrlEncode(email),
+                    SponsorOrgName = sponsorOrgName,
+                    SponsoredEmail = WebUtility.UrlEncode(invite.Email),
+                    ExistingAccount = invite.ExistingAccount,
                     WebVaultUrl = _globalSettings.BaseServiceUri.VaultWithHash,
                     SiteName = _globalSettings.SiteName,
-                    SponsorshipToken = token,
+                    SponsorshipToken = invite.Token,
                 };
+                var templateName = invite.ExistingAccount ?
+                    "FamiliesForEnterprise.FamiliesForEnterpriseOfferExistingAccount" :
+                    "FamiliesForEnterprise.FamiliesForEnterpriseOfferNewAccount";
 
-                await AddMessageContentAsync(message, "FamiliesForEnterprise.FamiliesForEnterpriseOfferExistingAccount", model);
+                return new MailQueueMessage(message, templateName, model);
             }
-            else
-            {
-                var model = new FamiliesForEnterpriseOfferNewAccountViewModel
-                {
-                    SponsorEmail = sponsorEmail,
-                    SponsoredEmail = WebUtility.UrlEncode(email),
-                    WebVaultUrl = _globalSettings.BaseServiceUri.VaultWithHash,
-                    SiteName = _globalSettings.SiteName,
-                    SponsorshipToken = token,
-                };
-
-                await AddMessageContentAsync(message, "FamiliesForEnterprise.FamiliesForEnterpriseOfferNewAccount", model);
-            }
-
-            message.Category = "FamiliesForEnterpriseOffer";
-            await _mailDeliveryService.SendEmailAsync(message);
+            var messageModels = invites.Select(invite => CreateMessage(invite));
+            await EnqueueMailAsync(messageModels);
         }
 
         public async Task SendFamiliesForEnterpriseRedeemedEmailsAsync(string familyUserEmail, string sponsorEmail)
@@ -848,12 +811,12 @@ namespace Bit.Core.Services
             await _mailDeliveryService.SendEmailAsync(message);
         }
 
-        public async Task SendFamiliesForEnterpriseSponsorshipRevertingEmailAsync(string email, string familyOrgName)
+        public async Task SendFamiliesForEnterpriseSponsorshipRevertingEmailAsync(string email, DateTime expirationDate)
         {
-            var message = CreateDefaultMessage($"{familyOrgName} Organization Sponsorship Is No Longer Valid", email);
+            var message = CreateDefaultMessage("Your Families Sponsorship was Removed", email);
             var model = new FamiliesForEnterpriseSponsorshipRevertingViewModel
             {
-                OrganizationName = CoreHelpers.SanitizeForEmail(familyOrgName, false),
+                ExpirationDate = expirationDate,
             };
             await AddMessageContentAsync(message, "FamiliesForEnterprise.FamiliesForEnterpriseSponsorshipReverting", model);
             message.Category = "FamiliesForEnterpriseSponsorshipReverting";
@@ -907,6 +870,11 @@ namespace Bit.Core.Services
             await AddMessageContentAsync(message, "FailedTwoFactorAttempts", model);
             message.Category = "FailedTwoFactorAttempts";
             await _mailDeliveryService.SendEmailAsync(message);
+        }
+
+        private static string GetUserIdentifier(string email, string userName)
+        {
+            return string.IsNullOrEmpty(userName) ? email : CoreHelpers.SanitizeForEmail(userName, false);
         }
     }
 }

@@ -32,7 +32,7 @@
     [ReferenceData]                 NVARCHAR (MAX)   NULL,
     [Enabled]                       BIT              NOT NULL,
     [LicenseKey]                    VARCHAR (100)    NULL,
-    [ApiKey]                        VARCHAR (MAX)     NOT NULL,
+    [ApiKey]                        VARCHAR (MAX)    NOT NULL,
     [PublicKey]                     VARCHAR (MAX)    NULL,
     [PrivateKey]                    VARCHAR (MAX)    NULL,
     [TwoFactorProviders]            NVARCHAR (MAX)   NULL,
@@ -55,4 +55,3 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Organization_Identifier]
     ON [dbo].[Organization]([Identifier] ASC)
     WHERE [Identifier] IS NOT NULL;
-

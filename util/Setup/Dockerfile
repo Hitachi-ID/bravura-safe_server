@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 
 LABEL com.hitachi.product="bravura_vault" com.hitachi.project="setup"
 
