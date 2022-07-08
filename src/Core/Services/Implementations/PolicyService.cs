@@ -66,11 +66,7 @@ namespace Bit.Core.Services
                     break;
 
                 case PolicyType.RequireSso:
-                    if (policy.Enabled)
-                    {
-                        await DependsOnSingleOrgAsync(org);
-                    }
-                    else
+                    if (!policy.Enabled)
                     {
                         await RequiredByKeyConnectorAsync(org);
                     }

@@ -772,6 +772,24 @@ namespace Bit.Core.Services
 
                     await _organizationUserRepository.CreateAsync(orgUser);
 
+                    if (organization.PlanType == PlanType.BravuraEnterprise)
+                    {
+                        Dictionary<string, bool> Data = new Dictionary<string, bool>
+                        {
+                            {"autoEnrollEnabled", true }
+                        };
+                        Policy policyMasterPasswordReset = new Policy
+                        {
+                            OrganizationId = organization.Id,
+                            Type = PolicyType.ResetPassword,
+                            Enabled = true,
+                            Data = JsonSerializer.Serialize(Data),
+                            CreationDate = organization.CreationDate,
+                            RevisionDate = organization.CreationDate
+                        };
+                        await _policyRepository.CreateAsync(policyMasterPasswordReset);
+                    }
+
                     var deviceIds = await GetUserDeviceIdsAsync(orgUser.UserId.Value);
                     await _pushRegistrationService.AddUserRegistrationOrganizationAsync(deviceIds,
                         organization.Id.ToString());
