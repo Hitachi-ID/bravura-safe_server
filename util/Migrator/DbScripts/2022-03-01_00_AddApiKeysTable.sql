@@ -181,7 +181,7 @@ BEGIN
 END;
 GO
 
-IF COL_LENGTH('[dbo].[Organization]', 'ApiKey') IS NOT NULl
+/* IF COL_LENGTH('[dbo].[Organization]', 'ApiKey') IS NOT NULl
 BEGIN
     BEGIN TRANSACTION MigrateOrganizationApiKeys
     PRINT N'Migrating Organization ApiKeys'
@@ -211,12 +211,12 @@ BEGIN
 
     COMMIT TRANSACTION MigrateOrganizationApiKeys;
 END
-GO
+GO */
 
 DROP FUNCTION [dbo].[GenerateComb];
 GO
 
-/*IF OBJECT_ID('[dbo].[Organization_Create]') IS NOT NULL
+IF OBJECT_ID('[dbo].[Organization_Create]') IS NOT NULL
 BEGIN
     DROP PROCEDURE [dbo].[Organization_Create]
 END
@@ -256,6 +256,7 @@ CREATE PROCEDURE [dbo].[Organization_Create]
     @ReferenceData VARCHAR(MAX),
     @Enabled BIT,
     @LicenseKey VARCHAR(100),
+    @ApiKey VARCHAR(MAX),
     @PublicKey VARCHAR(MAX),
     @PrivateKey VARCHAR(MAX),
     @TwoFactorProviders NVARCHAR(MAX),
@@ -304,6 +305,7 @@ BEGIN
         [ReferenceData],
         [Enabled],
         [LicenseKey],
+        [ApiKey],
         [PublicKey],
         [PrivateKey],
         [TwoFactorProviders],
@@ -349,6 +351,7 @@ BEGIN
         @ReferenceData,
         @Enabled,
         @LicenseKey,
+        @ApiKey,
         @PublicKey,
         @PrivateKey,
         @TwoFactorProviders,
@@ -402,6 +405,7 @@ CREATE PROCEDURE [dbo].[Organization_Update]
     @ReferenceData VARCHAR(MAX),
     @Enabled BIT,
     @LicenseKey VARCHAR(100),
+    @ApiKey VARCHAR(MAX),
     @PublicKey VARCHAR(MAX),
     @PrivateKey VARCHAR(MAX),
     @TwoFactorProviders NVARCHAR(MAX),
@@ -450,6 +454,7 @@ BEGIN
         [ReferenceData] = @ReferenceData,
         [Enabled] = @Enabled,
         [LicenseKey] = @LicenseKey,
+        [ApiKey] = @ApiKey,
         [PublicKey] = @PublicKey,
         [PrivateKey] = @PrivateKey,
         [TwoFactorProviders] = @TwoFactorProviders,
@@ -462,7 +467,7 @@ BEGIN
     WHERE
         [Id] = @Id
 END
-GO */
+GO
 
 IF OBJECT_ID('[dbo].[OrganizationView]') IS NOT NULL
 BEGIN
