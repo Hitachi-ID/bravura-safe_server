@@ -4,7 +4,7 @@
 		<TargetFramework>net5.0</TargetFramework>
 		<Version>1.48.1</Version>
 		<RootNamespace>Bit.$(MSBuildProjectName)</RootNamespace>
-        <InternalVersion>2022-05</InternalVersion>
+        <InternalVersion>2022-06</InternalVersion>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 
