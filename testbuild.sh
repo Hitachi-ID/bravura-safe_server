@@ -120,6 +120,8 @@ else
     echo "Building bravura_vault"
     echo "=================="
 
+    git submodule update --init
+
     "$DIR/scripts/build" api
     "$DIR/scripts/build-docker" api
 
