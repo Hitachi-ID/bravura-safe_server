@@ -17,8 +17,6 @@ namespace Bit.Api.Models.Request.Organizations
     public class OrganizationSsoRequestModel
     {
         [Required]
-        public bool Enabled { get; set; }
-        [Required]
         public SsoConfigurationDataRequest Data { get; set; }
 
         public SsoConfig ToSsoConfig(Guid organizationId)
@@ -28,7 +26,7 @@ namespace Bit.Api.Models.Request.Organizations
 
         public SsoConfig ToSsoConfig(SsoConfig existingConfig)
         {
-            existingConfig.Enabled = Enabled;
+            existingConfig.Enabled = true;
             var configurationData = Data.ToConfigurationData();
             existingConfig.SetData(configurationData);
             return existingConfig;

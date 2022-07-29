@@ -3,34 +3,31 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:33656/",
-      "sslPort": 0
+      "applicationUrl": "http://localhost:53915/",
+      "sslPort": 44311
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "Identity": {
       "commandName": "Project",
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:33656",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:33656"
     },
     "Identity-SelfHost": {
       "commandName": "Project",
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:33657",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "developSelfHosted": "true"
-      }
+      },
+      "applicationUrl": "http://localhost:33657"
     }
   }
 }
