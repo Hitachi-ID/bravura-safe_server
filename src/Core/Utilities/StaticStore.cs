@@ -138,7 +138,7 @@ namespace Bit.Core.Utilities
                     NameLocalizationKey = "bravuraPlanNameTeams",
                     DescriptionLocalizationKey = "bravuraPlanDescTeams",
                     BaseSeats = 32767,
-                    BaseStorageGb = 1,
+                    BaseStorageGb = 10240,
 
                     MaxCollections = 32767,
 
@@ -171,7 +171,7 @@ namespace Bit.Core.Utilities
                     NameLocalizationKey = "bravuraPlanNameEnterprise",
                     DescriptionLocalizationKey = "bravuraPlanDescEnterprise",
                     BaseSeats = 1000000,
-                    BaseStorageGb = 1,
+                    BaseStorageGb = 10240,
 
                     MaxCollections = 32767,
 
