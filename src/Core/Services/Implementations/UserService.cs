@@ -308,7 +308,7 @@ namespace Bit.Core.Services
             user.ApiKey = CoreHelpers.SecureRandomString(30);
             user.Premium = true;
             user.EmailVerified = true;
-            user.MaxStorageGb = 1;
+            user.MaxStorageGb = 2;
             var result = await base.CreateAsync(user, masterPassword);
             if (result == IdentityResult.Success)
             {
@@ -973,13 +973,13 @@ namespace Bit.Core.Services
 
             if (_globalSettings.SelfHosted)
             {
-                user.MaxStorageGb = 10240; // 10 TB
+                user.MaxStorageGb = 2;
                 user.LicenseKey = license.LicenseKey;
                 user.PremiumExpirationDate = license.Expires;
             }
             else
             {
-                user.MaxStorageGb = (short)(1 + additionalStorageGb);
+                user.MaxStorageGb = 2;
                 user.LicenseKey = CoreHelpers.SecureRandomString(20);
             }
 
