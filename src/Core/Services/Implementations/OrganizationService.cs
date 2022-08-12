@@ -565,7 +565,10 @@ namespace Bit.Core.Services
         public async Task<Tuple<Organization, OrganizationUser>> SignUpAsync(OrganizationSignup signup,
             bool provider = false)
         {
-            var plan = StaticStore.Plans.FirstOrDefault(p => p.Type == signup.Plan);
+            // Determine plan type
+            var count = (await _organizationRepository.GetManyByEnabledAsync()).Count();
+            var plan = StaticStore.Plans.FirstOrDefault(p => p.Type == (count > 0 ? PlanType.BravuraTeams : PlanType.BravuraEnterprise) );
+
             if (!(plan is { LegacyYear: null }))
             {
                 throw new BadRequestException("Invalid plan selected.");
@@ -589,22 +592,24 @@ namespace Bit.Core.Services
                 Id = CoreHelpers.GenerateComb(),
                 Name = signup.Name,
                 BillingEmail = signup.BillingEmail,
-                PlanType = PlanType.Custom,
-                Seats = 1000000,
-                MaxCollections = 32767,
-                MaxStorageGb = 10240,
-                UsePolicies = true,
-                UseSso = true,
-                UseGroups = true,
-                UseEvents = true,
-                UseDirectory = true,
-                UseTotp = true,
-                Use2fa = true,
-                UseApi = true,
-                UseResetPassword = true,
-                SelfHost = true,
-                UsersGetPremium = true,
-                Plan = "Custom",
+                BusinessName = signup.BusinessName,
+                PlanType = plan.Type,
+                Seats = plan.BaseSeats,
+                MaxCollections = plan.MaxCollections,
+                MaxStorageGb = !plan.BaseStorageGb.HasValue ?
+                    (short?)null : (short)(plan.BaseStorageGb.Value + signup.AdditionalStorageGb),
+                UsePolicies = plan.HasPolicies,
+                UseSso = plan.HasSso,
+                UseGroups = plan.HasGroups,
+                UseEvents = plan.HasEvents,
+                UseDirectory = plan.HasDirectory,
+                UseTotp = plan.HasTotp,
+                Use2fa = plan.Has2fa,
+                UseApi = plan.HasApi,
+                UseResetPassword = plan.HasResetPassword,
+                SelfHost = plan.HasSelfHost,
+                UsersGetPremium = plan.UsersGetPremium || signup.PremiumAccessAddon,
+                Plan = plan.Name,
                 Gateway = null,
                 ReferenceData = signup.Owner.ReferenceData,
                 Enabled = true,
@@ -766,6 +771,24 @@ namespace Bit.Core.Services
                     };
 
                     await _organizationUserRepository.CreateAsync(orgUser);
+
+                    if (organization.PlanType == PlanType.BravuraEnterprise)
+                    {
+                        Dictionary<string, bool> Data = new Dictionary<string, bool>
+                        {
+                            {"autoEnrollEnabled", true }
+                        };
+                        Policy policyMasterPasswordReset = new Policy
+                        {
+                            OrganizationId = organization.Id,
+                            Type = PolicyType.ResetPassword,
+                            Enabled = true,
+                            Data = JsonSerializer.Serialize(Data),
+                            CreationDate = organization.CreationDate,
+                            RevisionDate = organization.CreationDate
+                        };
+                        await _policyRepository.CreateAsync(policyMasterPasswordReset);
+                    }
 
                     var deviceIds = await GetUserDeviceIdsAsync(orgUser.UserId.Value);
                     await _pushRegistrationService.AddUserRegistrationOrganizationAsync(deviceIds,

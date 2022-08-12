@@ -35,8 +35,8 @@ namespace Bit.Core.IdentityServer
             }
             else if (id == "desktop")
             {
-                RedirectUris = new[] { "bitwarden://sso-callback" };
-                PostLogoutRedirectUris = new[] { "bitwarden://logged-out" };
+                RedirectUris = new[] { "bravurasafe://sso-callback" };
+                PostLogoutRedirectUris = new[] { "bravurasafe://logged-out" };
             }
             else if (id == "connector")
             {
@@ -66,8 +66,8 @@ namespace Bit.Core.IdentityServer
             }
             else if (id == "mobile")
             {
-                RedirectUris = new[] { "bitwarden://sso-callback" };
-                PostLogoutRedirectUris = new[] { "bitwarden://logged-out" };
+                RedirectUris = new[] { "bravurasafe://sso-callback" };
+                PostLogoutRedirectUris = new[] { "bravurasafe://logged-out" };
             }
 
             if (scopes == null)

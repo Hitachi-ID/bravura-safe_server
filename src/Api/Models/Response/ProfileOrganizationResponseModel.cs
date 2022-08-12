@@ -41,9 +41,7 @@ namespace Bit.Api.Models.Response
             ProviderId = organization.ProviderId?.ToString();
             ProviderName = organization.ProviderName;
             FamilySponsorshipFriendlyName = organization.FamilySponsorshipFriendlyName;
-            FamilySponsorshipAvailable = FamilySponsorshipFriendlyName == null &&
-                StaticStore.GetSponsoredPlan(PlanSponsorshipType.FamiliesForEnterprise)
-                .UsersCanSponsor(organization);
+            FamilySponsorshipAvailable = false;
             PlanProductType = StaticStore.GetPlan(organization.PlanType).Product;
 
             if (organization.SsoConfig != null)
