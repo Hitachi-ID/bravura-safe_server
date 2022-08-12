@@ -195,9 +195,9 @@ namespace Bit.Core.Entities
         {
             if (encrypted == true)
                 return this;
-            if (MasterPasswordHint is not null) MasterPasswordHint = AESHMACEncryption.SimpleEncrypt(MasterPasswordHint, cryptKey, authKey);
-            if (TwoFactorRecoveryCode is not null) TwoFactorRecoveryCode = AESHMACEncryption.SimpleEncrypt(TwoFactorRecoveryCode, cryptKey, authKey);
-            if (ApiKey is not null) ApiKey = AESHMACEncryption.SimpleEncrypt(ApiKey, cryptKey, authKey);
+            if (!string.IsNullOrEmpty(MasterPasswordHint)) MasterPasswordHint = AESHMACEncryption.SimpleEncrypt(MasterPasswordHint, cryptKey, authKey);
+            if (!string.IsNullOrEmpty(TwoFactorRecoveryCode)) TwoFactorRecoveryCode = AESHMACEncryption.SimpleEncrypt(TwoFactorRecoveryCode, cryptKey, authKey);
+            if (!string.IsNullOrEmpty(ApiKey)) ApiKey = AESHMACEncryption.SimpleEncrypt(ApiKey, cryptKey, authKey);
             encrypted = true;
             return this;
         }
@@ -206,9 +206,9 @@ namespace Bit.Core.Entities
         {
             if (encrypted == false)
                 return this;
-            if (MasterPasswordHint is not null) MasterPasswordHint = AESHMACEncryption.SimpleDecrypt(MasterPasswordHint, cryptKey, authKey);
-            if (TwoFactorRecoveryCode is not null) TwoFactorRecoveryCode = AESHMACEncryption.SimpleDecrypt(TwoFactorRecoveryCode, cryptKey, authKey);
-            if (ApiKey is not null) ApiKey = AESHMACEncryption.SimpleDecrypt(ApiKey, cryptKey, authKey);
+            if (!string.IsNullOrWhiteSpace(MasterPasswordHint)) MasterPasswordHint = AESHMACEncryption.SimpleDecrypt(MasterPasswordHint, cryptKey, authKey);
+            if (!string.IsNullOrWhiteSpace(TwoFactorRecoveryCode)) TwoFactorRecoveryCode = AESHMACEncryption.SimpleDecrypt(TwoFactorRecoveryCode, cryptKey, authKey);
+            if (!string.IsNullOrWhiteSpace(ApiKey)) ApiKey = AESHMACEncryption.SimpleDecrypt(ApiKey, cryptKey, authKey);
             encrypted = false;
             return this;
         }

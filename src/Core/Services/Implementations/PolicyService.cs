@@ -47,6 +47,11 @@ namespace Bit.Core.Services
                 throw new BadRequestException("This team cannot use policies.");
             }
 
+            if(!EnterprisePolicyOnlyTest(policy.Type, org.PlanType))
+            {
+                throw new BadRequestException("This team cannot use enterprise team policies.");
+            }
+
             // Handle dependent policy checks
             switch (policy.Type)
             {
@@ -60,11 +65,7 @@ namespace Bit.Core.Services
                     break;
 
                 case PolicyType.RequireSso:
-                    if (policy.Enabled)
-                    {
-                        await DependsOnSingleOrgAsync(org);
-                    }
-                    else
+                    if (!policy.Enabled)
                     {
                         await RequiredByKeyConnectorAsync(org);
                     }
@@ -170,6 +171,32 @@ namespace Bit.Core.Services
             {
                 throw new BadRequestException("Maximum Vault Timeout policy is enabled.");
             }
+        }
+
+
+        private bool EnterprisePolicyOnlyTest(PolicyType policy, PlanType type)
+        {
+            if (type != PlanType.BravuraEnterprise)
+            {
+                switch (policy)
+                {
+                    case PolicyType.PasswordGenerator:
+                    case PolicyType.MaximumVaultTimeout:
+                        return true;
+                    case PolicyType.TwoFactorAuthentication:
+                    case PolicyType.MasterPassword:
+                    case PolicyType.SingleOrg:
+                    case PolicyType.RequireSso:
+                    case PolicyType.PersonalOwnership:
+                    case PolicyType.DisableSend:
+                    case PolicyType.SendOptions:
+                    case PolicyType.ResetPassword:
+                    case PolicyType.DisablePersonalVaultExport:
+                    default:
+                        return false;
+                }
+            }
+            return true;
         }
     }
 }

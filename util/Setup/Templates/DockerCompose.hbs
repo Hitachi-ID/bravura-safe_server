@@ -204,6 +204,23 @@ services:
       - public
 {{/if}}
 
+  sso:
+    image: bravura_vault/sso:{{{CoreVersion}}}
+    container_name: bravura_vault-sso
+    restart: always
+    volumes:
+      - ../identity:/etc/bitwarden/identity
+      - ../core:/etc/bitwarden/core
+      - ../ca-certificates:/etc/bitwarden/ca-certificates
+      - ../logs/sso:/etc/bitwarden/logs
+    env_file:
+      - global.env
+      - ../env/uid.env
+      - ../env/global.override.env
+    networks:
+      - default
+      - public
+
 {{#if UseMssqlDocker}}
 {{#if MssqlDataDockerVolume}}
 

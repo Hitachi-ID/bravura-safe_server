@@ -36,6 +36,7 @@ then
     docker push $REPO/events:$TAG
     docker push $REPO/admin:$TAG
     docker push $REPO/nginx:$TAG
+    docker push $REPO/sso:$TAG
     docker push $REPO/mssql:$TAG
     docker push $REPO/setup:$TAG
 
@@ -56,6 +57,7 @@ then
     docker pull $REPO/events:$TAG
     docker pull $REPO/admin:$TAG
     docker pull $REPO/nginx:$TAG
+    docker pull $REPO/sso:$TAG
     docker pull $REPO/mssql:$TAG
     docker pull $REPO/setup:$TAG
 
@@ -68,6 +70,7 @@ then
     docker tag $REPO/events:$TAG bravura_vault/events:$TAG
     docker tag $REPO/admin:$TAG bravura_vault/admin:$TAG
     docker tag $REPO/nginx:$TAG bravura_vault/nginx:$TAG
+    docker tag $REPO/mssql:$TAG bravura_vault/sso:$TAG
     docker tag $REPO/mssql:$TAG bravura_vault/mssql:$TAG
     docker tag $REPO/setup:$TAG bravura_vault/setup:$TAG
 
@@ -87,6 +90,7 @@ then
     aws ecr create-repository --repository-name $REPO/events
     aws ecr create-repository --repository-name $REPO/admin
     aws ecr create-repository --repository-name $REPO/nginx
+    aws ecr create-repository --repository-name $REPO/sso
     aws ecr create-repository --repository-name $REPO/mssql
     aws ecr create-repository --repository-name $REPO/setup
 
@@ -109,11 +113,14 @@ then
     docker tag $REPO1/events:$TAG1 $REPO2/events:$TAG2
     docker tag $REPO1/admin:$TAG1 $REPO2/admin:$TAG2
     docker tag $REPO1/nginx:$TAG1 $REPO2/nginx:$TAG2
+    docker tag $REPO1/sso:$TAG1 $REPO2/sso:$TAG2
     docker tag $REPO1/mssql:$TAG1 $REPO2/mssql:$TAG2
     docker tag $REPO1/setup:$TAG1 $REPO2/setup:$TAG2
 else
     echo "Building bravura_vault"
     echo "=================="
+
+    git submodule update --init
 
     "$DIR/scripts/build" api
     "$DIR/scripts/build-docker" api
@@ -142,6 +149,9 @@ else
     "$DIR/scripts/build" admin
     "$DIR/scripts/build-docker" admin
 
+    "$DIR/scripts/build" sso
+    "$DIR/scripts/build-docker" sso
+    
     "$DIR/scripts/build" mssql
     "$DIR/scripts/build-docker" mssql
 
