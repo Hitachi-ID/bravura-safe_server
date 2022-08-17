@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)" />
     <PackageReference Include="Moq" Version="4.17.2" />
     <PackageReference Include="NSubstitute" Version="$(NSubstitueVersion)" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
     <PackageReference Include="xunit" Version="$(XUnitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XUnitRunnerVisualStudioVersion)">
       <PrivateAssets>all</PrivateAssets>
@@ -18,7 +19,7 @@
     </PackageReference>
     <PackageReference Include="AutoFixture.Xunit2" Version="$(AutoFixtureXUnit2Version)" />
     <PackageReference Include="AutoFixture.AutoNSubstitute" Version="$(AutoFixtureAutoNSubstituteVersion)" />
-    <PackageReference Include="Kralizek.AutoFixture.Extensions.MockHttp" Version="1.2.0"/>
+    <PackageReference Include="Kralizek.AutoFixture.Extensions.MockHttp" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Core\Core.csproj" />
@@ -26,9 +27,9 @@
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Utilities\data\embeddedResource.txt"/>
+    <None Remove="Utilities\data\embeddedResource.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Utilities\data\embeddedResource.txt"/>
+    <EmbeddedResource Include="Utilities\data\embeddedResource.txt" />
   </ItemGroup>
 </Project>
