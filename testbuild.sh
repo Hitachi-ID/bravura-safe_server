@@ -116,6 +116,13 @@ then
     docker tag $REPO1/sso:$TAG1 $REPO2/sso:$TAG2
     docker tag $REPO1/mssql:$TAG1 $REPO2/mssql:$TAG2
     docker tag $REPO1/setup:$TAG1 $REPO2/setup:$TAG2
+	
+elif [ $# -gt 1 -a "$1" == "build" ]
+then
+    PROJECT=$2
+    "$DIR/scripts/build" $PROJECT
+    "$DIR/scripts/build-docker" $PROJECT
+
 else
     echo "Building bravura_vault"
     echo "=================="

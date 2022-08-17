@@ -1,0 +1,26 @@
+{
+  "solution": {
+    "path": "bravura-vault-server.sln",
+    "projects": [
+      "bravura_src\\server\\sso\\sso.csproj",
+      "src\\Admin\\Admin.csproj",
+      "src\\Api\\Api.csproj",
+      "src\\Billing\\Billing.csproj",
+      "src\\Core\\Core.csproj",
+      "src\\EventsProcessor\\EventsProcessor.csproj",
+      "src\\Events\\Events.csproj",
+      "src\\Icons\\Icons.csproj",
+      "src\\Identity\\Identity.csproj",
+      "src\\Infrastructure.Dapper\\Infrastructure.Dapper.csproj",
+      "src\\Infrastructure.EntityFramework\\Infrastructure.EntityFramework.csproj",
+      "src\\Notifications\\Notifications.csproj",
+      "src\\SharedWeb\\SharedWeb.csproj",
+      "src\\Sql\\Sql.sqlproj",
+      "util\\Migrator\\Migrator.csproj",
+      "util\\MySqlMigrations\\MySqlMigrations.csproj",
+      "util\\PostgresMigrations\\PostgresMigrations.csproj",
+      "util\\Server\\Server.csproj",
+      "util\\Setup\\Setup.csproj"
+    ]
+  }
+}
