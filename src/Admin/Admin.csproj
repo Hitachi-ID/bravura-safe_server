@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.29.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(MicrosoftVisualStudioWebCodeGenerationDesignVersion)" />
     <PackageReference Include="NewRelic.Agent" Version="9.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.1.8" />

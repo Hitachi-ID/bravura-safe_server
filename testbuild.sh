@@ -151,7 +151,7 @@ else
 
     "$DIR/scripts/build" sso
     "$DIR/scripts/build-docker" sso
-    
+
     "$DIR/scripts/build" mssql
     "$DIR/scripts/build-docker" mssql
 

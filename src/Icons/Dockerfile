@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
 
 LABEL com.hitachi.product="bravura_vault"
 
@@ -38,8 +38,10 @@ RUN set -eux; \
         apk add --upgrade --no-cache \
                 linux-pam \
                 shadow \
-                tzdata
+                tzdata \
+                icu-libs
 
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 ENV ASPNETCORE_URLS http://+:5000
 WORKDIR /app
 EXPOSE 5000
