@@ -35,7 +35,7 @@ namespace Bit.Api.Models.Request.Organizations
             }
             catch (JsonException)
             {
-                throw new BadRequestException("Organization Connection configuration malformed");
+                throw new BadRequestException("Team Connection configuration malformed");
             }
         }
 

@@ -61,12 +61,12 @@ namespace Bit.Api.Controllers
         {
             if (!await HasPermissionAsync(model?.OrganizationId))
             {
-                throw new BadRequestException("Only the owner of an organization can create a connection.");
+                throw new BadRequestException("Only the owner of a team can create a connection.");
             }
 
             if (await HasConnectionTypeAsync(model))
             {
-                throw new BadRequestException($"The requested organization already has a connection of type {model.Type}. Only one of each connection type may exist per organization.");
+                throw new BadRequestException($"The requested team already has a connection of type {model.Type}. Only one of each connection type may exist per team.");
             }
 
             switch (model.Type)
@@ -82,7 +82,7 @@ namespace Bit.Api.Controllers
                     var connection = await _createOrganizationConnectionCommand.CreateAsync(typedModel.ToData());
                     return new OrganizationConnectionResponseModel(connection, typeof(BillingSyncConfig));
                 default:
-                    throw new BadRequestException($"Unknown Organization connection Type: {model.Type}");
+                    throw new BadRequestException($"Unknown Team connection Type: {model.Type}");
             }
         }
 
@@ -97,12 +97,12 @@ namespace Bit.Api.Controllers
 
             if (!await HasPermissionAsync(model?.OrganizationId))
             {
-                throw new BadRequestException("Only the owner of an organization can update a connection.");
+                throw new BadRequestException("Only the owner of a team can update a connection.");
             }
 
             if (await HasConnectionTypeAsync(model, organizationConnectionId))
             {
-                throw new BadRequestException($"The requested organization already has a connection of type {model.Type}. Only one of each connection type may exist per organization.");
+                throw new BadRequestException($"The requested team already has a connection of type {model.Type}. Only one of each connection type may exist per team.");
             }
 
             switch (model.Type)
@@ -114,7 +114,7 @@ namespace Bit.Api.Controllers
                     var connection = await _updateOrganizationConnectionCommand.UpdateAsync(typedModel.ToData(organizationConnectionId));
                     return new OrganizationConnectionResponseModel(connection, typeof(BillingSyncConfig));
                 default:
-                    throw new BadRequestException($"Unkown Organization connection Type: {model.Type}");
+                    throw new BadRequestException($"Unkown Team connection Type: {model.Type}");
             }
         }
 
@@ -123,7 +123,7 @@ namespace Bit.Api.Controllers
         {
             if (!await HasPermissionAsync(organizationId))
             {
-                throw new BadRequestException("Only the owner of an organization can retrieve a connection.");
+                throw new BadRequestException("Only the owner of a team can retrieve a connection.");
             }
 
             var connections = await GetConnectionsAsync(organizationId);
@@ -134,7 +134,7 @@ namespace Bit.Api.Controllers
                 case OrganizationConnectionType.CloudBillingSync:
                     return new OrganizationConnectionResponseModel(connection, typeof(BillingSyncConfig));
                 default:
-                    throw new BadRequestException($"Unkown Organization connection Type: {type}");
+                    throw new BadRequestException($"Unkown Team connection Type: {type}");
             }
 
         }
@@ -152,7 +152,7 @@ namespace Bit.Api.Controllers
 
             if (!await HasPermissionAsync(connection.OrganizationId))
             {
-                throw new BadRequestException("Only the owner of an organization can remove a connection.");
+                throw new BadRequestException("Only the owner of a team can remove a connection.");
             }
 
             await _deleteOrganizationConnectionCommand.DeleteAsync(connection);

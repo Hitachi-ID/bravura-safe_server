@@ -53,17 +53,17 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
         {
             if (sponsoringOrg == null)
             {
-                throw new BadRequestException("Cannot find the requested sponsoring organization.");
+                throw new BadRequestException("Cannot find the requested sponsoring team.");
             }
 
             if (sponsoringOrgUser == null || sponsoringOrgUser.Status != OrganizationUserStatusType.Confirmed)
             {
-                throw new BadRequestException("Only confirmed users can sponsor other organizations.");
+                throw new BadRequestException("Only confirmed users can sponsor other teams.");
             }
 
             if (sponsorship == null || sponsorship.OfferedToEmail == null)
             {
-                throw new BadRequestException("Cannot find an outstanding sponsorship offer for this organization.");
+                throw new BadRequestException("Cannot find an outstanding sponsorship offer for this team.");
             }
 
             await SendSponsorshipOfferAsync(sponsorship, sponsoringOrg.Name);

@@ -36,19 +36,19 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
                 sponsoringOrg == null ||
                 StaticStore.GetPlan(sponsoringOrg.PlanType).Product != requiredSponsoringProductType.Value)
             {
-                throw new BadRequestException("Specified Organization cannot sponsor other organizations.");
+                throw new BadRequestException("Specified Team cannot sponsor other teams.");
             }
 
             if (sponsoringOrgUser == null || sponsoringOrgUser.Status != OrganizationUserStatusType.Confirmed)
             {
-                throw new BadRequestException("Only confirmed users can sponsor other organizations.");
+                throw new BadRequestException("Only confirmed users can sponsor other teams.");
             }
 
             var existingOrgSponsorship = await _organizationSponsorshipRepository
                 .GetBySponsoringOrganizationUserIdAsync(sponsoringOrgUser.Id);
             if (existingOrgSponsorship?.SponsoredOrganizationId != null)
             {
-                throw new BadRequestException("Can only sponsor one organization per Organization User.");
+                throw new BadRequestException("Can only sponsor one team per Team User.");
             }
 
             var sponsorship = new OrganizationSponsorship

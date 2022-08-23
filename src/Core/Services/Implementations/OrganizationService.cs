@@ -1037,7 +1037,7 @@ namespace Bit.Core.Services
         {
             if (organization.Id == default(Guid))
             {
-                throw new ApplicationException("Cannot create org this way. Call SignUpAsync.");
+                throw new ApplicationException("Cannot create team this way. Call SignUpAsync.");
             }
 
             if (!string.IsNullOrWhiteSpace(organization.Identifier))
@@ -2187,7 +2187,7 @@ namespace Bit.Core.Services
 
             if (!await HasConfirmedOwnersExceptAsync(organizationUser.OrganizationId, new[] { organizationUser.Id }))
             {
-                throw new BadRequestException("Organization must have at least one confirmed owner.");
+                throw new BadRequestException("Team must have at least one confirmed owner.");
             }
 
             await _organizationUserRepository.DeactivateAsync(organizationUser.Id);
@@ -2209,7 +2209,7 @@ namespace Bit.Core.Services
 
             if (!await HasConfirmedOwnersExceptAsync(organizationId, organizationUserIds))
             {
-                throw new BadRequestException("Organization must have at least one confirmed owner.");
+                throw new BadRequestException("Team must have at least one confirmed owner.");
             }
 
             var deletingUserIsOwner = false;
