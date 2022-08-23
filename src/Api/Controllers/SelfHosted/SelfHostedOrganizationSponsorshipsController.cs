@@ -57,7 +57,7 @@ namespace Bit.Api.Controllers.SelfHosted
 
             if (orgUser == null)
             {
-                throw new BadRequestException("Unknown Organization User");
+                throw new BadRequestException("Unknown Team User");
             }
 
             var existingOrgSponsorship = await _organizationSponsorshipRepository

@@ -34,7 +34,7 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
                 .GetBySponsoredOrganizationIdAsync(sponsoredOrganization.Id);
             if (existingOrgSponsorship != null)
             {
-                throw new BadRequestException("Cannot redeem a sponsorship offer for an organization that is already sponsored. Revoke existing sponsorship first.");
+                throw new BadRequestException("Cannot redeem a sponsorship offer for a team that is already sponsored. Revoke existing sponsorship first.");
             }
 
             if (sponsorship.PlanSponsorshipType == null)
@@ -55,7 +55,7 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
                 sponsoredOrganization == null ||
                 StaticStore.GetPlan(sponsoredOrganization.PlanType).Product != requiredSponsoredProductType.Value)
             {
-                throw new BadRequestException("Can only redeem sponsorship offer on families organizations.");
+                throw new BadRequestException("Can only redeem sponsorship offer on families teams.");
             }
 
             await _paymentService.SponsorOrganizationAsync(sponsoredOrganization, sponsorship);

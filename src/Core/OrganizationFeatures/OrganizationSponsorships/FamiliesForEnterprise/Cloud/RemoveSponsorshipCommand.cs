@@ -18,7 +18,7 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
         {
             if (sponsorship == null || sponsorship.SponsoredOrganizationId == null)
             {
-                throw new BadRequestException("The requested organization is not currently being sponsored.");
+                throw new BadRequestException("The requested team is not currently being sponsored.");
             }
 
             await MarkToDeleteSponsorshipAsync(sponsorship);

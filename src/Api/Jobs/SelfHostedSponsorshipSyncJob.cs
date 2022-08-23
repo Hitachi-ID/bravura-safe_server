@@ -42,7 +42,7 @@ namespace Bit.Api.Jobs
         {
             if (!_globalSettings.EnableCloudCommunication)
             {
-                _logger.LogInformation("Skipping Organization sync with cloud - Cloud communication is disabled in global settings");
+                _logger.LogInformation("Skipping Team sync with cloud - Cloud communication is disabled in global settings");
                 return;
             }
 
@@ -63,7 +63,7 @@ namespace Bit.Api.Jobs
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, $"Sponsorship sync for organization {org.Name} Failed");
+                            _logger.LogError(ex, $"Sponsorship sync for team {org.Name} Failed");
                         }
                     }
                 }

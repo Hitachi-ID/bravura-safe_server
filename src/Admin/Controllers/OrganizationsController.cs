@@ -215,7 +215,7 @@ namespace Bit.Admin.Controllers
                 catch (Exception ex)
                 {
                     TempData["ConnectionError"] = ex.Message;
-                    _logger.LogWarning(ex, "Error while attempting to do billing sync for organization with id '{OrganizationId}'", id);
+                    _logger.LogWarning(ex, "Error while attempting to do billing sync for team with id '{OrganizationId}'", id);
                 }
 
                 if (_globalSettings.SelfHosted)

@@ -30,7 +30,7 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
         {
             if (sponsoringOrg == null)
             {
-                throw new BadRequestException("Failed to sync sponsorship - missing organization.");
+                throw new BadRequestException("Failed to sync sponsorship - missing team.");
             }
 
             var (processedSponsorshipsData, sponsorshipsToEmailOffer) = sponsorshipsData.Any() ?

@@ -86,7 +86,7 @@ namespace Bit.Core.Services
 
             var enabledOrgs = await _organizationRepository.GetManyByEnabledAsync();
             _logger.LogInformation(Constants.BypassFiltersEventId, null,
-                "Validating licenses for {0} organizations.", enabledOrgs.Count);
+                "Validating licenses for {0} teams.", enabledOrgs.Count);
 
             foreach (var org in enabledOrgs)
             {
@@ -100,7 +100,7 @@ namespace Bit.Core.Services
                 var totalLicensedOrgs = enabledOrgs.Count(o => o.LicenseKey.Equals(license.LicenseKey));
                 if (totalLicensedOrgs > 1)
                 {
-                    await DisableOrganizationAsync(org, license, "Multiple organizations.");
+                    await DisableOrganizationAsync(org, license, "Multiple teams.");
                     continue;
                 }
 
@@ -121,7 +121,7 @@ namespace Bit.Core.Services
         private async Task DisableOrganizationAsync(Organization org, ILicense license, string reason)
         {
             _logger.LogInformation(Constants.BypassFiltersEventId, null,
-                "Organization {0} ({1}) has an invalid license and is being disabled. Reason: {2}",
+                "Team {0} ({1}) has an invalid license and is being disabled. Reason: {2}",
                 org.Id, org.Name, reason);
             org.Enabled = false;
             org.ExpirationDate = license?.Expires ?? DateTime.UtcNow;

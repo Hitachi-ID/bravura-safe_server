@@ -25,7 +25,7 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
         {
             if (organization == null)
             {
-                throw new BadRequestException("Invalid organization");
+                throw new BadRequestException("Invalid team");
             }
             if (string.IsNullOrWhiteSpace(billingSyncKey))
             {

@@ -18,7 +18,7 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
         {
             if (sponsorship == null)
             {
-                throw new BadRequestException("You are not currently sponsoring an organization.");
+                throw new BadRequestException("You are not currently sponsoring a team.");
             }
 
             if (sponsorship.LastSyncDate == null)

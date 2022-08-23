@@ -55,23 +55,23 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
             }
             if (!billingSyncConnection.Enabled)
             {
-                throw new BadRequestException($"Billing Sync Key disabled for organization {organizationId}");
+                throw new BadRequestException($"Billing Sync Key disabled for team {organizationId}");
             }
             if (string.IsNullOrWhiteSpace(billingSyncConnection.Config))
             {
-                throw new BadRequestException($"No Billing Sync Key known for organization {organizationId}");
+                throw new BadRequestException($"No Billing Sync Key known for team {organizationId}");
             }
             var billingSyncConfig = billingSyncConnection.GetConfig<BillingSyncConfig>();
             if (billingSyncConfig == null || string.IsNullOrWhiteSpace(billingSyncConfig.BillingSyncKey))
             {
-                throw new BadRequestException($"Failed to get Billing Sync Key for organization {organizationId}");
+                throw new BadRequestException($"Failed to get Billing Sync Key for team {organizationId}");
             }
 
             var organizationSponsorshipsDict = (await _organizationSponsorshipRepository.GetManyBySponsoringOrganizationAsync(organizationId))
                 .ToDictionary(i => i.SponsoringOrganizationUserId);
             if (!organizationSponsorshipsDict.Any())
             {
-                _logger.LogInformation($"No existing sponsorships to sync for organization {organizationId}");
+                _logger.LogInformation($"No existing sponsorships to sync for team {organizationId}");
                 return;
             }
             var syncedSponsorships = new List<OrganizationSponsorshipData>();
@@ -87,8 +87,8 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
 
                 if (response == null)
                 {
-                    _logger.LogDebug("Organization sync failed for '{OrgId}'", organizationId);
-                    throw new BadRequestException("Organization sync failed");
+                    _logger.LogDebug("Team sync failed for '{OrgId}'", organizationId);
+                    throw new BadRequestException("Team sync failed");
                 }
 
                 syncedSponsorships.AddRange(response.ToOrganizationSponsorshipSync().SponsorshipsBatch);

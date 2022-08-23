@@ -58,7 +58,7 @@ namespace Bit.Api.Test.Controllers
         {
             var exception = await Assert.ThrowsAsync<BadRequestException>(() => sutProvider.Sut.CreateConnection(null));
 
-            Assert.Contains("Only the owner of an organization can create a connection.", exception.Message);
+            Assert.Contains("Only the owner of a team can create a connection.", exception.Message);
         }
 
         [Theory]
@@ -78,7 +78,7 @@ namespace Bit.Api.Test.Controllers
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(() => sutProvider.Sut.CreateConnection(model));
 
-            Assert.Contains($"The requested organization already has a connection of type {model.Type}. Only one of each connection type may exist per organization.", exception.Message);
+            Assert.Contains($"The requested team already has a connection of type {model.Type}. Only one of each connection type may exist per team.", exception.Message);
         }
 
         [Theory]
@@ -147,7 +147,7 @@ namespace Bit.Api.Test.Controllers
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(() => sutProvider.Sut.UpdateConnection(default, null));
 
-            Assert.Contains("Only the owner of an organization can update a connection.", exception.Message);
+            Assert.Contains("Only the owner of a team can update a connection.", exception.Message);
         }
 
         [Theory]
@@ -169,7 +169,7 @@ namespace Bit.Api.Test.Controllers
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(() => sutProvider.Sut.UpdateConnection(existing1.Id, typedModel));
 
-            Assert.Contains($"The requested organization already has a connection of type {typedModel.Type}. Only one of each connection type may exist per organization.", exception.Message);
+            Assert.Contains($"The requested team already has a connection of type {typedModel.Type}. Only one of each connection type may exist per team.", exception.Message);
         }
 
         [Theory]
@@ -215,7 +215,7 @@ namespace Bit.Api.Test.Controllers
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.GetConnection(connectionId, OrganizationConnectionType.CloudBillingSync));
 
-            Assert.Contains("Only the owner of an organization can retrieve a connection.", exception.Message);
+            Assert.Contains("Only the owner of a team can retrieve a connection.", exception.Message);
         }
 
         [Theory]
@@ -251,7 +251,7 @@ namespace Bit.Api.Test.Controllers
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(() => sutProvider.Sut.DeleteConnection(connection.Id));
 
-            Assert.Contains("Only the owner of an organization can remove a connection.", exception.Message);
+            Assert.Contains("Only the owner of a team can remove a connection.", exception.Message);
         }
 
         [Theory]

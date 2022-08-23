@@ -42,7 +42,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.SetUpSponsorshipAsync(sponsorship, org));
 
-            Assert.Contains("Cannot redeem a sponsorship offer for an organization that is already sponsored. Revoke existing sponsorship first.", exception.Message);
+            Assert.Contains("Cannot redeem a sponsorship offer for a team that is already sponsored. Revoke existing sponsorship first.", exception.Message);
             await AssertDidNotSetUpAsync(sutProvider);
         }
 
@@ -77,7 +77,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.SetUpSponsorshipAsync(sponsorship, org));
 
-            Assert.Contains("Can only redeem sponsorship offer on families organizations.", exception.Message);
+            Assert.Contains("Can only redeem sponsorship offer on families teams.", exception.Message);
             await AssertDidNotSetUpAsync(sutProvider);
         }
 

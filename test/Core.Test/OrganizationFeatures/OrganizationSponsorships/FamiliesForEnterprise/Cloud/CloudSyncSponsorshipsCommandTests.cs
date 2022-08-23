@@ -30,7 +30,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.SyncOrganization(null, sponsorshipsData));
 
-            Assert.Contains("Failed to sync sponsorship - missing organization.", exception.Message);
+            Assert.Contains("Failed to sync sponsorship - missing team.", exception.Message);
 
             await sutProvider.GetDependency<IOrganizationSponsorshipRepository>()
                 .DidNotReceiveWithAnyArgs()

@@ -22,7 +22,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RevokeSponsorshipAsync(null));
 
-            Assert.Contains("You are not currently sponsoring an organization.", exception.Message);
+            Assert.Contains("You are not currently sponsoring a team.", exception.Message);
             await AssertDidNotDeleteSponsorshipAsync(sutProvider);
             await AssertDidNotUpdateSponsorshipAsync(sutProvider);
         }

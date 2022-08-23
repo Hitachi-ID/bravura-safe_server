@@ -85,7 +85,7 @@ namespace Bit.Setup
             "connect-src 'self' wss://{0} https://api.pwnedpasswords.com " +
             "https://2fa.directory; object-src 'self' blob:;";
 
-        [Description("Communicate with the Bitwarden push relay service (push.safe.hitachi-id.net) for mobile\n" +
+        [Description("Communicate with the Bravura Safe push relay service (push.safe.hitachi-id.net) for mobile\n" +
             "app live sync.")]
         public bool PushNotifications { get; set; } = true;
 
