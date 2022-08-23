@@ -452,7 +452,7 @@ namespace Bit.Core.Services
 
             // Callback to ensure credential id is unique. Always return true since we don't care if another
             // account uses the same 2fa key.
-            IsCredentialIdUniqueToUserAsyncDelegate callback = args => Task.FromResult(true);
+            IsCredentialIdUniqueToUserAsyncDelegate callback = (args, cancellationToken) => Task.FromResult(true);
 
             var success = await _fido2.MakeNewCredentialAsync(attestationResponse, options, callback);
 
