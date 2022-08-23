@@ -111,7 +111,7 @@ namespace Bit.Core.Identity
                 return false;
             }
 
-            IsUserHandleOwnerOfCredentialIdAsync callback = (args) => Task.FromResult(true);
+            IsUserHandleOwnerOfCredentialIdAsync callback = (args, cancellationToken) => Task.FromResult(true);
 
             var res = await _fido2.MakeAssertionAsync(clientResponse, options, webAuthCred.Item2.PublicKey, webAuthCred.Item2.SignatureCounter, callback);
 
