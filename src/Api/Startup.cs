@@ -17,10 +17,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
+using Bit.SharedWeb.Utilities;
 using Stripe;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 #if !OSS
-using Bit.CommCore.Utilities;
+using Bit.Commercial.Core.Utilities;
 #endif
 
 namespace Bit.Api
@@ -68,22 +70,18 @@ namespace Bit.Api
 
             // Context
             services.AddScoped<ICurrentContext, CurrentContext>();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // Caching
             services.AddMemoryCache();
+            services.AddDistributedCache(globalSettings);
 
             // BitPay
             services.AddSingleton<BitPayClient>();
 
             if (!globalSettings.SelfHosted)
             {
-                // Rate limiting
-                services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-                services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-                // Ref: https://github.com/stefanprodan/AspNetCoreRateLimit/issues/216
-                services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
-                // Ref: https://github.com/stefanprodan/AspNetCoreRateLimit/issues/66
-                services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+                services.AddIpRateLimiting(globalSettings);
             }
 
             // Identity

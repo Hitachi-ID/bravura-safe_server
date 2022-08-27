@@ -1,7 +1,4 @@
-﻿using System;
-using Bit.Core.Enums.Provider;
-
-namespace Bit.Core.Models.Data
+﻿namespace Bit.Core.Models.Data
 {
     public class ProviderOrganizationOrganizationDetails
     {
@@ -13,5 +10,8 @@ namespace Bit.Core.Models.Data
         public string Settings { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime RevisionDate { get; set; }
+        public int UserCount { get; set; }
+        public int? Seats { get; set; }
+        public string Plan { get; set; }
     }
 }

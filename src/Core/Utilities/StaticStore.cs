@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Bit.Core.Enums;
+﻿using Bit.Core.Enums;
 using Bit.Core.Models.Data.Organizations.OrganizationUsers;
 using Bit.Core.Models.StaticStore;
 
@@ -175,9 +173,6 @@ namespace Bit.Core.Utilities
 
                     MaxCollections = 32767,
 
-                    HasAdditionalSeatsOption = false,
-                    HasAdditionalStorageOption = false,
-
                     HasPolicies = true,
                     HasGroups = true,
                     HasDirectory = true,
@@ -188,6 +183,7 @@ namespace Bit.Core.Utilities
                     HasSelfHost = true,
                     HasSso = true,
                     HasKeyConnector = false,
+                    HasScim = true,
                     HasResetPassword = true,
                     UsersGetPremium = true,
 

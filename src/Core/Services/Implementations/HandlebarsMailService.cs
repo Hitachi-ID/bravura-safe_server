@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Reflection;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Bit.Core.Entities;
 using Bit.Core.Entities.Provider;
 using Bit.Core.Models.Business;
@@ -419,7 +413,7 @@ namespace Bit.Core.Services
             var model = new AdminResetPasswordViewModel()
             {
                 UserName = GetUserIdentifier(email, userName),
-                OrgName = CoreHelpers.SanitizeForEmail(orgName),
+                OrgName = CoreHelpers.SanitizeForEmail(orgName, false),
             };
             await AddMessageContentAsync(message, "AdminResetPassword", model);
             message.Category = "AdminResetPassword";

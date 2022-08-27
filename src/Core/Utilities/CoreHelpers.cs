@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
+﻿using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
 using Azure;
 using Azure.Storage.Blobs;
@@ -34,12 +29,6 @@ namespace Bit.Core.Utilities
         private static readonly Random _random = new Random();
         private static string _version;
         private static string _internalVersion;
-        private static readonly string _qwertyDvorakMap = "-=qwertyuiop[]asdfghjkl;'zxcvbnm,./_+QWERTYUIO" +
-            "P{}ASDFGHJKL:\"ZXCVBNM<>?";
-        private static readonly string _dvorakMap = "[]',.pyfgcrl/=aoeuidhtns-;qjkxbmwvz{}\"<>PYFGC" +
-            "RL?+AOEUIDHTNS_:QJKXBMWVZ";
-        private static readonly string _qwertyColemakMap = "qwertyuiopasdfghjkl;zxcvbnmQWERTYUIOPASDFGHJKL:ZXCVBNM";
-        private static readonly string _colemakMap = "qwfpgjluy;arstdhneiozxcvbkmQWFPGJLUY:ARSTDHNEIOZXCVBKM";
         private static readonly string CloudFlareConnectingIp = "CF-Connecting-IP";
         private static readonly string RealIp = "X-Real-IP";
 
@@ -493,26 +482,6 @@ namespace Bit.Core.Utilities
             }
 
             return _internalVersion;
-        }
-
-        public static string Dvorak2Qwerty(string value)
-        {
-            return Other2Qwerty(value, _dvorakMap, _qwertyDvorakMap);
-        }
-
-        public static string Colemak2Qwerty(string value)
-        {
-            return Other2Qwerty(value, _colemakMap, _qwertyColemakMap);
-        }
-
-        private static string Other2Qwerty(string value, string otherMap, string qwertyMap)
-        {
-            var sb = new StringBuilder();
-            foreach (var c in value)
-            {
-                sb.Append(otherMap.IndexOf(c) > -1 ? qwertyMap[otherMap.IndexOf(c)] : c);
-            }
-            return sb.ToString();
         }
 
         public static string SanitizeForEmail(string value, bool htmlEncode = true)

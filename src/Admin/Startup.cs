@@ -1,21 +1,14 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using Bit.Core.Context;
 using Bit.Core.Identity;
 using Bit.Core.Settings;
 using Bit.Core.Utilities;
 using Bit.SharedWeb.Utilities;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Stripe;
 
 #if !OSS
-using Bit.CommCore.Utilities;
+using Bit.Commercial.Core.Utilities;
 #endif
 
 namespace Bit.Admin
