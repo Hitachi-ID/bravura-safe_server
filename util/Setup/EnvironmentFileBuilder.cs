@@ -116,6 +116,10 @@ namespace Bit.Setup
                 ["globalSettings__mail__smtp__password"] = "REPLACE",
                 ["globalSettings__disableUserRegistration"] = "false",
                 ["globalSettings__hibpApiKey"] = "REPLACE",
+
+                ["globalSettings__disableEmailNewDevice"] = "true",
+                ["globalSettings__twoFactorAuth__emailOnNewDeviceLogin"] = "false",
+
                 ["adminSettings__admins"] = string.Empty,
             };
 
