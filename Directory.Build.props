@@ -9,6 +9,13 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 
+  <PropertyGroup
+        Label="Normalise stack trace file locations"
+        Condition="$(BuildingInsideVisualStudio) != 'true'">
+    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+  </PropertyGroup>
+
+
   <!--
     This section is for packages that we use multiple times throughout the solution
     It gives us a single place to manage the version to ensure we are using the same version
