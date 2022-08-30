@@ -45,6 +45,8 @@ services:
     image: bravura_vault/web:{{{WebVersion}}}
     container_name: bravura_vault-web
     restart: always
+    depends_on:
+      - api
     volumes:
       - ../web:/etc/bitwarden/web
     env_file:
@@ -98,8 +100,9 @@ services:
     image: bravura_vault/admin:{{{CoreVersion}}}
     container_name: bravura_vault-admin
     restart: always
-{{#if UseMssqlDocker}}
     depends_on:
+      - api
+{{#if UseMssqlDocker}}
       - mssql
 {{/if}}
     volumes:
@@ -208,6 +211,8 @@ services:
     image: bravura_vault/sso:{{{CoreVersion}}}
     container_name: bravura_vault-sso
     restart: always
+    depends_on:
+      - api
     volumes:
       - ../identity:/etc/bitwarden/identity
       - ../core:/etc/bitwarden/core
@@ -217,6 +222,22 @@ services:
       - global.env
       - ../env/uid.env
       - ../env/global.override.env
+    networks:
+      - default
+      - public
+
+  mailrelay:
+    image: maildev/maildev
+    container_name: bravura_vault-mailrelay
+    restart: always
+    ports:
+      - '1080:1080'
+      - '1025:1025'
+    command: --web-user admin --web-pass 5*Hotel
+
+    # for AWS SES replace command above with command below, make sure to set user and password
+    # also have auto-relay set so that emails still get sent to users
+    # command: --web-user admin --web-pass 5*Hotel --outgoing-host email-smtp.us-east-1.amazonaws.com --outgoing-port 587 --outgoing-user IAMUSERNAME --outgoing-pass PASSWORD --auto-relay
     networks:
       - default
       - public
