@@ -76,6 +76,25 @@ namespace Bit.Setup
                 dbCatalog = Helpers.ReadInput("Enter your Database name [vault]");
 
                 _context.Config.UseMssqlDocker = string.IsNullOrEmpty(dbSource) & string.IsNullOrEmpty(dbUser);
+
+                var customMailDev = Helpers.ReadInput("Use custom maildev container? [Y/n]");
+                if (string.IsNullOrEmpty(customMailDev))
+                    customMailDev = "y";
+
+                _context.Config.UseCustomMaildev = true;
+
+                if ( customMailDev.ToLower().StartsWith("n"))
+                    _context.Config.UseCustomMaildev = false;
+
+                var mailDevPass = Helpers.ReadInput("Require username and password (default admin/5*Hotel) for the maildev mail checking UI?\n Answering no implies no password protection on UI [y/N]");
+                if (string.IsNullOrEmpty(mailDevPass))
+                    mailDevPass = "n";
+
+                _context.Config.MaildevWebUserPassword = false;
+
+                if (mailDevPass.ToLower().StartsWith("y"))
+                    _context.Config.MaildevWebUserPassword = true;
+
             }
 
             var dbConnectionString = new SqlConnectionStringBuilder
