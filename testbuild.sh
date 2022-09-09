@@ -39,6 +39,7 @@ then
     docker push $REPO/sso:$TAG
     docker push $REPO/mssql:$TAG
     docker push $REPO/setup:$TAG
+    docker push $REPO/mailrelay:$TAG
 
 elif [ $# -gt 1 -a "$1" == "pull" ]
 then
@@ -60,6 +61,7 @@ then
     docker pull $REPO/sso:$TAG
     docker pull $REPO/mssql:$TAG
     docker pull $REPO/setup:$TAG
+    docker pull $REPO/mailrelay:$TAG
 
     docker tag $REPO/api:$TAG bravura_vault/api:$TAG
     docker tag $REPO/identity:$TAG bravura_vault/identity:$TAG
@@ -73,6 +75,7 @@ then
     docker tag $REPO/mssql:$TAG bravura_vault/sso:$TAG
     docker tag $REPO/mssql:$TAG bravura_vault/mssql:$TAG
     docker tag $REPO/setup:$TAG bravura_vault/setup:$TAG
+    docker tag $REPO/mailrelay:$TAG bravura_vault/mailrelay:$TAG
 
 elif [ $# -gt 1 -a "$1" == "aws-create" ]
 then
@@ -93,6 +96,7 @@ then
     aws ecr create-repository --repository-name $REPO/sso
     aws ecr create-repository --repository-name $REPO/mssql
     aws ecr create-repository --repository-name $REPO/setup
+    aws ecr create-repository --repository-name $REPO/mailrelay
 
 elif [ $# -gt 1 -a "$1" == "tag" ]
 then
@@ -116,19 +120,37 @@ then
     docker tag $REPO1/sso:$TAG1 $REPO2/sso:$TAG2
     docker tag $REPO1/mssql:$TAG1 $REPO2/mssql:$TAG2
     docker tag $REPO1/setup:$TAG1 $REPO2/setup:$TAG2
+    docker tag $REPO1/mailrelay:$TAG1 $REPO2/mailrelay:$TAG2
 	
 elif [ $# -gt 1 -a "$1" == "build" ]
 then
     PROJECT=$2
-    "$DIR/scripts/build" $PROJECT
-    "$DIR/scripts/build-docker" $PROJECT
+	
+    echo "Building single target $2"
+    echo "=================="
+	
+      case "$PROJECT" in
+        "maildev")
+            pushd .
+            cd custom_maildev
+            npm install
+            npm run docker-build
+            popd
+        ;;
+	
+        *)
+          "$DIR/scripts/build" $PROJECT
+          "$DIR/scripts/build-docker" $PROJECT
+        ;;
+    esac
 
 else
+    echo "=================="
     echo "Building bravura_vault"
     echo "=================="
 
     git submodule update --init
-
+	
     "$DIR/scripts/build" api
     "$DIR/scripts/build-docker" api
 
@@ -164,4 +186,12 @@ else
 
     "$DIR/scripts/build" setup
     "$DIR/scripts/build-docker" setup
+	
+    echo "=================="
+    echo "Building custom maildev"
+    echo "=================="
+      pushd .
+      cd custom_maildev
+      npm run docker-build
+      popd
 fi

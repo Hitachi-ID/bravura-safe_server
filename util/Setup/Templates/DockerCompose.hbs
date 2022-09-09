@@ -227,15 +227,23 @@ services:
       - public
 
   mailrelay:
-    image: maildev/maildev
+{{#if UseCustomMaildev}}
+    image: bravura_vault/mailrelay:{{{CoreVersion}}}
+{{else}}
+    image: maildev/maildev:{{{CoreVersion}}}
+{{/if}}
     container_name: bravura_vault-mailrelay
     restart: always
     ports:
-      - '1080:1080'
-      - '1025:1025'
-    command: --web-user admin --web-pass 5*Hotel
+      - '2080:1080'
+      - '2025:1025'
 
-    # for AWS SES replace command above with command below, make sure to set user and password
+{{#if MaildevWebUserPassword}}
+    # if you want a password for the maildev web ui make sure it is specified on the command line options
+    command: --web-user admin --web-pass 5*Hotel
+{{/if}}
+
+    # for AWS SES use sample command below and make sure to set --outgoing-user and --outgoing-pass
     # also have auto-relay set so that emails still get sent to users
     # command: --web-user admin --web-pass 5*Hotel --outgoing-host email-smtp.us-east-1.amazonaws.com --outgoing-port 587 --outgoing-user IAMUSERNAME --outgoing-pass PASSWORD --auto-relay
     networks:
