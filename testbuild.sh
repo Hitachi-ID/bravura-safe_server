@@ -37,9 +37,9 @@ then
     docker push $REPO/admin:$TAG
     docker push $REPO/nginx:$TAG
     docker push $REPO/sso:$TAG
+    docker push $REPO/mailrelay:$TAG
     docker push $REPO/mssql:$TAG
     docker push $REPO/setup:$TAG
-    docker push $REPO/mailrelay:$TAG
 
 elif [ $# -gt 1 -a "$1" == "pull" ]
 then
