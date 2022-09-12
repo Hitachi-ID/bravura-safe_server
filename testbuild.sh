@@ -132,7 +132,7 @@ then
       case "$PROJECT" in
         "maildev")
             pushd .
-            cd custom_maildev
+            cd util/custom_maildev
             npm install
             npm run docker-build
             popd
@@ -191,7 +191,7 @@ else
     echo "Building custom maildev"
     echo "=================="
       pushd .
-      cd custom_maildev
+      cd util/custom_maildev
       npm run docker-build
       popd
 fi
