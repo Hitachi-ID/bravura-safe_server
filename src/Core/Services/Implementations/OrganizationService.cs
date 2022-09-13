@@ -783,6 +783,7 @@ namespace Bit.Core.Services
 
                     if (organization.PlanType == PlanType.BravuraEnterprise)
                     {
+                        // Master password reset
                         Dictionary<string, bool> Data = new Dictionary<string, bool>
                         {
                             {"autoEnrollEnabled", true }
@@ -797,6 +798,39 @@ namespace Bit.Core.Services
                             RevisionDate = organization.CreationDate
                         };
                         await _policyRepository.CreateAsync(policyMasterPasswordReset);
+
+                        // Master password requirements
+                        Dictionary<string, string> Data2 = new Dictionary<string, string>
+                        {
+                            {"minComplexity", "null"},
+                            {"minLength", "9"},
+                            {"requireUpper", "true"},
+                            {"requireLower", "true"},
+                            {"requireNumbers", "true"},
+                            {"requireSpecial", "true"}
+                        };
+                        Policy policyMasterPassword = new Policy
+                        {
+                            OrganizationId = organization.Id,
+                            Type = PolicyType.MasterPassword,
+                            Enabled = true,
+                            Data = JsonSerializer.Serialize(Data2),
+                            CreationDate = organization.CreationDate,
+                            RevisionDate = organization.CreationDate
+                        };
+                        await _policyRepository.CreateAsync(policyMasterPassword);
+
+                        // Two-step login
+                        Policy policyTwoFactor = new Policy
+                        {
+                            OrganizationId = organization.Id,
+                            Type = PolicyType.TwoFactorAuthentication,
+                            Enabled = true,
+                            Data = null,
+                            CreationDate = organization.CreationDate,
+                            RevisionDate = organization.CreationDate
+                        };
+                        await _policyRepository.CreateAsync(policyTwoFactor);
                     }
 
                     var deviceIds = await GetUserDeviceIdsAsync(orgUser.UserId.Value);
