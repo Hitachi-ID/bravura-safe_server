@@ -109,6 +109,12 @@ namespace Bit.Setup
         [Description("Enable SCIM")]
         public bool EnableScim { get; set; } = false;
 
+        [Description("Use the custom built maildev container instead of pulling latest from docker hub.")]
+        public bool UseCustomMaildev { get; set; } = true;
+
+        [Description("Maildev: require/use HTTP username and password for GUI")]
+        public bool MaildevWebUserPassword { get; set; } = false;
+
         [YamlIgnore]
         public string Domain
         {

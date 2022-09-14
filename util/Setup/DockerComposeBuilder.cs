@@ -52,6 +52,9 @@
                 EnableScim = context.Config.EnableScim;
                 HttpPort = context.Config.HttpPort;
                 HttpsPort = context.Config.HttpsPort;
+                UseCustomMaildev = context.Config.UseCustomMaildev;
+                MaildevWebUserPassword = context.Config.MaildevWebUserPassword;
+
                 if (!string.IsNullOrWhiteSpace(context.CoreVersion))
                 {
                     CoreVersion = context.CoreVersion;
@@ -77,6 +80,8 @@
             public string CoreVersion { get; set; } = "latest";
             public string WebVersion { get; set; } = "latest";
             public string KeyConnectorVersion { get; set; } = "latest";
+            public bool UseCustomMaildev { get; set; }
+            public bool MaildevWebUserPassword { get; set; }
         }
     }
 }

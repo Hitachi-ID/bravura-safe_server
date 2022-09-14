@@ -45,6 +45,8 @@ services:
     image: bravura_vault/web:{{{WebVersion}}}
     container_name: bravura_vault-web
     restart: always
+    depends_on:
+      - api
     volumes:
       - ../web:/etc/bitwarden/web
     env_file:
@@ -98,8 +100,9 @@ services:
     image: bravura_vault/admin:{{{CoreVersion}}}
     container_name: bravura_vault-admin
     restart: always
-{{#if UseMssqlDocker}}
     depends_on:
+      - api
+{{#if UseMssqlDocker}}
       - mssql
 {{/if}}
     volumes:
@@ -226,6 +229,8 @@ services:
     image: bravura_vault/sso:{{{CoreVersion}}}
     container_name: bravura_vault-sso
     restart: always
+    depends_on:
+      - api
     volumes:
       - ../identity:/etc/bitwarden/identity
       - ../core:/etc/bitwarden/core
@@ -235,6 +240,30 @@ services:
       - global.env
       - ../env/uid.env
       - ../env/global.override.env
+    networks:
+      - default
+      - public
+
+  mailrelay:
+{{#if UseCustomMaildev}}
+    image: bravura_vault/mailrelay:{{{CoreVersion}}}
+{{else}}
+    image: maildev/maildev:{{{CoreVersion}}}
+{{/if}}
+    container_name: bravura_vault-mailrelay
+    restart: always
+    ports:
+      - '2080:1080'
+      - '2025:1025'
+
+{{#if MaildevWebUserPassword}}
+    # if you want a password for the maildev web ui make sure it is specified on the command line options
+    command: --web-user admin --web-pass 5*Hotel
+{{/if}}
+
+    # for AWS SES use sample command below and make sure to set --outgoing-user and --outgoing-pass
+    # also have auto-relay set so that emails still get sent to users
+    # command: --web-user admin --web-pass 5*Hotel --outgoing-host email-smtp.us-east-1.amazonaws.com --outgoing-port 587 --outgoing-user IAMUSERNAME --outgoing-pass PASSWORD --auto-relay
     networks:
       - default
       - public
