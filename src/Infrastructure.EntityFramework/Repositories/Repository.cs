@@ -82,6 +82,28 @@ namespace Bit.Infrastructure.EntityFramework.Repositories
             }
         }
 
+        public virtual async Task DemoteAsync(T obj)
+        {
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var dbContext = GetDatabaseContext(scope);
+                var entity = Mapper.Map<TEntity>(obj);
+                dbContext.Update(entity);
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+        public virtual async Task PromoteAsync(T obj)
+        {
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var dbContext = GetDatabaseContext(scope);
+                var entity = Mapper.Map<TEntity>(obj);
+                dbContext.Update(entity);
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
         public virtual async Task RefreshDb()
         {
             using (var scope = ServiceScopeFactory.CreateScope())

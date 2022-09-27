@@ -91,5 +91,27 @@ namespace Bit.Infrastructure.Dapper.Repositories
                     commandType: CommandType.StoredProcedure);
             }
         }
+
+        public virtual async Task DemoteAsync(T obj)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(
+                    $"[{Schema}].[{Table}_DemoteById]",
+                    new { Id = obj.Id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public virtual async Task PromoteAsync(T obj)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                await connection.ExecuteAsync(
+                    $"[{Schema}].[{Table}_PromoteById]",
+                    new { Id = obj.Id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }
