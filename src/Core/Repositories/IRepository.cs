@@ -9,5 +9,7 @@ namespace Bit.Core.Repositories
         Task ReplaceAsync(T obj);
         Task UpsertAsync(T obj);
         Task DeleteAsync(T obj);
+        Task DemoteAsync(T obj);
+        Task PromoteAsync(T obj);
     }
 }

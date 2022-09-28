@@ -239,6 +239,8 @@
     <Build Include="dbo\User Defined Types\SelectionReadOnlyArray.sql" />
     <Build Include="dbo\Stored Procedures\Cipher_UpdateAttachment.sql" />
     <Build Include="dbo\Stored Procedures\Organization_UpdateStorage.sql" />
+    <Build Include="dbo\Stored Procedures\Organization_DemoteById.sql" />
+    <Build Include="dbo\Stored Procedures\Organization_PromoteById.sql" />
     <Build Include="dbo\Stored Procedures\User_UpdateStorage.sql" />
     <Build Include="dbo\Stored Procedures\Cipher_DeleteAttachment.sql" />
     <Build Include="dbo\Tables\Installation.sql" />

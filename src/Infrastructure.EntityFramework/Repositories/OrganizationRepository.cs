@@ -105,5 +105,29 @@ namespace Bit.Infrastructure.EntityFramework.Repositories
                 await dbContext.SaveChangesAsync();
             }
         }
+
+        public override async Task DemoteAsync(Core.Entities.Organization organization)
+        {
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var dbContext = GetDatabaseContext(scope);
+                var orgEntity = await dbContext.FindAsync<Organization>(organization.Id);
+
+                dbContext.Update(orgEntity);
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+        public override async Task PromoteAsync(Core.Entities.Organization organization)
+        {
+            using (var scope = ServiceScopeFactory.CreateScope())
+            {
+                var dbContext = GetDatabaseContext(scope);
+                var orgEntity = await dbContext.FindAsync<Organization>(organization.Id);
+
+                dbContext.Update(orgEntity);
+                await dbContext.SaveChangesAsync();
+            }
+        }
     }
 }

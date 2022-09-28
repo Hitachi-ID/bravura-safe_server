@@ -190,6 +190,52 @@ namespace Bit.Admin.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Demote(Guid id)
+        {
+            var organization = await _organizationRepository.GetByIdAsync(id);
+            if (organization != null)
+            {
+                await _organizationRepository.DemoteAsync(organization);
+                organization = await _organizationRepository.GetByIdAsync(id);
+                await _organizationRepository.ReplaceAsync(organization);
+                await _applicationCacheService.UpsertOrganizationAbilityAsync(organization);
+                await _referenceEventService.RaiseEventAsync(new ReferenceEvent(ReferenceEventType.OrganizationEditedByAdmin, organization)
+                {
+                    EventRaisedByUser = _userService.GetUserName(User),
+                });
+            }
+
+            TempData["status"] = "success";
+            TempData["message"] = $"{organization.Name} has been demoted!";
+
+            return RedirectToAction("Edit", new { id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Promote(Guid id)
+        {
+            var organization = await _organizationRepository.GetByIdAsync(id);
+            if (organization != null)
+            {
+                await _organizationRepository.PromoteAsync(organization);
+                organization = await _organizationRepository.GetByIdAsync(id);
+                await _organizationRepository.ReplaceAsync(organization);
+                await _applicationCacheService.UpsertOrganizationAbilityAsync(organization);
+                await _referenceEventService.RaiseEventAsync(new ReferenceEvent(ReferenceEventType.OrganizationEditedByAdmin, organization)
+                {
+                    EventRaisedByUser = _userService.GetUserName(User),
+                });
+            }
+
+            TempData["status"] = "success";
+            TempData["message"] = $"{organization.Name} has been promoted!";
+
+            return RedirectToAction("Edit", new { id });
+        }
+
         public async Task<IActionResult> TriggerBillingSync(Guid id)
         {
             var organization = await _organizationRepository.GetByIdAsync(id);
