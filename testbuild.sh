@@ -72,7 +72,7 @@ then
     docker tag $REPO/events:$TAG bravura_vault/events:$TAG
     docker tag $REPO/admin:$TAG bravura_vault/admin:$TAG
     docker tag $REPO/nginx:$TAG bravura_vault/nginx:$TAG
-    docker tag $REPO/mssql:$TAG bravura_vault/sso:$TAG
+    docker tag $REPO/sso:$TAG bravura_vault/sso:$TAG
     docker tag $REPO/mssql:$TAG bravura_vault/mssql:$TAG
     docker tag $REPO/setup:$TAG bravura_vault/setup:$TAG
     docker tag $REPO/mailrelay:$TAG bravura_vault/mailrelay:$TAG
@@ -121,7 +121,7 @@ then
     docker tag $REPO1/mssql:$TAG1 $REPO2/mssql:$TAG2
     docker tag $REPO1/setup:$TAG1 $REPO2/setup:$TAG2
     docker tag $REPO1/mailrelay:$TAG1 $REPO2/mailrelay:$TAG2
-	
+
 elif [ $# -gt 1 -a "$1" == "build" ]
 then
     PROJECT=$2
