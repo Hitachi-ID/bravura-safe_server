@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Models.Data;
+using Bit.Core.Models.Data.Organizations.OrganizationUsers;
 
 namespace Bit.Core.Repositories
 {
@@ -38,5 +39,7 @@ namespace Bit.Core.Repositories
         Task<OrganizationUser> GetByOrganizationEmailAsync(Guid organizationId, string email);
         Task<IEnumerable<OrganizationUserPublicKey>> GetManyPublicKeysByOrganizationUserAsync(Guid organizationId, IEnumerable<Guid> Ids);
         Task<IEnumerable<OrganizationUserUserDetails>> GetManyByMinimumRoleAsync(Guid organizationId, OrganizationUserType minRole);
+        Task DeactivateAsync(Guid id);
+        Task ActivateAsync(Guid id, OrganizationUserStatusType status);
     }
 }

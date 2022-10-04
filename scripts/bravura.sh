@@ -116,6 +116,14 @@ case $1 in
         mkdir -p $OUTPUT
         downloadRunFile
         $SCRIPTS_DIR/run.sh install $OUTPUT $COREVERSION $WEBVERSION $KEYCONNECTORVERSION
+        echo "*****"
+        echo "*****"
+        echo "Please remember after a fresh install to correctly set email username/password"
+        echo "in the docker/docker-compose.yml if you wish to correctly relay emails via AWS SES"
+	echo "Otherwise all emails will be sent only to maildev container and will never reach intended recipient."
+        echo "Then restart containers if any setup changes are made."
+        echo "*****"
+        echo "*****"
         ;;
     "start" | "restart")
         checkOutputDirExists

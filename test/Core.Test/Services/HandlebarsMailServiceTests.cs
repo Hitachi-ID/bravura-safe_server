@@ -115,9 +115,11 @@ namespace Bit.Core.Test.Services
                 { ("familyUserEmail", typeof(string)), "test@safe.hitachi-id.net" },
                 { ("sponsorEmail", typeof(string)), "test@safe.hitachi-id.net" },
                 { ("familyOrgName", typeof(string)), "Test Org Name" },
-                { ("orgCanSponsor", typeof(bool)), true },
                 { ("existingAccount", typeof(bool)), true },
                 { ("sponsorshipEndDate", typeof(DateTime)), DateTime.UtcNow.AddDays(1)},
+                { ("sponsorOrgName", typeof(string)), "Sponsor Test Org Name" },
+                { ("expirationDate", typeof(DateTime)), DateTime.Now.AddDays(3) },
+                { ("utcNow", typeof(DateTime)), DateTime.UtcNow },
             };
 
             var globalSettings = new GlobalSettings

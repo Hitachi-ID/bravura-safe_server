@@ -20,7 +20,7 @@ namespace Bit.Core.Services
     public class LicensingService : ILicensingService
     {
         private readonly X509Certificate2 _certificate;
-        private readonly GlobalSettings _globalSettings;
+        private readonly IGlobalSettings _globalSettings;
         private readonly IUserRepository _userRepository;
         private readonly IOrganizationRepository _organizationRepository;
         private readonly IOrganizationUserRepository _organizationUserRepository;
@@ -36,7 +36,7 @@ namespace Bit.Core.Services
             IMailService mailService,
             IWebHostEnvironment environment,
             ILogger<LicensingService> logger,
-            GlobalSettings globalSettings)
+            IGlobalSettings globalSettings)
         {
             _userRepository = userRepository;
             _organizationRepository = organizationRepository;
@@ -79,7 +79,43 @@ namespace Bit.Core.Services
 
         public async Task ValidateOrganizationsAsync()
         {
-            return;
+            if (!_globalSettings.SelfHosted)
+            {
+                return;
+            }
+
+            var enabledOrgs = await _organizationRepository.GetManyByEnabledAsync();
+            _logger.LogInformation(Constants.BypassFiltersEventId, null,
+                "Validating licenses for {0} teams.", enabledOrgs.Count);
+
+            foreach (var org in enabledOrgs)
+            {
+                var license = await ReadOrganizationLicenseAsync(org);
+                if (license == null)
+                {
+                    await DisableOrganizationAsync(org, null, "No license file.");
+                    continue;
+                }
+
+                var totalLicensedOrgs = enabledOrgs.Count(o => o.LicenseKey.Equals(license.LicenseKey));
+                if (totalLicensedOrgs > 1)
+                {
+                    await DisableOrganizationAsync(org, license, "Multiple teams.");
+                    continue;
+                }
+
+                if (!license.VerifyData(org, _globalSettings))
+                {
+                    await DisableOrganizationAsync(org, license, "Invalid data.");
+                    continue;
+                }
+
+                if (!license.VerifySignature(_certificate))
+                {
+                    await DisableOrganizationAsync(org, license, "Invalid signature.");
+                    continue;
+                }
+            }
         }
 
         private async Task DisableOrganizationAsync(Organization org, ILicense license, string reason)
@@ -97,12 +133,55 @@ namespace Bit.Core.Services
 
         public async Task ValidateUsersAsync()
         {
-            return;
+            if (!_globalSettings.SelfHosted)
+            {
+                return;
+            }
+
+            var premiumUsers = await _userRepository.GetManyByPremiumAsync(true);
+            _logger.LogInformation(Constants.BypassFiltersEventId, null,
+                "Validating premium for {0} users.", premiumUsers.Count);
+
+            foreach (var user in premiumUsers)
+            {
+                await ProcessUserValidationAsync(user);
+            }
         }
 
         public async Task<bool> ValidateUserPremiumAsync(User user)
         {
-            return true;
+            if (!_globalSettings.SelfHosted)
+            {
+                return user.Premium;
+            }
+
+            if (!user.Premium)
+            {
+                return false;
+            }
+
+            // Only check once per day
+            var now = DateTime.UtcNow;
+            if (_userCheckCache.ContainsKey(user.Id))
+            {
+                var lastCheck = _userCheckCache[user.Id];
+                if (lastCheck < now && now - lastCheck < TimeSpan.FromDays(1))
+                {
+                    return user.Premium;
+                }
+                else
+                {
+                    _userCheckCache[user.Id] = now;
+                }
+            }
+            else
+            {
+                _userCheckCache.Add(user.Id, now);
+            }
+
+            _logger.LogInformation(Constants.BypassFiltersEventId, null,
+                "Validating premium license for user {0}({1}).", user.Id, user.Email);
+            return await ProcessUserValidationAsync(user);
         }
 
         private async Task<bool> ProcessUserValidationAsync(User user)
@@ -170,16 +249,18 @@ namespace Bit.Core.Services
             return JsonSerializer.Deserialize<UserLicense>(data);
         }
 
-        private OrganizationLicense ReadOrganizationLicense(Organization organization)
+        public Task<OrganizationLicense> ReadOrganizationLicenseAsync(Organization organization) =>
+            ReadOrganizationLicenseAsync(organization.Id);
+        public async Task<OrganizationLicense> ReadOrganizationLicenseAsync(Guid organizationId)
         {
-            var filePath = $"{_globalSettings.LicenseDirectory}/organization/{organization.Id}.json";
+            var filePath = Path.Combine(_globalSettings.LicenseDirectory, "organization", $"{organizationId}.json");
             if (!File.Exists(filePath))
             {
                 return null;
             }
 
-            var data = File.ReadAllText(filePath, Encoding.UTF8);
-            return JsonSerializer.Deserialize<OrganizationLicense>(data);
+            using var fs = File.OpenRead(filePath);
+            return await JsonSerializer.DeserializeAsync<OrganizationLicense>(fs);
         }
     }
 }

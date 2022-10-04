@@ -80,6 +80,10 @@ namespace Bit.Api
                 // Rate limiting
                 services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
                 services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+                // Ref: https://github.com/stefanprodan/AspNetCoreRateLimit/issues/216
+                services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+                // Ref: https://github.com/stefanprodan/AspNetCoreRateLimit/issues/66
+                services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             }
 
             // Identity
@@ -114,12 +118,17 @@ namespace Bit.Api
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim(JwtClaimTypes.Scope, "api.organization");
                 });
+                config.AddPolicy("Installation", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(JwtClaimTypes.Scope, "api.installation");
+                });
             });
 
             services.AddScoped<AuthenticatorTokenProvider>();
 
             // Services
-            services.AddBaseServices();
+            services.AddBaseServices(globalSettings);
             services.AddDefaultServices(globalSettings);
             services.AddCoreLocalizationServices();
 
@@ -137,15 +146,9 @@ namespace Bit.Api
             });
 
             services.AddSwagger(globalSettings);
-            Jobs.JobsHostedService.AddJobsServices(services);
+            Jobs.JobsHostedService.AddJobsServices(services, globalSettings.SelfHosted);
             services.AddHostedService<Jobs.JobsHostedService>();
 
-            if (globalSettings.SelfHosted)
-            {
-                // Jobs service
-                Jobs.JobsHostedService.AddJobsServices(services);
-                services.AddHostedService<Jobs.JobsHostedService>();
-            }
             if (CoreHelpers.SettingHasValue(globalSettings.ServiceBus.ConnectionString) &&
                 CoreHelpers.SettingHasValue(globalSettings.ServiceBus.ApplicationCacheTopicName))
             {

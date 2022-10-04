@@ -76,6 +76,25 @@ namespace Bit.Setup
                 dbCatalog = Helpers.ReadInput("Enter your Database name [vault]");
 
                 _context.Config.UseMssqlDocker = string.IsNullOrEmpty(dbSource) & string.IsNullOrEmpty(dbUser);
+
+                var customMailDev = Helpers.ReadInput("Use custom maildev container? [Y/n]");
+                if (string.IsNullOrEmpty(customMailDev))
+                    customMailDev = "y";
+
+                _context.Config.UseCustomMaildev = true;
+
+                if ( customMailDev.ToLower().StartsWith("n"))
+                    _context.Config.UseCustomMaildev = false;
+
+                var mailDevPass = Helpers.ReadInput("Require username and password (default admin/5*Hotel) for the maildev mail checking UI?\n Answering no implies no password protection on UI [y/N]");
+                if (string.IsNullOrEmpty(mailDevPass))
+                    mailDevPass = "n";
+
+                _context.Config.MaildevWebUserPassword = false;
+
+                if (mailDevPass.ToLower().StartsWith("y"))
+                    _context.Config.MaildevWebUserPassword = true;
+
             }
 
             var dbConnectionString = new SqlConnectionStringBuilder
@@ -109,13 +128,17 @@ namespace Bit.Setup
                 ["globalSettings__yubico__clientId"] = "REPLACE",
                 ["globalSettings__yubico__key"] = "REPLACE",
                 ["globalSettings__mail__replyToEmail"] = $"no-reply@{_context.Config.Domain}",
-                ["globalSettings__mail__smtp__host"] = "REPLACE",
-                ["globalSettings__mail__smtp__port"] = "587",
+                ["globalSettings__mail__smtp__host"] = "mailrelay",
+                ["globalSettings__mail__smtp__port"] = "1025",
                 ["globalSettings__mail__smtp__ssl"] = "false",
                 ["globalSettings__mail__smtp__username"] = "REPLACE",
                 ["globalSettings__mail__smtp__password"] = "REPLACE",
                 ["globalSettings__disableUserRegistration"] = "false",
                 ["globalSettings__hibpApiKey"] = "REPLACE",
+
+                ["globalSettings__disableEmailNewDevice"] = "true",
+                ["globalSettings__twoFactorAuth__emailOnNewDeviceLogin"] = "false",
+
                 ["adminSettings__admins"] = string.Empty,
             };
 

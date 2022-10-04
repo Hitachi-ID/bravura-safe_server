@@ -94,13 +94,10 @@ function install() {
         fi
     fi
 
-    echo -e -n "${CYAN}(!)${NC} Enter the database name for your Bravura Safe instance (ex. vault): "
-    read DATABASE
-    echo ""
 
     if [ "$DATABASE" == "" ]
     then
-        DATABASE="vault"
+        DATABASE="vaultDB_replaceme"
     fi
     
     pullSetup

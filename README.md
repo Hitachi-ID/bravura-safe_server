@@ -1,6 +1,6 @@
 -------------------
 
-**Hitachi ID Bravura Safe is a modified version of BitwardenÂ®. It was developed using Bitwarden open source software.  
+**Hitachi ID Bravura Safe is a modified version of Bitwarden®. It was developed using Bitwarden open source software.  
 Hitachi ID Systems, Inc. and Bravura Safe are not affiliated with or endorsed by Bitwarden or Bitwarden, Inc.  
 Bitwarden is a trademark or registered trademark of Bitwarden, Inc. in the United States and/or other countries.**
 
@@ -10,45 +10,9 @@ The original documentation is available at [https://bitwarden.com/help/].
 A complete list of all changes is available in the git history of this project.
 
 
-## Build/Run
+## Developer Documentation
 
-Please read the [Setup guide](https://github.comhitachi-id/bravura-safe_server/blob/master/SETUP.md) for a step-by-step guide to set up your own local development server.
-
-### Requirements
-
-- [.NET 5.0 SDK](https://dotnet.microsoft.com/download)
-- [SQL Server 2017](https://docs.microsoft.com/en-us/sql/index)
-
-*These dependencies are free to use.*
-
-### Recommended Development Tooling
-
-- [Visual Studio](https://www.visualstudio.com/vs/) (Windows and macOS)
-- [Visual Studio Code](https://code.visualstudio.com/) (other)
-
-*These tools are free to use.*
-
-### API
-
-```
-cd src/Api
-dotnet restore
-dotnet build
-dotnet run
-```
-
-visit http://localhost:4000/alive
-
-### Identity
-
-```
-cd src/Identity
-dotnet restore
-dotnet build
-dotnet run
-```
-
-visit http://localhost:33657/.well-known/openid-configuration
+Please refer to the [Server Setup Guide](https://contributing.hitachi-id.com/server/guide/) in the [Contributing Documentation](https://contributing.hitachi-id.com/) for build instructions, recommended tooling, code style tips, and lots of other great information to get you started.
 
 ## Deploy
 
@@ -97,11 +61,3 @@ We recently migrated to using dotnet-format as code formatter. All previous bran
 5. Commit
 6. Run `git merge -Xours 23b0a1f9df25058ab29785ecad9a233113c10889`
 7. Push
-
-#### Git blame
-
-We also recommend that you configure git to ignore the prettier revision using:
-
-```bash
-git config blame.ignoreRevsFile .git-blame-ignore-revs
-```

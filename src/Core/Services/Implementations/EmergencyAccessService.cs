@@ -327,6 +327,7 @@ namespace Bit.Core.Services
             grantor.Key = key;
             // Disable TwoFactor providers since they will otherwise block logins
             grantor.SetTwoFactorProviders(new Dictionary<TwoFactorProviderType, TwoFactorProvider>());
+            grantor.UnknownDeviceVerificationEnabled = false;
             await _userRepository.ReplaceAsync(grantor);
 
             // Remove grantor from all organizations unless Owner
@@ -392,7 +393,7 @@ namespace Bit.Core.Services
             };
         }
 
-        public async Task<AttachmentResponseData> GetAttachmentDownloadAsync(Guid id, string cipherId, string attachmentId, User requestingUser)
+        public async Task<AttachmentResponseData> GetAttachmentDownloadAsync(Guid id, Guid cipherId, string attachmentId, User requestingUser)
         {
             var emergencyAccess = await _emergencyAccessRepository.GetByIdAsync(id);
 
@@ -401,7 +402,7 @@ namespace Bit.Core.Services
                 throw new BadRequestException("Emergency Access not valid.");
             }
 
-            var cipher = await _cipherRepository.GetByIdAsync(new Guid(cipherId), emergencyAccess.GrantorId);
+            var cipher = await _cipherRepository.GetByIdAsync(cipherId, emergencyAccess.GrantorId);
             return await _cipherService.GetAttachmentDownloadDataAsync(cipher, attachmentId);
         }
 

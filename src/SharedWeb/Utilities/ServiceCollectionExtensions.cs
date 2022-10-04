@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Security.Claims;
@@ -9,6 +10,7 @@ using Bit.Core.Enums;
 using Bit.Core.Identity;
 using Bit.Core.IdentityServer;
 using Bit.Core.Models.Business.Tokenables;
+using Bit.Core.OrganizationFeatures;
 using Bit.Core.Repositories;
 using Bit.Core.Resources;
 using Bit.Core.Services;
@@ -90,12 +92,11 @@ namespace Bit.SharedWeb.Utilities
             }
         }
 
-        public static void AddBaseServices(this IServiceCollection services)
+        public static void AddBaseServices(this IServiceCollection services, IGlobalSettings globalSettings)
         {
             services.AddScoped<ICipherService, CipherService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IOrganizationService, OrganizationService>();
-            services.AddScoped<IOrganizationSponsorshipService, OrganizationSponsorshipService>();
+            services.AddOrganizationServices(globalSettings);
             services.AddScoped<ICollectionService, CollectionService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IPolicyService, PolicyService>();
@@ -121,12 +122,19 @@ namespace Bit.SharedWeb.Utilities
                     HCaptchaTokenable.DataProtectorPurpose,
                     serviceProvider.GetDataProtectionProvider())
             );
+            services.AddSingleton<IDataProtectorTokenFactory<SsoTokenable>>(serviceProvider =>
+                new DataProtectorTokenFactory<SsoTokenable>(
+                    SsoTokenable.ClearTextPrefix,
+                    SsoTokenable.DataProtectorPurpose,
+                    serviceProvider.GetDataProtectionProvider()));
         }
 
         public static void AddDefaultServices(this IServiceCollection services, GlobalSettings globalSettings)
         {
             // Required for UserService
             services.AddWebAuthn(globalSettings);
+            // Required for HTTP calls
+            services.AddHttpClient();
 
             services.AddSingleton<IStripeAdapter, StripeAdapter>();
             services.AddSingleton<Braintree.IBraintreeGateway>((serviceProvider) =>
@@ -141,6 +149,7 @@ namespace Bit.SharedWeb.Utilities
                 };
             });
             services.AddSingleton<IPaymentService, StripePaymentService>();
+            services.AddSingleton<IStripeSyncService, StripeSyncService>();
             services.AddSingleton<IMailService, HandlebarsMailService>();
             services.AddSingleton<ILicensingService, NoopLicensingService>();
             services.AddTokenizers();
@@ -591,7 +600,7 @@ namespace Bit.SharedWeb.Utilities
             {
                 options.ServerDomain = new Uri(globalSettings.BaseServiceUri.Vault).Host;
                 options.ServerName = "Bitwarden";
-                options.Origin = globalSettings.BaseServiceUri.Vault;
+                options.Origins = new HashSet<string> { globalSettings.BaseServiceUri.Vault, };
                 options.TimestampDriftTolerance = 300000;
             });
         }

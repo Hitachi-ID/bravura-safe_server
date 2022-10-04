@@ -51,6 +51,8 @@
         OrganizationUser_AdminResetPassword = 1508,
         OrganizationUser_ResetSsoLink = 1509,
         OrganizationUser_FirstSsoLogin = 1510,
+        OrganizationUser_Deactivated = 1511,
+        OrganizationUser_Activated = 1512,
 
         Organization_Updated = 1600,
         Organization_PurgedVault = 1601,
@@ -60,6 +62,7 @@
         Organization_DisabledSso = 1605,
         Organization_EnabledKeyConnector = 1606,
         Organization_DisabledKeyConnector = 1607,
+        Organization_SponsorshipsSynced = 1608,
 
         Policy_Updated = 1700,
 

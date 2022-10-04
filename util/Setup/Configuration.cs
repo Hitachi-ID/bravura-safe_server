@@ -85,7 +85,7 @@ namespace Bit.Setup
             "connect-src 'self' wss://{0} https://api.pwnedpasswords.com " +
             "https://2fa.directory; object-src 'self' blob:;";
 
-        [Description("Communicate with the Bitwarden push relay service (push.safe.hitachi-id.net) for mobile\n" +
+        [Description("Communicate with the Bravura Safe push relay service (push.safe.hitachi-id.net) for mobile\n" +
             "app live sync.")]
         public bool PushNotifications { get; set; } = true;
 
@@ -100,11 +100,19 @@ namespace Bit.Setup
 
         [Description("Defines \"real\" IPs in nginx.conf. Useful for defining proxy servers that forward the \n" +
             "client IP address.\n" +
-            "Learn more: https://nginx.org/en/docs/http/ngx_http_realip_module.html")]
+            "Learn more: https://nginx.org/en/docs/http/ngx_http_realip_module.html\n\n" +
+            "Defined as a dictionary, e.g.:\n" +
+            "real_ips: ['10.10.0.0/24', '172.16.0.0/16']")]
         public List<string> RealIps { get; set; }
 
         [Description("Enable Key Connector (https://safe.hitachi-id.net/help/article/deploy-key-connector)")]
         public bool EnableKeyConnector { get; set; } = false;
+
+        [Description("Use the custom built maildev container instead of pulling latest from docker hub.")]
+        public bool UseCustomMaildev { get; set; } = true;
+
+        [Description("Maildev: require/use HTTP username and password for GUI")]
+        public bool MaildevWebUserPassword { get; set; } = false;
 
         [YamlIgnore]
         public string Domain

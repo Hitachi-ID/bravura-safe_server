@@ -7,6 +7,10 @@
     <ANCMPreConfiguredForIIS>true</ANCMPreConfiguredForIIS>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1591</NoWarn>
     <DefineConstants>$(DefineConstants);OSS</DefineConstants>
@@ -32,16 +36,11 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.EventGrid" Version="4.10.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.8" />
     <PackageReference Include="NewRelic.Agent" Version="9.8.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.1.8" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="Swashbuckle.AspNetCore.Cli" Version="4.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
 </Project>
