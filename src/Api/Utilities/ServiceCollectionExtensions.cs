@@ -21,7 +21,7 @@ namespace Bit.Api.Utilities
                     {
                         Name = "Bravura Safe Support",
                         Url = new Uri("https://safe.hitachi-id.net"),
-                        Email = "support@hitachi-id.com"
+                        Email = "support@bravurasecurity.com"
                     },
                     Description = "The Bravura Safe public APIs.",
                     License = new OpenApiLicense
