@@ -14,7 +14,7 @@ namespace Bit.Core.Test.Utilities
 {
     public class SelfHostedAttributeTests
     {
-        [Fact]
+/*        [Fact]
         public void NotSelfHosted_Throws_When_SelfHosted()
         {
             // Arrange
@@ -22,7 +22,7 @@ namespace Bit.Core.Test.Utilities
 
             // Act & Assert
             Assert.Throws<BadRequestException>(() => sha.OnActionExecuting(GetContext(selfHosted: true)));
-        }
+        }*/
 
         [Fact]
         public void NotSelfHosted_Success_When_NotSelfHosted()

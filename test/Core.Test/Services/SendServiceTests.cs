@@ -565,7 +565,7 @@ namespace Bit.Core.Test.Services
                 sutProvider.Sut.UploadFileToExistingSendAsync(new MemoryStream(), send)
             );
 
-            Assert.Contains("not a file type send", badRequest.Message, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("not a file type share", badRequest.Message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Theory]

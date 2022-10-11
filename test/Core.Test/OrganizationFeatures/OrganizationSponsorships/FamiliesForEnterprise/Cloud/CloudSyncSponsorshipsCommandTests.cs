@@ -91,7 +91,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
         {
             // Arrange
             sponsoringOrganization.Enabled = true;
-            sponsoringOrganization.PlanType = PlanType.EnterpriseAnnually;
+            sponsoringOrganization.PlanType = PlanType.BravuraEnterprise;
 
             existingSponsorship.ToDelete = false;
             newSponsorship.ToDelete = false;
@@ -131,7 +131,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
             Organization sponsoringOrganization, OrganizationSponsorship canDeleteSponsorship, OrganizationSponsorship cannotDeleteSponsorship)
         {
             // Arrange
-            sponsoringOrganization.PlanType = PlanType.EnterpriseAnnually;
+            sponsoringOrganization.PlanType = PlanType.BravuraEnterprise;
 
             canDeleteSponsorship.ToDelete = true;
             canDeleteSponsorship.SponsoredOrganizationId = null;
@@ -172,7 +172,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
         public async Task SyncOrganization_BadData_DoesNotSave(SutProvider<CloudSyncSponsorshipsCommand> sutProvider,
             Organization sponsoringOrganization, OrganizationSponsorship badOrganizationSponsorship)
         {
-            sponsoringOrganization.PlanType = PlanType.EnterpriseAnnually;
+            sponsoringOrganization.PlanType = PlanType.BravuraEnterprise;
 
             badOrganizationSponsorship.ToDelete = true;
             badOrganizationSponsorship.LastSyncDate = null;
@@ -200,7 +200,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
         public async Task SyncOrganization_OrgDisabledForFourMonths_DoesNotSave(SutProvider<CloudSyncSponsorshipsCommand> sutProvider,
             Organization sponsoringOrganization, OrganizationSponsorship organizationSponsorship)
         {
-            sponsoringOrganization.PlanType = PlanType.EnterpriseAnnually;
+            sponsoringOrganization.PlanType = PlanType.BravuraEnterprise;
             sponsoringOrganization.Enabled = false;
             sponsoringOrganization.ExpirationDate = DateTime.UtcNow.AddDays(-120);
 

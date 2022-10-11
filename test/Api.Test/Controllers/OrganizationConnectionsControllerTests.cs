@@ -169,7 +169,7 @@ namespace Bit.Api.Test.Controllers
 
             var exception = await Assert.ThrowsAsync<BadRequestException>(() => sutProvider.Sut.UpdateConnection(existing1.Id, typedModel));
 
-            Assert.Contains($"The requested organization already has a connection of type {typedModel.Type}. Only one of each connection type may exist per organization.", exception.Message);
+            Assert.Contains($"The requested team already has a connection of type {typedModel.Type}. Only one of each connection type may exist per team.", exception.Message);
         }
 
         [Theory]

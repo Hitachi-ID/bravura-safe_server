@@ -81,7 +81,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
             OrganizationUserStatusType statusType, Organization org, OrganizationUser orgUser, User user,
             SutProvider<CreateSponsorshipCommand> sutProvider)
         {
-            org.PlanType = PlanType.EnterpriseAnnually;
+            org.PlanType = PlanType.BravuraEnterprise;
             orgUser.Status = statusType;
 
             sutProvider.GetDependency<IUserService>().GetUserByIdAsync(orgUser.UserId.Value).Returns(user);
@@ -101,7 +101,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
             OrganizationUser orgUser, User user, OrganizationSponsorship sponsorship,
             SutProvider<CreateSponsorshipCommand> sutProvider)
         {
-            org.PlanType = PlanType.EnterpriseAnnually;
+            org.PlanType = PlanType.BravuraEnterprise;
             orgUser.Status = OrganizationUserStatusType.Confirmed;
 
             sutProvider.GetDependency<IUserService>().GetUserByIdAsync(orgUser.UserId.Value).Returns(user);
@@ -121,7 +121,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
         public async Task CreateSponsorship_CreatesSponsorship(Organization sponsoringOrg, OrganizationUser sponsoringOrgUser, User user,
             string sponsoredEmail, string friendlyName, Guid sponsorshipId, SutProvider<CreateSponsorshipCommand> sutProvider)
         {
-            sponsoringOrg.PlanType = PlanType.EnterpriseAnnually;
+            sponsoringOrg.PlanType = PlanType.BravuraEnterprise;
             sponsoringOrgUser.Status = OrganizationUserStatusType.Confirmed;
 
             sutProvider.GetDependency<IUserService>().GetUserByIdAsync(sponsoringOrgUser.UserId.Value).Returns(user);
@@ -154,7 +154,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
         public async Task CreateSponsorship_CreateSponsorshipThrows_RevertsDatabase(Organization sponsoringOrg, OrganizationUser sponsoringOrgUser, User user,
             string sponsoredEmail, string friendlyName, SutProvider<CreateSponsorshipCommand> sutProvider)
         {
-            sponsoringOrg.PlanType = PlanType.EnterpriseAnnually;
+            sponsoringOrg.PlanType = PlanType.BravuraEnterprise;
             sponsoringOrgUser.Status = OrganizationUserStatusType.Confirmed;
 
             var expectedException = new Exception();

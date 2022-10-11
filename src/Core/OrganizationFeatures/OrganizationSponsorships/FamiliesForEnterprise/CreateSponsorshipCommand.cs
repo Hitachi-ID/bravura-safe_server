@@ -26,7 +26,7 @@ namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnte
             var sponsoringUser = await _userService.GetUserByIdAsync(sponsoringOrgUser.UserId.Value);
             if (sponsoringUser == null || string.Equals(sponsoringUser.Email, sponsoredEmail, System.StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new BadRequestException("Cannot offer a Families Organization Sponsorship to yourself. Choose a different email.");
+                throw new BadRequestException("Cannot offer a Families Team Sponsorship to yourself. Choose a different email.");
             }
 
             var requiredSponsoringProductType = StaticStore.GetSponsoredPlan(sponsorshipType)?.SponsoringProductType;

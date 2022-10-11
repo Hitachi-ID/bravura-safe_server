@@ -22,7 +22,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RemoveSponsorshipAsync(sponsorship));
 
-            Assert.Contains("The requested organization is not currently being sponsored.", exception.Message);
+            Assert.Contains("The requested team is not currently being sponsored.", exception.Message);
             Assert.False(sponsorship.ToDelete);
             await AssertDidNotDeleteSponsorshipAsync(sutProvider);
             await AssertDidNotUpdateSponsorshipAsync(sutProvider);
@@ -35,7 +35,7 @@ namespace Bit.Core.Test.OrganizationFeatures.OrganizationSponsorships.FamiliesFo
             var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
                 sutProvider.Sut.RemoveSponsorshipAsync(null));
 
-            Assert.Contains("The requested organization is not currently being sponsored.", exception.Message);
+            Assert.Contains("The requested team is not currently being sponsored.", exception.Message);
             await AssertDidNotDeleteSponsorshipAsync(sutProvider);
             await AssertDidNotUpdateSponsorshipAsync(sutProvider);
         }

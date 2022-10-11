@@ -35,7 +35,7 @@ namespace Bit.Core.Test.Services
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
         public async void PurchaseOrganizationAsync_Stripe(SutProvider<StripePaymentService> sutProvider, Organization organization, string paymentToken, TaxInfo taxInfo)
         {
-            var plan = StaticStore.Plans.First(p => p.Type == PlanType.EnterpriseAnnually);
+            var plan = StaticStore.Plans.First(p => p.Type == PlanType.BravuraEnterprise);
 
             var stripeAdapter = sutProvider.GetDependency<IStripeAdapter>();
             stripeAdapter.CustomerCreateAsync(default).ReturnsForAnyArgs(new Stripe.Customer
@@ -84,7 +84,7 @@ namespace Bit.Core.Test.Services
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
         public async void PurchaseOrganizationAsync_Stripe_PM(SutProvider<StripePaymentService> sutProvider, Organization organization, string paymentToken, TaxInfo taxInfo)
         {
-            var plan = StaticStore.Plans.First(p => p.Type == PlanType.EnterpriseAnnually);
+            var plan = StaticStore.Plans.First(p => p.Type == PlanType.BravuraEnterprise);
             paymentToken = "pm_" + paymentToken;
 
             var stripeAdapter = sutProvider.GetDependency<IStripeAdapter>();
@@ -134,7 +134,7 @@ namespace Bit.Core.Test.Services
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
         public async void PurchaseOrganizationAsync_Stripe_TaxRate(SutProvider<StripePaymentService> sutProvider, Organization organization, string paymentToken, TaxInfo taxInfo)
         {
-            var plan = StaticStore.Plans.First(p => p.Type == PlanType.EnterpriseAnnually);
+            var plan = StaticStore.Plans.First(p => p.Type == PlanType.BravuraEnterprise);
 
             var stripeAdapter = sutProvider.GetDependency<IStripeAdapter>();
             stripeAdapter.CustomerCreateAsync(default).ReturnsForAnyArgs(new Stripe.Customer
@@ -163,7 +163,7 @@ namespace Bit.Core.Test.Services
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
         public async void PurchaseOrganizationAsync_Stripe_Declined(SutProvider<StripePaymentService> sutProvider, Organization organization, string paymentToken, TaxInfo taxInfo)
         {
-            var plan = StaticStore.Plans.First(p => p.Type == PlanType.EnterpriseAnnually);
+            var plan = StaticStore.Plans.First(p => p.Type == PlanType.BravuraEnterprise);
             paymentToken = "pm_" + paymentToken;
 
             var stripeAdapter = sutProvider.GetDependency<IStripeAdapter>();
@@ -196,7 +196,7 @@ namespace Bit.Core.Test.Services
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
         public async void PurchaseOrganizationAsync_Stripe_RequiresAction(SutProvider<StripePaymentService> sutProvider, Organization organization, string paymentToken, TaxInfo taxInfo)
         {
-            var plan = StaticStore.Plans.First(p => p.Type == PlanType.EnterpriseAnnually);
+            var plan = StaticStore.Plans.First(p => p.Type == PlanType.BravuraEnterprise);
 
             var stripeAdapter = sutProvider.GetDependency<IStripeAdapter>();
             stripeAdapter.CustomerCreateAsync(default).ReturnsForAnyArgs(new Stripe.Customer
@@ -227,7 +227,7 @@ namespace Bit.Core.Test.Services
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
         public async void PurchaseOrganizationAsync_Paypal(SutProvider<StripePaymentService> sutProvider, Organization organization, string paymentToken, TaxInfo taxInfo)
         {
-            var plan = StaticStore.Plans.First(p => p.Type == PlanType.EnterpriseAnnually);
+            var plan = StaticStore.Plans.First(p => p.Type == PlanType.BravuraEnterprise);
 
             var stripeAdapter = sutProvider.GetDependency<IStripeAdapter>();
             stripeAdapter.CustomerCreateAsync(default).ReturnsForAnyArgs(new Stripe.Customer
@@ -286,7 +286,7 @@ namespace Bit.Core.Test.Services
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
         public async void PurchaseOrganizationAsync_Paypal_FailedCreate(SutProvider<StripePaymentService> sutProvider, Organization organization, string paymentToken, TaxInfo taxInfo)
         {
-            var plan = StaticStore.Plans.First(p => p.Type == PlanType.EnterpriseAnnually);
+            var plan = StaticStore.Plans.First(p => p.Type == PlanType.BravuraEnterprise);
 
             var customerResult = Substitute.For<Result<Customer>>();
             customerResult.IsSuccess().Returns(false);
@@ -303,7 +303,7 @@ namespace Bit.Core.Test.Services
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
         public async void PurchaseOrganizationAsync_PayPal_Declined(SutProvider<StripePaymentService> sutProvider, Organization organization, string paymentToken, TaxInfo taxInfo)
         {
-            var plan = StaticStore.Plans.First(p => p.Type == PlanType.EnterpriseAnnually);
+            var plan = StaticStore.Plans.First(p => p.Type == PlanType.BravuraEnterprise);
             paymentToken = "pm_" + paymentToken;
 
             var stripeAdapter = sutProvider.GetDependency<IStripeAdapter>();
@@ -365,7 +365,7 @@ namespace Bit.Core.Test.Services
             });
             stripeAdapter.SubscriptionCreateAsync(default).ReturnsForAnyArgs(new Stripe.Subscription { });
 
-            var plan = StaticStore.Plans.First(p => p.Type == PlanType.EnterpriseAnnually);
+            var plan = StaticStore.Plans.First(p => p.Type == PlanType.BravuraEnterprise);
             var result = await sutProvider.Sut.UpgradeFreeOrganizationAsync(organization, plan, 0, 0, false, taxInfo);
 
             Assert.Null(result);

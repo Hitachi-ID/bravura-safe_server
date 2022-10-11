@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
 using Bit.Core.Context;
 using Bit.Core.Entities;
+using Bit.Core.Enums;
+using Bit.Core.Models;
 using Bit.Core.Models.Business;
 using Bit.Core.Models.Data.Organizations;
 using Bit.Core.Repositories;
@@ -57,8 +59,37 @@ namespace Bit.Core.Test.Services
             var versionProp = AssertHelper.AssertJsonProperty(root, "Version", JsonValueKind.Number);
             Assert.Equal(1, versionProp.GetInt32());
         }
-    }
-}
+
+        [Theory, CustomAutoData(typeof(SutProviderCustomization))]
+        public async Task SendTwoFactorEmailAsync_Success(SutProvider<UserService> sutProvider, User user)
+        {
+            var email = user.Email.ToLowerInvariant();
+            var token = "thisisatokentocompare";
+
+            var userTwoFactorTokenProvider = Substitute.For<IUserTwoFactorTokenProvider<User>>();
+            userTwoFactorTokenProvider
+                .CanGenerateTwoFactorTokenAsync(Arg.Any<UserManager<User>>(), user)
+                .Returns(Task.FromResult(true));
+            userTwoFactorTokenProvider
+                .GenerateAsync("2faEmail:" + email, Arg.Any<UserManager<User>>(), user)
+                .Returns(Task.FromResult(token));
+
+            sutProvider.Sut.RegisterTokenProvider("Email", userTwoFactorTokenProvider);
+
+            user.SetTwoFactorProviders(new Dictionary<TwoFactorProviderType, TwoFactorProvider>
+            {
+                [TwoFactorProviderType.Email] = new TwoFactorProvider
+                {
+                    MetaData = new Dictionary<string, object> { ["Email"] = email },
+                    Enabled = true
+                }
+            });
+            await sutProvider.Sut.SendTwoFactorEmailAsync(user);
+
+            await sutProvider.GetDependency<IMailService>()
+                .Received(1)
+                .SendTwoFactorEmailAsync(email, token);
+        }
 
         [Theory, CustomAutoData(typeof(SutProviderCustomization))]
         public async Task SendTwoFactorEmailBecauseNewDeviceLoginAsync_Success(SutProvider<UserService> sutProvider, User user)
