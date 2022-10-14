@@ -1,7 +1,7 @@
 -------------------
 
-**Hitachi ID Bravura Safe is a modified version of Bitwarden®. It was developed using Bitwarden open source software.  
-Hitachi ID Systems, Inc. and Bravura Safe are not affiliated with or endorsed by Bitwarden or Bitwarden, Inc.  
+**Bravura Safe is a modified version of Bitwarden®. It was developed using Bitwarden open source software.  
+Bravura Security, Inc. and Bravura Safe are not affiliated with or endorsed by Bitwarden or Bitwarden, Inc.  
 Bitwarden is a trademark or registered trademark of Bitwarden, Inc. in the United States and/or other countries.**
 
 
@@ -12,7 +12,7 @@ A complete list of all changes is available in the git history of this project.
 
 ## Developer Documentation
 
-Please refer to the [Server Setup Guide](https://contributing.hitachi-id.com/server/guide/) in the [Contributing Documentation](https://contributing.hitachi-id.com/) for build instructions, recommended tooling, code style tips, and lots of other great information to get you started.
+Please refer to the [Server Setup Guide](https://contributing.bravurasecurity.com/server/guide/) in the [Contributing Documentation](https://contributing.bravurasecurity.com/) for build instructions, recommended tooling, code style tips, and lots of other great information to get you started.
 
 ## Deploy
 
