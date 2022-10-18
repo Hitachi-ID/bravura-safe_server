@@ -40,6 +40,7 @@
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="4.1.0" />
     <PackageReference Include="Microsoft.Azure.ServiceBus" Version="5.2.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="6.0.8" />
@@ -55,7 +56,7 @@
     <PackageReference Include="Serilog.Sinks.SyslogMessages" Version="2.0.6" />
     <PackageReference Include="AspNetCoreRateLimit" Version="4.0.2" />
     <PackageReference Include="Braintree" Version="5.12.0" />
-    <PackageReference Include="Stripe.net" Version="39.107.0" />
+    <PackageReference Include="Stripe.net" Version="40.0.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
     <PackageReference Include="System.Text.Json" Version="6.0.5" />
     <PackageReference Include="Otp.NET" Version="1.2.2" />

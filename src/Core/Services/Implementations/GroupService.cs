@@ -5,8 +5,8 @@ using Bit.Core.Models.Business;
 using Bit.Core.Models.Data;
 using Bit.Core.Repositories;
 
-namespace Bit.Core.Services
-{
+namespace Bit.Core.Services;
+
     public class GroupService : IGroupService
     {
         private readonly IEventService _eventService;
@@ -61,7 +61,16 @@ namespace Bit.Core.Services
             else
             {
                 group.RevisionDate = DateTime.UtcNow;
-                await _groupRepository.ReplaceAsync(group, collections ?? new List<SelectionReadOnly>());
+
+            if (collections == null)
+            {
+                await _groupRepository.ReplaceAsync(group);
+            }
+            else
+            {
+                await _groupRepository.ReplaceAsync(group, collections);
+            }
+
                 await _eventService.LogGroupEventAsync(group, Enums.EventType.Group_Updated);
             }
         }
@@ -83,4 +92,3 @@ namespace Bit.Core.Services
             await _eventService.LogOrganizationUserEventAsync(orgUser, Enums.EventType.OrganizationUser_UpdatedGroups);
         }
     }
-}

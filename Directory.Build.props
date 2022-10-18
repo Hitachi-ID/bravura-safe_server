@@ -3,11 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <!--Current Version: -->
-    <Version>2022.8.0</Version>
+    <Version>2022.10.0</Version>
     <RootNamespace>Bit.$(MSBuildProjectName)</RootNamespace>
-        <InternalVersion>2022-08</InternalVersion>
+    <InternalVersion>2022-10</InternalVersion>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <ImplicitUsings>enable</ImplicitUsings>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup
@@ -56,5 +57,23 @@
     -->
     <AutoFixtureAutoNSubstituteVersion>4.17.0</AutoFixtureAutoNSubstituteVersion>
   </PropertyGroup>
+
+  <!--
+    This section is for getting & setting the gitHash value, which can easily be accessed
+    via the Core.Utilities.AssemblyHelpers class.
+  -->
+  <Target Name="SetSourceRevisionId" BeforeTargets="CoreGenerateAssemblyInfo">
+    <Exec Command="git describe --long --always --dirty --exclude=* --abbrev=8" ConsoleToMSBuild="True" IgnoreExitCode="False">
+      <Output PropertyName="SourceRevisionId" TaskParameter="ConsoleOutput"/>
+    </Exec>
+  </Target>
+  <Target Name="WriteRevision" AfterTargets="SetSourceRevisionId">
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>GitHash</_Parameter1>
+        <_Parameter2>$(SourceRevisionId)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
 
 </Project>

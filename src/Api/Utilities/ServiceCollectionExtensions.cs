@@ -1,8 +1,8 @@
 ﻿using Bit.Core.Settings;
 using Microsoft.OpenApi.Models;
 
-namespace Bit.Api.Utilities
-{
+namespace Bit.Api.Utilities;
+
     public static class ServiceCollectionExtensions
     {
         public static void AddSwagger(this IServiceCollection services, GlobalSettings globalSettings)
@@ -28,7 +28,7 @@ namespace Bit.Api.Utilities
                 });
                 config.SwaggerDoc("internal", new OpenApiInfo { Title = "Bravura Safe Internal API", Version = "latest" });
 
-                config.AddSecurityDefinition("OAuth2 Client Credentials", new OpenApiSecurityScheme
+            config.AddSecurityDefinition("oauth2-client-credentials", new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.OAuth2,
                     Flows = new OpenApiOAuthFlows
@@ -52,7 +52,7 @@ namespace Bit.Api.Utilities
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "OAuth2 Client Credentials"
+                            Id = "oauth2-client-credentials"
                             },
                         },
                         new[] { "api.organization" }
@@ -69,4 +69,3 @@ namespace Bit.Api.Utilities
             });
         }
     }
-}

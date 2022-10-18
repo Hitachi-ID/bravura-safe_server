@@ -10,8 +10,8 @@ using Bit.Core.Settings;
 using Bit.Core.Utilities;
 using Core.Models.Data;
 
-namespace Bit.Core.Services
-{
+namespace Bit.Core.Services;
+
     public class CipherService : ICipherService
     {
         public const long MAX_FILE_SIZE = Constants.FileSize501mb;
@@ -31,7 +31,6 @@ namespace Bit.Core.Services
         private const long _fileSizeLeeway = 1024L * 1024L; // 1MB 
         private readonly IReferenceEventService _referenceEventService;
         private readonly ICurrentContext _currentContext;
-        private readonly IProviderService _providerService;
 
         public CipherService(
             ICipherRepository cipherRepository,
@@ -404,7 +403,7 @@ namespace Bit.Core.Services
 
             var events = deletingCiphers.Select(c =>
                 new Tuple<Cipher, EventType, DateTime?>(c, EventType.Cipher_Deleted, null));
-            foreach (var eventsBatch in events.Batch(100))
+        foreach (var eventsBatch in events.Chunk(100))
             {
                 await _eventService.LogCipherEventsAsync(eventsBatch);
             }
@@ -575,7 +574,7 @@ namespace Bit.Core.Services
 
             var events = cipherInfos.Select(c =>
                 new Tuple<Cipher, EventType, DateTime?>(c.cipher, EventType.Cipher_Shared, null));
-            foreach (var eventsBatch in events.Batch(100))
+        foreach (var eventsBatch in events.Chunk(100))
             {
                 await _eventService.LogCipherEventsAsync(eventsBatch);
             }
@@ -792,7 +791,7 @@ namespace Bit.Core.Services
 
             var events = deletingCiphers.Select(c =>
                 new Tuple<Cipher, EventType, DateTime?>(c, EventType.Cipher_SoftDeleted, null));
-            foreach (var eventsBatch in events.Batch(100))
+        foreach (var eventsBatch in events.Chunk(100))
             {
                 await _eventService.LogCipherEventsAsync(eventsBatch);
             }
@@ -841,7 +840,7 @@ namespace Bit.Core.Services
                 c.DeletedDate = null;
                 return new Tuple<Cipher, EventType, DateTime?>(c, EventType.Cipher_Restored, null);
             });
-            foreach (var eventsBatch in events.Batch(100))
+        foreach (var eventsBatch in events.Chunk(100))
             {
                 await _eventService.LogCipherEventsAsync(eventsBatch);
             }
@@ -875,12 +874,6 @@ namespace Bit.Core.Services
             var collectionCiphersGroupDict = collectionCiphers
                 .Where(c => orgCipherIds.Contains(c.CipherId))
                 .GroupBy(c => c.CipherId).ToDictionary(s => s.Key);
-
-            var providerId = await _currentContext.ProviderIdForOrg(organizationId);
-            if (providerId.HasValue)
-            {
-                await _providerService.LogProviderAccessToOrganizationAsync(organizationId);
-            }
 
             return (orgCiphers, collectionCiphersGroupDict);
         }
@@ -1028,4 +1021,3 @@ namespace Bit.Core.Services
             ValidateCipherLastKnownRevisionDateAsync(cipher, lastKnownRevisionDate);
         }
     }
-}
