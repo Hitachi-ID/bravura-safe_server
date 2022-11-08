@@ -38,7 +38,8 @@ RUN set -eux; \
         apk add --upgrade --no-cache \
                 linux-pam \
                 shadow \
-                freetype
+                freetype \
+                curl
 
 COPY nginx.conf /etc/nginx
 COPY proxy.conf /etc/nginx
