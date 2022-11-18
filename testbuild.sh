@@ -24,22 +24,42 @@ then
     REPO=$2
     TAG=$3
 
+    echo "======================================="
     echo "Pushing bravura_vault ($TAG)"
-    echo "========================"
+    echo "======================================="
 
     docker push $REPO/api:$TAG
     docker push $REPO/identity:$TAG
     docker push $REPO/server:$TAG
     docker push $REPO/attachments:$TAG
+	
+	echo "======================================="
+	echo "Finished: Pushed api identity server attachments"
+    echo "======================================="
+	
     docker push $REPO/icons:$TAG
     docker push $REPO/notifications:$TAG
     docker push $REPO/events:$TAG
     docker push $REPO/admin:$TAG
+	
+	echo "======================================="
+	echo "Finished: Pushed icons notifications events admin"
+    echo "======================================="
+	
     docker push $REPO/nginx:$TAG
     docker push $REPO/sso:$TAG
+	
+	echo "======================================="
+	echo "Finished: Pushed nginx sso"
+    echo "======================================="
+	
     docker push $REPO/mailrelay:$TAG
     docker push $REPO/mssql:$TAG
     docker push $REPO/setup:$TAG
+	
+	echo "======================================="
+	echo "Finished: docker push completed"
+    echo "======================================="
 
 elif [ $# -gt 1 -a "$1" == "pull" ]
 then
