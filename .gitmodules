@@ -1,4 +1,4 @@
 [submodule "bravura_src"]
 	path = bravura_src
 	url = https://gitlab.hitachi-id.com/product/bravura-safe/bravura_src.git
-	branch =  develop
+	branch = tmp/gisselac/upgrade10
