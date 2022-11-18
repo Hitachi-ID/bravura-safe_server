@@ -246,7 +246,7 @@ public class HandlebarsMailService : IMailService
 
     public async Task SendOrganizationUserRemovedForPolicyTwoStepEmailAsync(string organizationName, string email)
     {
-        var message = CreateDefaultMessage($"You have been removed from {organizationName}", email);
+        var message = CreateDefaultMessage($"You Have Been Removed From {organizationName}", email);
         var model = new OrganizationUserRemovedForPolicyTwoStepViewModel
         {
             OrganizationName = CoreHelpers.SanitizeForEmail(organizationName, false),
@@ -386,7 +386,7 @@ public class HandlebarsMailService : IMailService
 
     public async Task SendOrganizationUserRemovedForPolicySingleOrgEmailAsync(string organizationName, string email)
     {
-        var message = CreateDefaultMessage($"You have been removed from {organizationName}", email);
+        var message = CreateDefaultMessage($"You Have Been Removed From {organizationName}", email);
         var model = new OrganizationUserRemovedForPolicySingleOrgViewModel
         {
             OrganizationName = CoreHelpers.SanitizeForEmail(organizationName, false),
@@ -609,7 +609,7 @@ public class HandlebarsMailService : IMailService
 
     public async Task SendEmergencyAccessConfirmedEmailAsync(string grantorName, string email)
     {
-        var message = CreateDefaultMessage($"You Have Been Confirmed as Emergency Access Contact", email);
+        var message = CreateDefaultMessage($"You Have Been Confirmed As Emergency Access Contact", email);
         var model = new EmergencyAccessConfirmedViewModel
         {
             Name = CoreHelpers.SanitizeForEmail(grantorName),
@@ -743,7 +743,7 @@ public class HandlebarsMailService : IMailService
 
     public async Task SendProviderUserRemoved(string providerName, string email)
     {
-        var message = CreateDefaultMessage($"You Have Been Removed from {providerName}", email);
+        var message = CreateDefaultMessage($"You Have Been Removed From {providerName}", email);
         var model = new ProviderUserRemovedViewModel
         {
             ProviderName = CoreHelpers.SanitizeForEmail(providerName),
