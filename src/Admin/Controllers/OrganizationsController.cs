@@ -10,6 +10,7 @@ using Bit.Core.Settings;
 using Bit.Core.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace Bit.Admin.Controllers;
 
@@ -197,6 +198,31 @@ public class OrganizationsController : Controller
         var organization = await _organizationRepository.GetByIdAsync(id);
         if (organization != null)
         {
+            // Disable policies
+            // Master password reset
+            var existingPolicyResetPassword = await _policyRepository.GetByOrganizationIdTypeAsync(id, PolicyType.ResetPassword);
+            if (existingPolicyResetPassword != null)
+            {
+                existingPolicyResetPassword.Enabled = false;
+                await _policyRepository.UpsertAsync(existingPolicyResetPassword);
+            }
+
+            // Master password requirements
+            var existingPolicyMasterPassword = await _policyRepository.GetByOrganizationIdTypeAsync(id, PolicyType.MasterPassword);
+            if (existingPolicyMasterPassword != null)
+            {
+                existingPolicyMasterPassword.Enabled = false;
+                await _policyRepository.UpsertAsync(existingPolicyMasterPassword);
+            }
+
+            // Two-step login
+            var existingPolicyTwoFactorAuthentication = await _policyRepository.GetByOrganizationIdTypeAsync(id, PolicyType.TwoFactorAuthentication);
+            if (existingPolicyTwoFactorAuthentication != null)
+            {
+                existingPolicyTwoFactorAuthentication.Enabled = false;
+                await _policyRepository.UpsertAsync(existingPolicyTwoFactorAuthentication);
+            }
+
             await _organizationRepository.DemoteAsync(organization);
             organization = await _organizationRepository.GetByIdAsync(id);
             await _organizationRepository.ReplaceAsync(organization);
@@ -220,6 +246,80 @@ public class OrganizationsController : Controller
         var organization = await _organizationRepository.GetByIdAsync(id);
         if (organization != null)
         {
+            // Setup policies (as per OrganizationService.cs)
+            // Master password reset
+            Dictionary<string, bool> Data = new Dictionary<string, bool>
+            {
+                {"autoEnrollEnabled", true }
+            };
+            var existingPolicyResetPassword = await _policyRepository.GetByOrganizationIdTypeAsync(id, PolicyType.ResetPassword);
+            if (existingPolicyResetPassword != null)
+            {
+                existingPolicyResetPassword.Enabled = true;
+                existingPolicyResetPassword.Data = JsonSerializer.Serialize(Data);
+                await _policyRepository.UpsertAsync(existingPolicyResetPassword);
+            }
+            else
+            {
+                Policy newPolicy = new Policy
+                {
+                    OrganizationId = id,
+                    Type = PolicyType.ResetPassword,
+                    Enabled = true,
+                    Data = JsonSerializer.Serialize(Data)
+                };
+                await _policyRepository.CreateAsync(newPolicy);
+            }
+
+            // Master password requirements
+            Dictionary<string, string> Data2 = new Dictionary<string, string>
+            {
+                {"minComplexity", "null"},
+                {"minLength", "9"},
+                {"requireUpper", "true"},
+                {"requireLower", "true"},
+                {"requireNumbers", "true"},
+                {"requireSpecial", "true"}
+            };
+            var existingPolicyMasterPassword = await _policyRepository.GetByOrganizationIdTypeAsync(id, PolicyType.MasterPassword);
+            if (existingPolicyMasterPassword != null)
+            {
+                existingPolicyMasterPassword.Enabled = true;
+                existingPolicyMasterPassword.Data = JsonSerializer.Serialize(Data2);
+                await _policyRepository.UpsertAsync(existingPolicyMasterPassword);
+            }
+            else
+            {
+                Policy newPolicy = new Policy
+                {
+                    OrganizationId = id,
+                    Type = PolicyType.MasterPassword,
+                    Enabled = true,
+                    Data = JsonSerializer.Serialize(Data2)
+                };
+                await _policyRepository.CreateAsync(newPolicy);
+            }
+
+            // Two-step login
+            var existingPolicyTwoFactorAuthentication = await _policyRepository.GetByOrganizationIdTypeAsync(id, PolicyType.TwoFactorAuthentication);
+            if (existingPolicyTwoFactorAuthentication != null)
+            {
+                existingPolicyTwoFactorAuthentication.Enabled = true;
+                existingPolicyTwoFactorAuthentication.Data = null;
+                await _policyRepository.UpsertAsync(existingPolicyTwoFactorAuthentication);
+            }
+            else
+            {
+                Policy newPolicy = new Policy
+                {
+                    OrganizationId = id,
+                    Type = PolicyType.TwoFactorAuthentication,
+                    Enabled = true,
+                    Data = null
+                };
+                await _policyRepository.CreateAsync(newPolicy);
+            }
+
             await _organizationRepository.PromoteAsync(organization);
             organization = await _organizationRepository.GetByIdAsync(id);
             await _organizationRepository.ReplaceAsync(organization);

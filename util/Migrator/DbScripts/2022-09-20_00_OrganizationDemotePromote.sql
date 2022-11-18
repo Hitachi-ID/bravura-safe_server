@@ -17,9 +17,9 @@ BEGIN
     SET
         [Plan] = 'Teams',
         [PlanType] = 12,
+        [Seats] = 32767,
         [Use2fa] = 0,
         [UseSso] = 0,
-        [UseDirectory] = 0,
         [UseResetPassword] = 0,
         [RevisionDate] = GETUTCDATE()
     WHERE
@@ -46,6 +46,10 @@ BEGIN
     SET
         [Plan] = 'Enterprise',
         [PlanType] = 13,
+        [Seats] = 1000000,
+        [Use2fa] = 1,
+        [UseSso] = 1,
+        [UseResetPassword] = 1,
         [RevisionDate] = GETUTCDATE()
     WHERE
         [Id] = @Id
