@@ -31,6 +31,7 @@ namespace Bit.Core.IdentityServer
         private readonly IUserService _userService;
         private readonly IEventService _eventService;
         private readonly IOrganizationDuoWebTokenProvider _organizationDuoWebTokenProvider;
+        private readonly IOrganizationHyprWebTokenProvider _organizationHyprWebTokenProvider;
         private readonly IOrganizationRepository _organizationRepository;
         private readonly IOrganizationUserRepository _organizationUserRepository;
         private readonly IApplicationCacheService _applicationCacheService;
@@ -49,6 +50,7 @@ namespace Bit.Core.IdentityServer
             IUserService userService,
             IEventService eventService,
             IOrganizationDuoWebTokenProvider organizationDuoWebTokenProvider,
+            IOrganizationHyprWebTokenProvider organizationHyprWebTokenProvider,
             IOrganizationRepository organizationRepository,
             IOrganizationUserRepository organizationUserRepository,
             IApplicationCacheService applicationCacheService,
@@ -66,6 +68,7 @@ namespace Bit.Core.IdentityServer
             _userService = userService;
             _eventService = eventService;
             _organizationDuoWebTokenProvider = organizationDuoWebTokenProvider;
+            _organizationHyprWebTokenProvider = organizationHyprWebTokenProvider;
             _organizationRepository = organizationRepository;
             _organizationUserRepository = organizationUserRepository;
             _applicationCacheService = applicationCacheService;
@@ -466,6 +469,12 @@ namespace Bit.Core.IdentityServer
                     }
 
                     return await _organizationDuoWebTokenProvider.ValidateAsync(token, organization, user);
+                case TwoFactorProviderType.OrganizationHypr:
+                    if(!organization?.TwoFactorProviderIsEnabled(type) ?? true)
+                    {
+                        return false;
+                    }
+                    return await _organizationHyprWebTokenProvider.ValidateAsync(token, organization, user);
                 default:
                     return false;
             }
@@ -526,6 +535,16 @@ namespace Bit.Core.IdentityServer
                         {
                             ["Host"] = provider.MetaData["Host"],
                             ["Signature"] = await _organizationDuoWebTokenProvider.GenerateAsync(organization, user)
+                        };
+                    }
+                    return null;
+                case TwoFactorProviderType.OrganizationHypr:
+                    if (await _organizationHyprWebTokenProvider.CanGenerateTwoFactorTokenAsync(organization))
+                    {
+                        return new Dictionary<string, object>
+                        {
+                            ["Team"] = organization.Id.ToString(),
+                            ["Signature"] = await _organizationHyprWebTokenProvider.GenerateAsync(organization, user)
                         };
                     }
                     return null;

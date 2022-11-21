@@ -123,6 +123,8 @@ namespace Bit.Setup
                     Helpers.SecureRandomString(64, alpha: true, numeric: true),
                 ["globalSettings__duo__aKey"] = _context.Stub ? "RANDOM_DUO_AKEY" :
                     Helpers.SecureRandomString(64, alpha: true, numeric: true),
+                ["globalSettings__hypr__sKey"] = _context.Stub ? "RANDOM_HYPR_SKEY" :
+                    Helpers.SecureRandomString(64, alpha: true, numeric: true),
                 ["globalSettings__installation__id"] = _context.Install?.InstallationId.ToString(),
                 ["globalSettings__installation__key"] = _context.Install?.InstallationKey,
                 ["globalSettings__yubico__clientId"] = "REPLACE",
