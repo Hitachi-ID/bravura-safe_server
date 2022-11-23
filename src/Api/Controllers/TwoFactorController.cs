@@ -486,19 +486,58 @@ namespace Bit.Api.Controllers
                 throw new NotFoundException();
             }
 
+            var sKey = _globalSettings.Hypr.SKey;
+
+            if (String.IsNullOrEmpty(sKey))
+            {
+                throw new BadRequestException("Hypr signature key is not set.");
+            }
+
             try
             {
-                string AppID = null;
-                var hyprApi = new HyprApi(model.ApiKey, model.ServerURL, AppID);
-                var api_response = await hyprApi.ApiCallAsync("GET", "/cc/api/versioned/rpUser");
-                if (api_response.StatusCode != HttpStatusCode.OK)
+                var pushRequestJson = new HyprAuthRequestJson
                 {
-                    throw new BadRequestException("Hypr could not connect.");
+                    actionId = "defaultAuthAction",
+                    appId = model.AppId,
+                    machineId = "push-notif-request",
+                    namedUser = "NhXDJZyW2il1FeUUrCUJ@2KfBjrSL2Unk8LXEjgbM",
+                    machine = "WEB",
+                    sessionNonce = HyprApi.GetNonce(),
+                    deviceNonce = HyprApi.GetNonce(),
+                    serviceNonce = HyprApi.GetNonce(),
+                    serviceHmac = HyprApi.GetNonce(),
+                    additionalDetails = new HyprAuthRequestJsonAdditionalDetails()
+                    {
+                        mobileBrowser = false
+                    }
+                };
+
+                using (var hyprApi = new HyprApi(model.ApiKey, model.ServerURL, model.AppId))
+                {
+                    var jsonMessage = JsonSerializer.Serialize(pushRequestJson);
+                    var (httpResponseInitial, pushCallResponse) = await hyprApi.JSONApiCallAsync<HyprAuthResponseJson>("POST", "/rp/api/oob/client/authentication/requests", jsonMessage);
+
+                    if (httpResponseInitial.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        throw new HyprException("API Token is invalid.");
+                    }
+                    else if (httpResponseInitial.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        throw new HyprException("Application ID is invalid.");
+                    }
+                    else if (httpResponseInitial.StatusCode != HttpStatusCode.BadRequest)
+                    {
+                        throw new HyprException("Push notification failed to initiate.");
+                    }
                 }
             }
-            catch (HyprException)
+            catch(System.Net.Http.HttpRequestException)
             {
-                throw new BadRequestException("Hypr configuration settings are not valid. Please re-check the Hypr Admin panel.");
+                throw new BadRequestException("Hypr configuration settings are not valid. Server Address is invalid.");
+            }
+            catch (HyprException e)
+            {
+                throw new BadRequestException("Hypr configuration settings are not valid. " + e.Message);
             }
 
             model.ToOrganization(organization);

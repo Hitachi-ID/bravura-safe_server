@@ -278,10 +278,10 @@ namespace Bit.Api.Models.Request
         [Required]
         public string AppId { get; set; }
         [Required]
-        [StringLength(42)]
+        [StringLength(42, ErrorMessage = "The API Token cannot exceed 42 characters. ")]
         public string ApiKey { get; set; }
         [Required]
-        [StringLength(75)]
+        [StringLength(75, ErrorMessage = "The Server Address cannot exceed 75 characters. ")]
         public string ServerURL { get; set; }
 
         public Organization ToOrganization(Organization extistingOrg)
