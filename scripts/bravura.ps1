@@ -89,8 +89,8 @@ function Write-Line($str) {
 $year = (Get-Date).year
 
 Write-Line @'
-HITACHI-ID
-Bravura Safe Vault
+BRAVURA-SECURITY
+Bravura Safe
 '@
 
 Write-Line "
