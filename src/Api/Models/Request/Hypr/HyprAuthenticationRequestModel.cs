@@ -6,6 +6,12 @@ namespace Bit.Api.Models.Request.Hypr
         [Required]
         public string Signature { get; set; }
         public string Team { get; set; }
+        public bool MobileBrowser { get; set; }
+
+        public HyprAuthenticationRequestModel()
+        {
+            MobileBrowser = false;
+        }
     }
 
     public class HyprAuthRequestJson
