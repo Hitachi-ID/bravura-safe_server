@@ -596,7 +596,7 @@ namespace Bit.Api.Controllers
                     serviceHmac = HyprApi.GetNonce(),
                     additionalDetails =  new HyprAuthRequestJsonAdditionalDetails()
                     {
-                        mobileBrowser = false
+                        mobileBrowser = model.MobileBrowser
                     }
                 };
 
