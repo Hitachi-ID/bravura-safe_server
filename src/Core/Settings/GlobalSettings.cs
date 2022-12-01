@@ -65,6 +65,7 @@ public class GlobalSettings : IGlobalSettings
     public virtual NotificationHubSettings NotificationHub { get; set; } = new NotificationHubSettings();
     public virtual YubicoSettings Yubico { get; set; } = new YubicoSettings();
     public virtual DuoSettings Duo { get; set; } = new DuoSettings();
+    public virtual HyprSettings Hypr { get; set; } = new HyprSettings();
     public virtual BraintreeSettings Braintree { get; set; } = new BraintreeSettings();
     public virtual BitPaySettings BitPay { get; set; } = new BitPaySettings();
     public virtual AmazonSettings Amazon { get; set; } = new AmazonSettings();
@@ -427,6 +428,11 @@ public class GlobalSettings : IGlobalSettings
     public class DuoSettings
     {
         public string AKey { get; set; }
+    }
+
+    public class HyprSettings
+    {
+        public string SKey { get; set; }
     }
 
     public class BraintreeSettings

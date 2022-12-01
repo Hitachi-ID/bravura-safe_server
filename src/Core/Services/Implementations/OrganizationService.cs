@@ -1157,6 +1157,24 @@ public class OrganizationService : IOrganizationService
             return;
         }
 
+        providers[type].Enabled = false;
+        organization.SetTwoFactorProviders(providers);
+        await UpdateAsync(organization);
+    }
+
+    public async Task DeleteTwoFactorProviderAsync(Organization organization, TwoFactorProviderType type)
+    {
+        if (!type.ToString().Contains("Organization"))
+        {
+            throw new ArgumentException("Not a team provider type.");
+        }
+
+        var providers = organization.GetTwoFactorProviders();
+        if (!providers?.ContainsKey(type) ?? true)
+        {
+            return;
+        }
+
         providers.Remove(type);
         organization.SetTwoFactorProviders(providers);
         await UpdateAsync(organization);

@@ -26,6 +26,7 @@ public class CustomTokenRequestValidator : BaseRequestValidator<CustomTokenReque
         IUserService userService,
         IEventService eventService,
         IOrganizationDuoWebTokenProvider organizationDuoWebTokenProvider,
+        IOrganizationHyprWebTokenProvider organizationHyprWebTokenProvider,
         IOrganizationRepository organizationRepository,
         IOrganizationUserRepository organizationUserRepository,
         IApplicationCacheService applicationCacheService,
@@ -38,7 +39,7 @@ public class CustomTokenRequestValidator : BaseRequestValidator<CustomTokenReque
         IUserRepository userRepository,
         ICaptchaValidationService captchaValidationService)
         : base(userManager, deviceRepository, deviceService, userService, eventService,
-              organizationDuoWebTokenProvider, organizationRepository, organizationUserRepository,
+              organizationDuoWebTokenProvider, organizationHyprWebTokenProvider, organizationRepository, organizationUserRepository,
               applicationCacheService, mailService, logger, currentContext, globalSettings, policyRepository,
               userRepository, captchaValidationService)
     {

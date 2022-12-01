@@ -306,6 +306,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services, GlobalSettings globalSettings)
     {
         services.AddSingleton<IOrganizationDuoWebTokenProvider, OrganizationDuoWebTokenProvider>();
+        services.AddSingleton<IOrganizationHyprWebTokenProvider, OrganizationHyprWebTokenProvider>();
         services.Configure<PasswordHasherOptions>(options => options.IterationCount = 100000);
         services.Configure<TwoFactorRememberTokenProviderOptions>(options =>
         {
