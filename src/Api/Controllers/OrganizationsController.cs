@@ -708,8 +708,10 @@ public async Task<ListResponseModel<OrganizationApiKeyInformation>> ApiKeyInform
 
         var ssoConfig = await _ssoConfigRepository.GetByOrganizationIdAsync(id);
         ssoConfig = ssoConfig == null ? model.ToSsoConfig(id) : model.ToSsoConfig(ssoConfig);
+        organization.Identifier = model.Identifier;
 
         await _ssoConfigService.SaveAsync(ssoConfig, organization);
+        await _organizationService.UpdateAsync(organization);
 
         return new OrganizationSsoResponseModel(organization, _globalSettings, ssoConfig);
     }

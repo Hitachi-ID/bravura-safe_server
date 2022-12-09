@@ -114,7 +114,7 @@ public class ResourceOwnerPasswordValidator : BaseRequestValidator<ResourceOwner
             if (authRequest != null)
             {
                 var requestAge = DateTime.UtcNow - authRequest.CreationDate;
-                if (requestAge < TimeSpan.FromHours(1) && !authRequest.AuthenticationDate.HasValue &&
+                if (requestAge < TimeSpan.FromHours(1) &&
                     CoreHelpers.FixedTimeEquals(authRequest.AccessCode, context.Password))
                 {
                     authRequest.AuthenticationDate = DateTime.UtcNow;
@@ -124,14 +124,12 @@ public class ResourceOwnerPasswordValidator : BaseRequestValidator<ResourceOwner
             }
             return false;
         }
-        else
+
+        if (!await _userService.CheckPasswordAsync(validatorContext.User, context.Password))
         {
-            if (!await _userService.CheckPasswordAsync(validatorContext.User, context.Password))
-            {
-                return false;
-            }
-            return true;
+            return false;
         }
+        return true;
     }
 
     protected override Task SetSuccessResult(ResourceOwnerPasswordValidationContext context, User user,
