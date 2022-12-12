@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Bit.Api.Models.Request;
 using Bit.Api.Models.Request.Accounts;
+using Bit.Api.Models.Request.Hypr;
 using Bit.Api.Models.Response;
+using Bit.Api.Models.Response.Hypr;
 using Bit.Api.Models.Response.TwoFactor;
 using Bit.Core.Context;
 using Bit.Core.Entities;
@@ -14,6 +19,7 @@ using Bit.Core.Services;
 using Bit.Core.Settings;
 using Bit.Core.Utilities;
 using Bit.Core.Utilities.Duo;
+using Bit.Core.Utilities.Hypr;
 using Fido2NetLib;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -360,6 +366,30 @@ namespace Bit.Api.Controllers
             return response;
         }
 
+        [HttpPut("~/organizations/{id}/two-factor/delete")]
+        [HttpPost("~/organizations/{id}/two-factor/delete")]
+        public async Task<TwoFactorProviderResponseModel> PutOrganizationDelete(string id,
+            [FromBody] TwoFactorProviderRequestModel model)
+        {
+            var user = await CheckAsync(model, false);
+
+            var orgIdGuid = new Guid(id);
+            if (!await _currentContext.ManagePolicies(orgIdGuid))
+            {
+                throw new NotFoundException();
+            }
+
+            var organization = await _organizationRepository.GetByIdAsync(orgIdGuid);
+            if (organization == null)
+            {
+                throw new NotFoundException();
+            }
+
+            await _organizationService.DeleteTwoFactorProviderAsync(organization, model.Type.Value);
+            var response = new TwoFactorProviderResponseModel(model.Type.Value, organization);
+            return response;
+        }
+
         [HttpPost("get-recover")]
         public async Task<TwoFactorRecoverResponseModel> GetRecover([FromBody] SecretVerificationRequestModel model)
         {
@@ -414,6 +444,230 @@ namespace Bit.Api.Controllers
             model.ToUser(user);
             await _userService.SaveUserAsync(user);
             return new DeviceVerificationResponseModel(true, user.UnknownDeviceVerificationEnabled);
+        }
+
+        [HttpPost("~/organizations/{id}/two-factor/get-hypr")]
+        public async Task<TwoFactorHyprResponseModel> GetOrganizationHypr(string id, [FromBody] SecretVerificationRequestModel model)
+        {
+            var user = await CheckAsync(model, false);
+
+            var orgIdGuid = new Guid(id);
+            if (!await _currentContext.ManagePolicies(orgIdGuid))
+            {
+                throw new NotFoundException();
+            }
+
+            var organization = await _organizationRepository.GetByIdAsync(orgIdGuid);
+            if (organization == null)
+            {
+                throw new NotFoundException();
+            }
+
+            var response = new TwoFactorHyprResponseModel(organization);
+            return response;
+        }
+
+        [HttpPut("~/organizations/{id}/two-factor/hypr")]
+        [HttpPost("~/organizations/{id}/two-factor/hypr")]
+        public async Task<TwoFactorHyprResponseModel> PutOrganizationHypr(string id,
+            [FromBody] UpdateTwoFactorHyprRequestModel model)
+        {
+            var user = await CheckAsync(model, false);
+
+            var orgIdGuid = new Guid(id);
+            if (!await _currentContext.ManagePolicies(orgIdGuid))
+            {
+                throw new NotFoundException();
+            }
+
+            var organization = await _organizationRepository.GetByIdAsync(orgIdGuid);
+            if (organization == null)
+            {
+                throw new NotFoundException();
+            }
+
+            var sKey = _globalSettings.Hypr.SKey;
+
+            if (String.IsNullOrEmpty(sKey))
+            {
+                throw new BadRequestException("Hypr signature key is not set.");
+            }
+
+            try
+            {
+                var pushRequestJson = new HyprAuthRequestJson
+                {
+                    actionId = "defaultAuthAction",
+                    appId = model.AppId,
+                    machineId = "push-notif-request",
+                    namedUser = "NhXDJZyW2il1FeUUrCUJ@2KfBjrSL2Unk8LXEjgbM",
+                    machine = "WEB",
+                    sessionNonce = HyprApi.GetNonce(),
+                    deviceNonce = HyprApi.GetNonce(),
+                    serviceNonce = HyprApi.GetNonce(),
+                    serviceHmac = HyprApi.GetNonce(),
+                    additionalDetails = new HyprAuthRequestJsonAdditionalDetails()
+                    {
+                        mobileBrowser = false
+                    }
+                };
+
+                using (var hyprApi = new HyprApi(model.ApiKey, model.ServerURL, model.AppId))
+                {
+                    var jsonMessage = JsonSerializer.Serialize(pushRequestJson);
+                    var (httpResponseInitial, pushCallResponse) = await hyprApi.JSONApiCallAsync<HyprAuthResponseJson>("POST", "/rp/api/oob/client/authentication/requests", jsonMessage);
+
+                    if (httpResponseInitial.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        throw new HyprException("API Token is invalid.");
+                    }
+                    else if (httpResponseInitial.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        throw new HyprException("Application ID is invalid.");
+                    }
+                    else if (httpResponseInitial.StatusCode != HttpStatusCode.BadRequest)
+                    {
+                        throw new HyprException("Push notification failed to initiate.");
+                    }
+                }
+            }
+            catch(System.Net.Http.HttpRequestException)
+            {
+                throw new BadRequestException("Hypr configuration settings are not valid. Server Address is invalid.");
+            }
+            catch (HyprException e)
+            {
+                throw new BadRequestException("Hypr configuration settings are not valid. " + e.Message);
+            }
+
+            model.ToOrganization(organization);
+            await _organizationService.UpdateTwoFactorProviderAsync(organization,
+                TwoFactorProviderType.OrganizationHypr);
+            var response = new TwoFactorHyprResponseModel(organization);
+            return response;
+        }
+
+        [HttpPost("hypr/push-authentication")]
+        [AllowAnonymous]
+        public async Task<HyprAuthenticationResponseModel> OrganizationHyprRequestPushAuthentication([FromBody] HyprAuthenticationRequestModel model)
+        {
+            var (username, teamid) = HyprWeb.VerifyTxResponse(_globalSettings.Hypr.SKey, model.Signature);
+            var teamguid = new Guid(teamid);
+            var team = await _organizationRepository.GetByIdAsync(teamguid);
+            if (team == null)
+            {
+                throw new NotFoundException();
+            }
+
+            string ServerURL = null;
+            string ApiKey = null;
+            string AppID = null;
+            var provider = team.GetTwoFactorProvider(TwoFactorProviderType.OrganizationHypr);
+            if (provider.MetaData.ContainsKey("Server"))
+            {
+                ServerURL = (string)provider.MetaData["Server"];
+            }
+            if (provider.MetaData.ContainsKey("AKey"))
+            {
+                ApiKey = (string)provider.MetaData["AKey"];
+            }
+            if (provider.MetaData.ContainsKey("App"))
+            {
+                AppID = (string)provider.MetaData["App"];
+            }
+            if (ApiKey is null || ServerURL is null || AppID is null)
+            {
+                throw new BadRequestException("Hypr not configured. Check two-factor login settings.");
+            }
+
+            bool stop = false, found = false;
+            try
+            {
+                var pushRequestJson = new HyprAuthRequestJson
+                {
+                    actionId = "defaultAuthAction",
+                    appId = AppID,
+                    machineId = "push-notif-request",
+                    namedUser = username,
+                    machine = "WEB",
+                    sessionNonce = HyprApi.GetNonce(),
+                    deviceNonce = HyprApi.GetNonce(),
+                    serviceNonce = HyprApi.GetNonce(),
+                    serviceHmac = HyprApi.GetNonce(),
+                    additionalDetails =  new HyprAuthRequestJsonAdditionalDetails()
+                    {
+                        mobileBrowser = model.MobileBrowser
+                    }
+                };
+
+                using (var hyprApi = new HyprApi(ApiKey, ServerURL, AppID))
+                {
+                    var jsonMessage = JsonSerializer.Serialize(pushRequestJson);
+                    var (httpResponseInitial, pushCallResponse) = await hyprApi.JSONApiCallAsync<HyprAuthResponseJson>("POST", "/rp/api/oob/client/authentication/requests", jsonMessage);
+
+                    if (httpResponseInitial.StatusCode != HttpStatusCode.OK || pushCallResponse is null || pushCallResponse.status.responseCode != 200)
+                    {
+                        if (httpResponseInitial is not null)
+                        {
+                            string jsonResultStr = httpResponseInitial.Content.ReadAsStringAsync().Result;
+                            Dictionary<string, object> result = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonResultStr);
+                            throw new HyprException(result["title"].ToString());
+                        }
+                        else
+                        {
+                            throw new HyprException("Push notification failed to initiate.");
+                        }
+                    }
+
+                    var requestid = pushCallResponse.response.requestId;
+                    var requestResponse = pushCallResponse.status.responseCode;
+                    string statusUrl = "/rp/api/oob/client/authentication/requests/" + requestid;
+                    int pollTime = 250;
+
+                    if (requestResponse == 200 && string.IsNullOrWhiteSpace(requestid))
+                    {
+                        throw new HyprException("Hypr authentication request returned is not valid.");
+                    }
+
+                    while (!stop && !found)
+                    {
+                        var (httpResponse, pushGetStatusResponse) = await hyprApi?.JSONApiCallAsync<HyprAuthGetStatusResponseJson>("GET", statusUrl);
+                        var states = pushGetStatusResponse?.state;
+                        if(states is null)
+                        {
+                            throw new HyprException("No request found.");
+                        }
+                        else
+                        {
+                            found = states.Any(item => item.value == "COMPLETED");
+                            stop = states.Any(item => item.value == "CANCELED" || item.value == "FAILED") || httpResponse.StatusCode != HttpStatusCode.OK || hyprApi is null;
+                        }
+
+                        if (!stop && !found)
+                        {
+                            await Task.Delay(pollTime);
+                        }
+                    };
+                }
+
+            }
+            catch (HyprException e)
+            {
+                throw new BadRequestException(e.Message);
+            }
+
+            if (!found || stop)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            var response = new HyprAuthenticationResponseModel
+            {
+                status = 200,
+                signature = HyprWeb.SignAuthRequest(_globalSettings.Hypr.SKey, username, teamid)
+            };
+
+            return response;
         }
 
         private async Task<User> CheckAsync(SecretVerificationRequestModel model, bool premium)

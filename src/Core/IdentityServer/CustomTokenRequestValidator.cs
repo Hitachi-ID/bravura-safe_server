@@ -33,6 +33,7 @@ namespace Bit.Core.IdentityServer
             IUserService userService,
             IEventService eventService,
             IOrganizationDuoWebTokenProvider organizationDuoWebTokenProvider,
+            IOrganizationHyprWebTokenProvider organizationHyprWebTokenProvider,
             IOrganizationRepository organizationRepository,
             IOrganizationUserRepository organizationUserRepository,
             IApplicationCacheService applicationCacheService,
@@ -45,7 +46,7 @@ namespace Bit.Core.IdentityServer
             IUserRepository userRepository,
             ICaptchaValidationService captchaValidationService)
             : base(userManager, deviceRepository, deviceService, userService, eventService,
-                  organizationDuoWebTokenProvider, organizationRepository, organizationUserRepository,
+                  organizationDuoWebTokenProvider, organizationHyprWebTokenProvider, organizationRepository, organizationUserRepository,
                   applicationCacheService, mailService, logger, currentContext, globalSettings, policyRepository,
                   userRepository, captchaValidationService)
         {

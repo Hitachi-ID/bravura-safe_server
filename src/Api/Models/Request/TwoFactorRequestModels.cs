@@ -272,4 +272,50 @@ namespace Bit.Api.Models.Request
         [StringLength(32)]
         public string RecoveryCode { get; set; }
     }
+
+    public class UpdateTwoFactorHyprRequestModel : SecretVerificationRequestModel, IValidatableObject
+    {
+        [Required]
+        public string AppId { get; set; }
+        [Required]
+        [StringLength(42, ErrorMessage = "The API Token cannot exceed 42 characters. ")]
+        public string ApiKey { get; set; }
+        [Required]
+        [StringLength(75, ErrorMessage = "The Server Address cannot exceed 75 characters. ")]
+        public string ServerURL { get; set; }
+
+        public Organization ToOrganization(Organization extistingOrg)
+        {
+            var providers = extistingOrg.GetTwoFactorProviders();
+            if (providers == null)
+            {
+                providers = new Dictionary<TwoFactorProviderType, TwoFactorProvider>();
+            }
+            else if (providers.ContainsKey(TwoFactorProviderType.OrganizationHypr))
+            {
+                providers.Remove(TwoFactorProviderType.OrganizationHypr);
+            }
+
+            providers.Add(TwoFactorProviderType.OrganizationHypr, new TwoFactorProvider
+            {
+                MetaData = new Dictionary<string, object>
+                {
+                    ["App"] = AppId,
+                    ["AKey"] = ApiKey,
+                    ["Server"] = ServerURL
+                },
+                Enabled = true
+            });
+            extistingOrg.SetTwoFactorProviders(providers);
+            return extistingOrg;
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (!Core.Utilities.Hypr.HyprApi.ValidServer(ServerURL))
+            {
+                yield return new ValidationResult("Server URL is invalid.", new string[] { nameof(ServerURL) });
+            }
+        }
+    }
 }
