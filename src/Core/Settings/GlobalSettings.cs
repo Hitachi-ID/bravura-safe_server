@@ -36,7 +36,7 @@ namespace Bit.Core.Settings
         public virtual string OidcIdentityClientKey { get; set; }
         public virtual string HibpApiKey { get; set; }
         public virtual bool DisableUserRegistration { get; set; }
-        public virtual bool DisableEmailNewDevice { get; set; }
+        public virtual bool DisableEmailNewDevice { get; set; } = true;
         public virtual bool EnableCloudCommunication { get; set; } = false;
         public virtual int OrganizationInviteExpirationHours { get; set; } = 120; // 5 days
         public virtual string EventGridKey { get; set; }
@@ -494,7 +494,7 @@ namespace Bit.Core.Settings
 
         public class TwoFactorAuthSettings : ITwoFactorAuthSettings
         {
-            public bool EmailOnNewDeviceLogin { get; set; } = true;
+            public bool EmailOnNewDeviceLogin { get; set; } = false;
     }
 }
 }
