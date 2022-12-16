@@ -3082,16 +3082,16 @@
         "type": "Project",
         "dependencies": {
           "Azure.Messaging.EventGrid": "4.10.0",
-          "Commercial.Core": "2022.8.4",
-          "Core": "2022.8.4",
-          "SharedWeb": "2022.8.4",
+          "Commercial.Core": "2022.11.0",
+          "Core": "2022.11.0",
+          "SharedWeb": "2022.11.0",
           "Swashbuckle.AspNetCore": "6.3.1"
         }
       },
       "commercial.core": {
         "type": "Project",
         "dependencies": {
-          "Core": "2022.8.4"
+          "Core": "2022.11.0"
         }
       },
       "common": {
@@ -3099,7 +3099,7 @@
         "dependencies": {
           "AutoFixture.AutoNSubstitute": "4.17.0",
           "AutoFixture.Xunit2": "4.17.0",
-          "Core": "2022.8.4",
+          "Core": "2022.11.0",
           "Kralizek.AutoFixture.Extensions.MockHttp": "1.2.0",
           "Microsoft.NET.Test.Sdk": "17.1.0",
           "NSubstitute": "4.3.0",
@@ -3149,15 +3149,15 @@
       "identity": {
         "type": "Project",
         "dependencies": {
-          "Core": "2022.8.4",
-          "SharedWeb": "2022.8.4",
+          "Core": "2022.11.0",
+          "SharedWeb": "2022.11.0",
           "Swashbuckle.AspNetCore.SwaggerGen": "6.3.1"
         }
       },
       "infrastructure.dapper": {
         "type": "Project",
         "dependencies": {
-          "Core": "2022.8.4",
+          "Core": "2022.11.0",
           "Dapper": "2.0.123",
           "System.Data.SqlClient": "4.8.3"
         }
@@ -3166,7 +3166,7 @@
         "type": "Project",
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
-          "Core": "2022.8.4",
+          "Core": "2022.11.0",
           "Microsoft.EntityFrameworkCore.Relational": "6.0.4",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "6.0.4",
           "Pomelo.EntityFrameworkCore.MySql": "6.0.1",
@@ -3176,8 +3176,8 @@
       "integrationtestcommon": {
         "type": "Project",
         "dependencies": {
-          "Common": "2022.8.4",
-          "Identity": "2022.8.4",
+          "Common": "2022.11.0",
+          "Identity": "2022.11.0",
           "Microsoft.AspNetCore.Mvc.Testing": "6.0.5",
           "Microsoft.EntityFrameworkCore.InMemory": "6.0.5",
           "Microsoft.Extensions.Configuration": "6.0.1"
@@ -3186,9 +3186,9 @@
       "sharedweb": {
         "type": "Project",
         "dependencies": {
-          "Core": "2022.8.4",
-          "Infrastructure.Dapper": "2022.8.4",
-          "Infrastructure.EntityFramework": "2022.8.4"
+          "Core": "2022.11.0",
+          "Infrastructure.Dapper": "2022.11.0",
+          "Infrastructure.EntityFramework": "2022.11.0"
         }
       }
     }

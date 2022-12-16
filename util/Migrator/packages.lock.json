@@ -2742,7 +2742,7 @@
         "type": "Project",
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "[11.0.0, )",
-          "Core": "[2022.10.0, )",
+          "Core": "[2022.11.0, )",
           "Microsoft.EntityFrameworkCore.Relational": "[6.0.4, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[6.0.4, )",
           "Pomelo.EntityFrameworkCore.MySql": "[6.0.1, )",

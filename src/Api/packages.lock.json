@@ -1541,8 +1541,8 @@
       },
       "System.Data.SqlClient": {
         "type": "Transitive",
-        "resolved": "4.8.3",
-        "contentHash": "yERfVLXAY0QbylAgaGLByYN0hFxX28aeEQ0hUgJO+Ntn1AfmWl5HHUoYJA0Yl9HhIUUJHVaS/Sw/RLZr5aaC+A==",
+        "resolved": "4.8.5",
+        "contentHash": "fRqxut4lrndPHrXD+ht1XRmCL3obuKldm4XjCRYS9p5f7FSR7shBxAwTkDrpFMsHC9BhNgjjmUtiIjvehn5zkg==",
         "dependencies": {
           "Microsoft.Win32.Registry": "4.7.0",
           "System.Security.Principal.Windows": "4.7.0",
@@ -2767,7 +2767,7 @@
       "commercial.core": {
         "type": "Project",
         "dependencies": {
-          "Core": "2022.8.4"
+          "Core": "2022.11.0"
         }
       },
       "core": {
@@ -2816,18 +2816,18 @@
       "infrastructure.dapper": {
         "type": "Project",
         "dependencies": {
-          "Core": "2022.8.4",
-          "Dapper": "2.0.123",
-          "System.Data.SqlClient": "4.8.3",
-          "System.Security.Cryptography.Xml": "6.0.1",
-          "System.Text.RegularExpressions": "4.3.1"
+          "Core": "[2022.11.0, )",
+          "Dapper": "[2.0.123, )",
+          "System.Data.SqlClient": "[4.8.5, )",
+          "System.Security.Cryptography.Xml": "[6.0.1, )",
+          "System.Text.RegularExpressions": "[4.3.1, )"
         }
       },
       "infrastructure.entityframework": {
         "type": "Project",
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
-          "Core": "2022.8.4",
+          "Core": "2022.11.0",
           "Microsoft.EntityFrameworkCore.Relational": "6.0.8",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "6.0.4",
           "Pomelo.EntityFrameworkCore.MySql": "6.0.1",
@@ -2839,9 +2839,9 @@
       "sharedweb": {
         "type": "Project",
         "dependencies": {
-          "Core": "2022.8.4",
-          "Infrastructure.Dapper": "2022.8.4",
-          "Infrastructure.EntityFramework": "2022.8.4",
+          "Core": "2022.11.0",
+          "Infrastructure.Dapper": "2022.11.0",
+          "Infrastructure.EntityFramework": "2022.11.0",
           "System.Security.Cryptography.Xml": "6.0.1",
           "System.Text.RegularExpressions": "4.3.1"
         }

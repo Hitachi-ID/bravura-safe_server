@@ -610,7 +610,7 @@ public class TwoFactorController : Controller
                 serviceHmac = HyprApi.GetNonce(),
                 additionalDetails =  new HyprAuthRequestJsonAdditionalDetails()
                 {
-                    mobileBrowser = false
+                    mobileBrowser = model.MobileBrowser
                 }
             };
 
