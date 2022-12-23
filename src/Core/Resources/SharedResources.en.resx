@@ -317,7 +317,7 @@
     <value>SAML Identity Provider Configuration</value>
   </data>
   <data name="SingleSignOnServiceUrl" xml:space="preserve">
-    <value>Single Sign On Service URL</value>
+    <value>Single Sign-On Service URL</value>
   </data>
   <data name="SingleLogoutServiceUrl" xml:space="preserve">
     <value>Single Log Out Service URL</value>
@@ -377,10 +377,10 @@
     <value>The Callback Path field is required on a Open ID Connect configuration.</value>
   </data>
   <data name="SpEntityIdValidationError" xml:space="preserve">
-    <value>The Service Provider Configuration Entity Id field is required on a SAML configuration.</value>
+    <value>The Service Provider Configuration Entity ID field is required on a SAML configuration.</value>
   </data>
   <data name="IdpEntityIdValidationError" xml:space="preserve">
-    <value>The Identity Provider Configuration Entity Id field is required on a SAML configuration.</value>
+    <value>The Identity Provider Configuration Entity ID field is required on a SAML configuration.</value>
   </data>
   <data name="Saml2SigningBehaviorValidationError" xml:space="preserve">
     <value>If SAML Signing Behavior is set to never, public and private service provider keys are required.</value>
@@ -389,7 +389,7 @@
     <value>If SAML Binding Type is set to artifact, identity provider resolution service URL is required.</value>
   </data>
   <data name="IdpSingleSignOnServiceUrlValidationError" xml:space="preserve">
-    <value>If Identity Provider Entity ID is not a URL, single sign on service URL is required.</value>
+    <value>If Identity Provider Entity ID is not a URL, single sign-on service URL is required.</value>
   </data>
   <data name="InvalidSchemeConfigurationError" xml:space="preserve">
     <value>The configured authentication scheme is not valid: "{0}"</value>
@@ -677,12 +677,12 @@
     <value>Single log out service URL contains illegal characters.</value>
   </data>
   <data name="IdpSingleSignOnServiceUrlInvalid" xml:space="preserve">
-    <value>Single sign on service URL contains illegal characters.</value>
+    <value>Single sign-on service URL contains illegal characters.</value>
   </data>
   <data name="SsoRedirectTokenValidationMissing" xml:space="preserve">
-    <value>Single sign on redirect token is missing from the request.</value>
+    <value>Single sign-on redirect token is missing from the request.</value>
   </data>
   <data name="InvalidSsoRedirectToken" xml:space="preserve">
-    <value>Single sign on redirect token is invalid or expired.</value>
+    <value>Single sign-on redirect token is invalid or expired.</value>
   </data>
 </root>
