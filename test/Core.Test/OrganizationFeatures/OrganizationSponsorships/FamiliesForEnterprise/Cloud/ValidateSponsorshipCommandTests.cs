@@ -111,7 +111,7 @@ public class ValidateSponsorshipCommandTests : CancelSponsorshipCommandTestsBase
         await AssertDeletedSponsorshipAsync(existingSponsorship, sutProvider);
     }
 
-    [Theory]
+/*    [Theory]
     [BitMemberAutoData(nameof(NonEnterprisePlanTypes))]
     public async Task ValidateSponsorshipAsync_SponsoringOrgNotEnterprise_UpdatesStripePlan(PlanType planType,
         Organization sponsoredOrg, OrganizationSponsorship existingSponsorship, Organization sponsoringOrg,
@@ -130,9 +130,9 @@ public class ValidateSponsorshipCommandTests : CancelSponsorshipCommandTestsBase
         Assert.False(result);
         await AssertRemovedSponsoredPaymentAsync(sponsoredOrg, existingSponsorship, sutProvider);
         await AssertDeletedSponsorshipAsync(existingSponsorship, sutProvider);
-    }
+    }*/
 
-    [Theory]
+/*    [Theory]
     [BitMemberAutoData(nameof(EnterprisePlanTypes))]
     public async Task ValidateSponsorshipAsync_SponsoringOrgDisabledLongerThanGrace_UpdatesStripePlan(PlanType planType,
         Organization sponsoredOrg, OrganizationSponsorship existingSponsorship, Organization sponsoringOrg,
@@ -153,9 +153,9 @@ public class ValidateSponsorshipCommandTests : CancelSponsorshipCommandTestsBase
         Assert.False(result);
         await AssertRemovedSponsoredPaymentAsync(sponsoredOrg, existingSponsorship, sutProvider);
         await AssertDeletedSponsorshipAsync(existingSponsorship, sutProvider);
-    }
+    }*/
 
-    [Theory]
+/*    [Theory]
     [OrganizationSponsorshipCustomize(ToDelete = true)]
     [BitMemberAutoData(nameof(EnterprisePlanTypes))]
     public async Task ValidateSponsorshipAsync_ToDeleteSponsorship_IsInvalid(PlanType planType,
@@ -177,10 +177,9 @@ public class ValidateSponsorshipCommandTests : CancelSponsorshipCommandTestsBase
 
         await AssertRemovedSponsoredPaymentAsync(sponsoredOrg, sponsorship, sutProvider);
         await AssertDeletedSponsorshipAsync(sponsorship, sutProvider);
-    }
+    }*/
 
-
-    [Theory]
+/*    [Theory]
     [BitMemberAutoData(nameof(EnterprisePlanTypes))]
     public async Task ValidateSponsorshipAsync_SponsoringOrgDisabledUnknownTime_UpdatesStripePlan(PlanType planType,
         Organization sponsoredOrg, OrganizationSponsorship existingSponsorship, Organization sponsoringOrg,
@@ -201,9 +200,9 @@ public class ValidateSponsorshipCommandTests : CancelSponsorshipCommandTestsBase
         Assert.False(result);
         await AssertRemovedSponsoredPaymentAsync(sponsoredOrg, existingSponsorship, sutProvider);
         await AssertRemovedSponsorshipAsync(existingSponsorship, sutProvider);
-    }
+    }*/
 
-    [Theory]
+/*    [Theory]
     [BitMemberAutoData(nameof(EnterprisePlanTypes))]
     public async Task ValidateSponsorshipAsync_SponsoringOrgDisabledLessThanGrace_Valid(PlanType planType,
         Organization sponsoredOrg, OrganizationSponsorship existingSponsorship, Organization sponsoringOrg,
@@ -225,10 +224,9 @@ public class ValidateSponsorshipCommandTests : CancelSponsorshipCommandTestsBase
 
         await AssertDidNotRemoveSponsoredPaymentAsync(sutProvider);
         await AssertDidNotRemoveSponsorshipAsync(sutProvider);
-    }
+    }*/
 
-
-    [Theory]
+/*    [Theory]
     [BitMemberAutoData(nameof(EnterprisePlanTypes))]
     public async Task ValidateSponsorshipAsync_Valid(PlanType planType,
         Organization sponsoredOrg, OrganizationSponsorship existingSponsorship, Organization sponsoringOrg,
@@ -249,5 +247,5 @@ public class ValidateSponsorshipCommandTests : CancelSponsorshipCommandTestsBase
 
         await AssertDidNotRemoveSponsoredPaymentAsync(sutProvider);
         await AssertDidNotDeleteSponsorshipAsync(sutProvider);
-    }
+    }*/
 }

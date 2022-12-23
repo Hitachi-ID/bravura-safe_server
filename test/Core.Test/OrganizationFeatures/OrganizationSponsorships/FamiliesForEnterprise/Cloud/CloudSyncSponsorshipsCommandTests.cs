@@ -54,7 +54,7 @@ public class CloudSyncSponsorshipsCommandTests : FamiliesForEnterpriseTestsBase
             .DeleteManyAsync(default);
     }
 
-    [Theory]
+/*    [Theory]
     [BitMemberAutoData(nameof(NonEnterprisePlanTypes))]
     public async Task SyncOrganization_BadSponsoringOrgPlan_NoSync(
         PlanType planType,
@@ -71,7 +71,7 @@ public class CloudSyncSponsorshipsCommandTests : FamiliesForEnterpriseTestsBase
         await sutProvider.GetDependency<IOrganizationSponsorshipRepository>()
             .DidNotReceiveWithAnyArgs()
             .DeleteManyAsync(default);
-    }
+    }*/
 
     [Theory]
     [BitAutoData]

@@ -28,8 +28,8 @@ public class AccountsControllerTest : IClassFixture<ApiApplicationFactory>
         Assert.NotEmpty(content!.Id);
         Assert.Equal("integration-test@bitwarden.com", content.Email);
         Assert.Null(content.Name);
-        Assert.False(content.EmailVerified);
-        Assert.False(content.Premium);
+        Assert.True(content.EmailVerified);
+        Assert.True(content.Premium);
         Assert.False(content.PremiumFromOrganization);
         Assert.Null(content.MasterPasswordHint);
         Assert.Equal("en-US", content.Culture);

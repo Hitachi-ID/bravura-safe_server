@@ -44,7 +44,7 @@ public class SetUpSponsorshipCommandTests : FamiliesForEnterpriseTestsBase
         await AssertDidNotSetUpAsync(sutProvider);
     }
 
-    [Theory]
+/*    [Theory]
     [BitMemberAutoData(nameof(FamiliesPlanTypes))]
     public async Task SetUpSponsorship_TooLongSinceLastSync_ThrowsBadRequest(PlanType planType, Organization org,
         OrganizationSponsorship sponsorship,
@@ -61,9 +61,9 @@ public class SetUpSponsorshipCommandTests : FamiliesForEnterpriseTestsBase
             .Received(1)
             .DeleteAsync(sponsorship);
         await AssertDidNotSetUpAsync(sutProvider);
-    }
+    }*/
 
-    [Theory]
+/*    [Theory]
     [BitMemberAutoData(nameof(NonFamiliesPlanTypes))]
     public async Task SetUpSponsorship_OrgNotFamiles_ThrowsBadRequest(PlanType planType,
         OrganizationSponsorship sponsorship, Organization org,
@@ -77,7 +77,7 @@ public class SetUpSponsorshipCommandTests : FamiliesForEnterpriseTestsBase
 
         Assert.Contains("Can only redeem sponsorship offer on families teams.", exception.Message);
         await AssertDidNotSetUpAsync(sutProvider);
-    }
+    }*/
 
     private static async Task AssertDidNotSetUpAsync(SutProvider<SetUpSponsorshipCommand> sutProvider)
     {
