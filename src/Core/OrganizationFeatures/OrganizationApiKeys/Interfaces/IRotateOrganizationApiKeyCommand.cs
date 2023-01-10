@@ -1,10 +1,8 @@
-﻿using System.Threading.Tasks;
-using Bit.Core.Entities;
+﻿using Bit.Core.Entities;
 
-namespace Bit.Core.OrganizationFeatures.OrganizationApiKeys.Interfaces
+namespace Bit.Core.OrganizationFeatures.OrganizationApiKeys.Interfaces;
+
+public interface IRotateOrganizationApiKeyCommand
 {
-    public interface IRotateOrganizationApiKeyCommand
-    {
-        Task<OrganizationApiKey> RotateApiKeyAsync(OrganizationApiKey organizationApiKey);
-    }
+    Task<OrganizationApiKey> RotateApiKeyAsync(OrganizationApiKey organizationApiKey);
 }

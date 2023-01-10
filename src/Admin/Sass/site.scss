@@ -148,7 +148,7 @@ table {
                 div.dropdown {
                     button.btn-outline-secondary {
                         background-color: #fbfbfb;
-                        border-color: #ced4da;
+                        border-color: #fbfbfb;
                         color: rgba(0,0,0,.8);
                         padding-top: 3px;
                         &:hover {
@@ -169,4 +169,15 @@ table {
             }
         }
     }
+}
+
+.modal-footer {
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+h5 {
+    text-transform: uppercase;
+    font-weight: bold;
 }

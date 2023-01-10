@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Bit.Api.Models.Public.Request;
 
-namespace Bit.Api.Models.Public.Request
+public class UpdateGroupIdsRequestModel
 {
-    public class UpdateGroupIdsRequestModel
-    {
-        /// <summary>
-        /// The associated group ids that this object can access.
-        /// </summary>
-        public IEnumerable<Guid> GroupIds { get; set; }
-    }
+    /// <summary>
+    /// The associated group ids that this object can access.
+    /// </summary>
+    public IEnumerable<Guid> GroupIds { get; set; }
 }

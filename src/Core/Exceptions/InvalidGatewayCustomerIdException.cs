@@ -1,13 +1,10 @@
-﻿using System;
+﻿namespace Bit.Core.Exceptions;
 
-namespace Bit.Core.Exceptions
+public class InvalidGatewayCustomerIdException : Exception
 {
-    public class InvalidGatewayCustomerIdException : Exception
+    public InvalidGatewayCustomerIdException()
+        : base("Invalid gateway customerId.")
     {
-        public InvalidGatewayCustomerIdException()
-            : base("Invalid gateway customerId.")
-        {
 
-        }
     }
 }

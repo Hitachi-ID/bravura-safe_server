@@ -79,6 +79,9 @@ dotnet_diagnostic.CS0618.severity = suggestion
 # Obsolete warnings, this should be removed or changed to warning once we address some of the obsolete items.
 dotnet_diagnostic.CS0612.severity = suggestion
 
+# Remove unnecessary using directives https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0005
+dotnet_diagnostic.IDE0005.severity = warning
+
 # CSharp code style settings:
 [*.cs]
 # Prefer "var" everywhere
@@ -110,6 +113,9 @@ csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
+
+# Namespace settings
+csharp_style_namespace_declarations = file_scoped:warning
 
 # All files
 [*]

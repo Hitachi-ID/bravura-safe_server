@@ -32,9 +32,9 @@
     [ApiKey]                          VARCHAR (MAX)     NOT NULL,
     [ForcePasswordReset]              BIT              NOT NULL,
     [UsesKeyConnector]                BIT              NOT NULL,
-    [FailedLoginCount]                INT              NOT NULL,
+    [FailedLoginCount]                 INT              CONSTRAINT [D_User_FailedLoginCount] DEFAULT ((0)) NOT NULL,
     [LastFailedLoginDate]             DATETIME2 (7)    NULL,
-    [UnknownDeviceVerificationEnabled]  BIT            NULL,
+    [UnknownDeviceVerificationEnabled] BIT              CONSTRAINT [D_User_UnknownDeviceVerificationEnabled] DEFAULT ((1)) NOT NULL,
     CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Bit.Api.Models.Request.Organizations
+namespace Bit.Api.Models.Request.Organizations;
+
+public class OrganizationSeatRequestModel : IValidatableObject
 {
-    public class OrganizationSeatRequestModel : IValidatableObject
-    {
-        [Required]
-        public int? SeatAdjustment { get; set; }
+    [Required]
+    public int? SeatAdjustment { get; set; }
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (SeatAdjustment == 0)
         {
-            if (SeatAdjustment == 0)
-            {
-                yield return new ValidationResult("Seat adjustment cannot be 0.", new string[] { nameof(SeatAdjustment) });
-            }
+            yield return new ValidationResult("Seat adjustment cannot be 0.", new string[] { nameof(SeatAdjustment) });
         }
     }
 }

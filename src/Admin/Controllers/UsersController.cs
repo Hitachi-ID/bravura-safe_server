@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Bit.Admin.Models;
+﻿using Bit.Admin.Models;
 using Bit.Core.Entities;
 using Bit.Core.Repositories;
 using Bit.Core.Services;
@@ -10,117 +7,116 @@ using Bit.Core.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bit.Admin.Controllers
+namespace Bit.Admin.Controllers;
+
+[Authorize]
+public class UsersController : Controller
 {
-    [Authorize]
-    public class UsersController : Controller
+    private readonly IUserRepository _userRepository;
+    private readonly ICipherRepository _cipherRepository;
+    private readonly IPaymentService _paymentService;
+    private readonly GlobalSettings _globalSettings;
+    [TempData]
+    public string status { get; set; }
+    [TempData]
+    public string message { get; set; }
+
+    public UsersController(
+        IUserRepository userRepository,
+        ICipherRepository cipherRepository,
+        IPaymentService paymentService,
+        GlobalSettings globalSettings)
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ICipherRepository _cipherRepository;
-        private readonly IPaymentService _paymentService;
-        private readonly GlobalSettings _globalSettings;
-        [TempData]
-        public string status { get; set; }
-        [TempData]
-        public string message { get; set; }
+        _userRepository = userRepository;
+        _cipherRepository = cipherRepository;
+        _paymentService = paymentService;
+        _globalSettings = globalSettings;
+    }
 
-        public UsersController(
-            IUserRepository userRepository,
-            ICipherRepository cipherRepository,
-            IPaymentService paymentService,
-            GlobalSettings globalSettings)
+    public async Task<IActionResult> Index(string email, int page = 1, int count = 25)
+    {
+        if (page < 1)
         {
-            _userRepository = userRepository;
-            _cipherRepository = cipherRepository;
-            _paymentService = paymentService;
-            _globalSettings = globalSettings;
+            page = 1;
         }
 
-        public async Task<IActionResult> Index(string email, int page = 1, int count = 25)
+        if (count < 1)
         {
-            if (page < 1)
-            {
-                page = 1;
-            }
-
-            if (count < 1)
-            {
-                count = 1;
-            }
-
-            var skip = (page - 1) * count;
-            var users = await _userRepository.SearchAsync(email, skip, count);
-            return View(new UsersModel
-            {
-                Items = users as List<User>,
-                Email = string.IsNullOrWhiteSpace(email) ? null : email,
-                Page = page,
-                Count = count,
-                // no matter globalSettings.SelfHosted or not, display users/view page
-                // Action = _globalSettings.SelfHosted ? "View" : "Edit"
-                Action = "View"
-            });
+            count = 1;
         }
 
-        public async Task<IActionResult> View(Guid id)
+        var skip = (page - 1) * count;
+        var users = await _userRepository.SearchAsync(email, skip, count);
+        return View(new UsersModel
         {
-            var user = await _userRepository.GetByIdAsync(id);
-            if (user == null)
-            {
-                return RedirectToAction("Index");
-            }
+            Items = users as List<User>,
+            Email = string.IsNullOrWhiteSpace(email) ? null : email,
+            Page = page,
+            Count = count,
+            // no matter globalSettings.SelfHosted or not, display users/view page
+            // Action = _globalSettings.SelfHosted ? "View" : "Edit"
+            Action = "View"
+        });
+    }
 
-            var ciphers = await _cipherRepository.GetManyByUserIdAsync(id);
-            return View(new UserViewModel(user, ciphers));
-        }
-
-        [SelfHosted(NotSelfHostedOnly = true)]
-        public async Task<IActionResult> Edit(Guid id)
+    public async Task<IActionResult> View(Guid id)
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null)
         {
-            var user = await _userRepository.GetByIdAsync(id);
-            if (user == null)
-            {
-                return RedirectToAction("Index");
-            }
-
-            var ciphers = await _cipherRepository.GetManyByUserIdAsync(id);
-            var billingInfo = await _paymentService.GetBillingAsync(user);
-            // Tempory disable users/edit page according to Ian requirement
-            // return View(new UserEditModel(user, ciphers, billingInfo, _globalSettings));
-            return NotFound();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [SelfHosted(NotSelfHostedOnly = true)]
-        public async Task<IActionResult> Edit(Guid id, UserEditModel model)
-        {
-            var user = await _userRepository.GetByIdAsync(id);
-            if (user == null)
-            {
-                return RedirectToAction("Index");
-            }
-
-            model.ToUser(user);
-            await _userRepository.ReplaceAsync(user);
-            // return RedirectToAction("Edit", new { id });
-            return NotFound();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var user = await _userRepository.GetByIdAsync(id);
-            if (user != null)
-            {
-                await _userRepository.DeleteAsync(user);
-            }
-
-            TempData["status"] = "success";
-            TempData["message"] = $"{user.Name} has been deleted!";
-
             return RedirectToAction("Index");
         }
+
+        var ciphers = await _cipherRepository.GetManyByUserIdAsync(id);
+        return View(new UserViewModel(user, ciphers));
+    }
+
+    [SelfHosted(NotSelfHostedOnly = true)]
+    public async Task<IActionResult> Edit(Guid id)
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null)
+        {
+            return RedirectToAction("Index");
+        }
+
+        var ciphers = await _cipherRepository.GetManyByUserIdAsync(id);
+        var billingInfo = await _paymentService.GetBillingAsync(user);
+        // Tempory disable users/edit page according to Ian requirement
+        // return View(new UserEditModel(user, ciphers, billingInfo, _globalSettings));
+        return NotFound();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [SelfHosted(NotSelfHostedOnly = true)]
+    public async Task<IActionResult> Edit(Guid id, UserEditModel model)
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null)
+        {
+            return RedirectToAction("Index");
+        }
+
+        model.ToUser(user);
+        await _userRepository.ReplaceAsync(user);
+        // return RedirectToAction("Edit", new { id });
+        return NotFound();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user != null)
+        {
+            await _userRepository.DeleteAsync(user);
+        }
+
+        TempData["status"] = "success";
+        TempData["message"] = $"{user.Name} has been deleted!";
+
+        return RedirectToAction("Index");
     }
 }

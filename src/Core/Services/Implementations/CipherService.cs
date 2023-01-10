@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
+using Bit.Core.Context;
 using Bit.Core.Entities;
 using Bit.Core.Enums;
 using Bit.Core.Exceptions;
@@ -14,8 +10,8 @@ using Bit.Core.Settings;
 using Bit.Core.Utilities;
 using Core.Models.Data;
 
-namespace Bit.Core.Services
-{
+namespace Bit.Core.Services;
+
     public class CipherService : ICipherService
     {
         public const long MAX_FILE_SIZE = Constants.FileSize501mb;
@@ -34,6 +30,7 @@ namespace Bit.Core.Services
         private readonly GlobalSettings _globalSettings;
         private const long _fileSizeLeeway = 1024L * 1024L; // 1MB 
         private readonly IReferenceEventService _referenceEventService;
+        private readonly ICurrentContext _currentContext;
 
         public CipherService(
             ICipherRepository cipherRepository,
@@ -48,7 +45,8 @@ namespace Bit.Core.Services
             IUserService userService,
             IPolicyRepository policyRepository,
             GlobalSettings globalSettings,
-            IReferenceEventService referenceEventService)
+            IReferenceEventService referenceEventService,
+            ICurrentContext currentContext)
         {
             _cipherRepository = cipherRepository;
             _folderRepository = folderRepository;
@@ -63,6 +61,7 @@ namespace Bit.Core.Services
             _policyRepository = policyRepository;
             _globalSettings = globalSettings;
             _referenceEventService = referenceEventService;
+            _currentContext = currentContext;
         }
 
         public async Task SaveAsync(Cipher cipher, Guid savingUserId, DateTime? lastKnownRevisionDate,
@@ -404,7 +403,7 @@ namespace Bit.Core.Services
 
             var events = deletingCiphers.Select(c =>
                 new Tuple<Cipher, EventType, DateTime?>(c, EventType.Cipher_Deleted, null));
-            foreach (var eventsBatch in events.Batch(100))
+        foreach (var eventsBatch in events.Chunk(100))
             {
                 await _eventService.LogCipherEventsAsync(eventsBatch);
             }
@@ -575,7 +574,7 @@ namespace Bit.Core.Services
 
             var events = cipherInfos.Select(c =>
                 new Tuple<Cipher, EventType, DateTime?>(c.cipher, EventType.Cipher_Shared, null));
-            foreach (var eventsBatch in events.Batch(100))
+        foreach (var eventsBatch in events.Chunk(100))
             {
                 await _eventService.LogCipherEventsAsync(eventsBatch);
             }
@@ -792,7 +791,7 @@ namespace Bit.Core.Services
 
             var events = deletingCiphers.Select(c =>
                 new Tuple<Cipher, EventType, DateTime?>(c, EventType.Cipher_SoftDeleted, null));
-            foreach (var eventsBatch in events.Batch(100))
+        foreach (var eventsBatch in events.Chunk(100))
             {
                 await _eventService.LogCipherEventsAsync(eventsBatch);
             }
@@ -841,13 +840,42 @@ namespace Bit.Core.Services
                 c.DeletedDate = null;
                 return new Tuple<Cipher, EventType, DateTime?>(c, EventType.Cipher_Restored, null);
             });
-            foreach (var eventsBatch in events.Batch(100))
+        foreach (var eventsBatch in events.Chunk(100))
             {
                 await _eventService.LogCipherEventsAsync(eventsBatch);
             }
 
             // push
             await _pushService.PushSyncCiphersAsync(restoringUserId);
+        }
+
+        public async Task<(IEnumerable<CipherOrganizationDetails>, Dictionary<Guid, IGrouping<Guid, CollectionCipher>>)> GetOrganizationCiphers(Guid userId, Guid organizationId)
+        {
+            if (!await _currentContext.ViewAllCollections(organizationId) && !await _currentContext.AccessReports(organizationId))
+            {
+                throw new NotFoundException();
+            }
+
+            IEnumerable<CipherOrganizationDetails> orgCiphers;
+            if (await _currentContext.OrganizationAdmin(organizationId))
+            {
+                // Admins, Owners and Providers can access all items even if not assigned to them
+                orgCiphers = await _cipherRepository.GetManyOrganizationDetailsByOrganizationIdAsync(organizationId);
+            }
+            else
+            {
+                var ciphers = await _cipherRepository.GetManyByUserIdAsync(userId, true);
+                orgCiphers = ciphers.Where(c => c.OrganizationId == organizationId);
+            }
+
+            var orgCipherIds = orgCiphers.Select(c => c.Id);
+
+            var collectionCiphers = await _collectionCipherRepository.GetManyByOrganizationIdAsync(organizationId);
+            var collectionCiphersGroupDict = collectionCiphers
+                .Where(c => orgCipherIds.Contains(c.CipherId))
+                .GroupBy(c => c.CipherId).ToDictionary(s => s.Key);
+
+            return (orgCiphers, collectionCiphersGroupDict);
         }
 
         private async Task<bool> UserCanEditAsync(Cipher cipher, Guid userId)
@@ -993,4 +1021,3 @@ namespace Bit.Core.Services
             ValidateCipherLastKnownRevisionDateAsync(cipher, lastKnownRevisionDate);
         }
     }
-}

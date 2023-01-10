@@ -1,7 +1,6 @@
-﻿namespace Bit.Core.Models.Mail
+﻿namespace Bit.Core.Models.Mail;
+
+public class UpdateTempPasswordViewModel : BaseMailModel
 {
-    public class UpdateTempPasswordViewModel : BaseMailModel
-    {
-        public string UserName { get; set; }
-    }
+    public string UserName { get; set; }
 }

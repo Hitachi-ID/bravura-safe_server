@@ -1,20 +1,18 @@
-﻿using System.Collections.Generic;
-using AutoMapper;
+﻿using AutoMapper;
 
-namespace Bit.Infrastructure.EntityFramework.Models
+namespace Bit.Infrastructure.EntityFramework.Models;
+
+public class OrganizationUser : Core.Entities.OrganizationUser
 {
-    public class OrganizationUser : Core.Entities.OrganizationUser
-    {
-        public virtual Organization Organization { get; set; }
-        public virtual User User { get; set; }
-        public virtual ICollection<CollectionUser> CollectionUsers { get; set; }
-    }
+    public virtual Organization Organization { get; set; }
+    public virtual User User { get; set; }
+    public virtual ICollection<CollectionUser> CollectionUsers { get; set; }
+}
 
-    public class OrganizationUserMapperProfile : Profile
+public class OrganizationUserMapperProfile : Profile
+{
+    public OrganizationUserMapperProfile()
     {
-        public OrganizationUserMapperProfile()
-        {
-            CreateMap<Core.Entities.OrganizationUser, OrganizationUser>().ReverseMap();
-        }
+        CreateMap<Core.Entities.OrganizationUser, OrganizationUser>().ReverseMap();
     }
 }

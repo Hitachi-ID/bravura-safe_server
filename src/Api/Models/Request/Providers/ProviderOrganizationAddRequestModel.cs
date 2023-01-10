@@ -1,14 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Bit.Api.Models.Request.Providers
+namespace Bit.Api.Models.Request.Providers;
+
+public class ProviderOrganizationAddRequestModel
 {
-    public class ProviderOrganizationAddRequestModel
-    {
-        [Required]
-        public Guid OrganizationId { get; set; }
+    [Required]
+    public Guid OrganizationId { get; set; }
 
-        [Required]
-        public string Key { get; set; }
-    }
+    [Required]
+    public string Key { get; set; }
 }
