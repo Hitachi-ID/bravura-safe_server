@@ -154,6 +154,7 @@ public class StaticStore
                 HasSelfHost = true,
                 HasSso = false,
                 HasKeyConnector = false,
+                HasScim = false,
                 HasResetPassword = false,
                 UsersGetPremium = true,
 
@@ -184,7 +185,7 @@ public class StaticStore
                 HasSelfHost = true,
                 HasSso = true,
                 HasKeyConnector = false,
-                HasScim = true,
+                HasScim = false,
                 HasResetPassword = true,
                 UsersGetPremium = true,
 
