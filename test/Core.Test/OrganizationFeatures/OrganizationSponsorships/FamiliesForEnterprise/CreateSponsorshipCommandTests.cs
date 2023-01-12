@@ -131,7 +131,6 @@ public class CreateSponsorshipCommandTests : FamiliesForEnterpriseTestsBase
             sponsorship.Id = sponsorshipId;
         });
 
-
         await sutProvider.Sut.CreateSponsorshipAsync(sponsoringOrg, sponsoringOrgUser,
             PlanSponsorshipType.FamiliesForEnterprise, sponsoredEmail, friendlyName);
 
