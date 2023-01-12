@@ -3,7 +3,7 @@ IF COL_LENGTH('[dbo].[Organization]', 'UseCustomPermissions') IS NULL
         ALTER TABLE
             [dbo].[Organization]
         ADD
-            [UseCustomPermissions] BIT NOT NULL CONSTRAINT [DF_Organization_UseCustomPermissions] DEFAULT (0);
+            [UseCustomPermissions] BIT NOT NULL CONSTRAINT [DF_Organization_UseCustomPermissions] DEFAULT (1);
     END
 GO
     
@@ -166,7 +166,7 @@ CREATE OR ALTER PROCEDURE [dbo].[Organization_Create]
     @MaxAutoscaleSeats INT,
     @UseKeyConnector BIT = 0,
     @UseScim BIT = 0,
-    @UseCustomPermissions BIT = 0
+    @UseCustomPermissions BIT = 1
 AS
 BEGIN
     SET NOCOUNT ON
@@ -312,7 +312,7 @@ CREATE OR ALTER PROCEDURE [dbo].[Organization_Update]
     @MaxAutoscaleSeats INT,
     @UseKeyConnector BIT = 0,
     @UseScim BIT = 0,
-    @UseCustomPermissions BIT = 0
+    @UseCustomPermissions BIT = 1
 AS
 BEGIN
     SET NOCOUNT ON
@@ -397,9 +397,7 @@ GO
 
 -- Enable Existing Enterprise Customers to use Custom Permissions
 UPDATE  [dbo].[Organization]
-SET     [UseCustomPermissions] = 1
-WHERE   [PlanType] IN (4, 5, 10, 11) -- Enterprise Annual/Monthly (2019 and 2020)
-        AND [UseCustomPermissions] = 0;
+SET     [UseCustomPermissions] = 1;
 GO
 
 -- Update non Enterprise Customers using Custom Permissions role to a Manager role

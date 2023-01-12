@@ -52,7 +52,7 @@ public class UpdateGroupCommandTests
     {
         var exception = await Assert.ThrowsAsync<BadRequestException>(async () => await sutProvider.Sut.UpdateGroupAsync(group, null, eventSystemUser));
 
-        Assert.Contains("Organization not found", exception.Message);
+        Assert.Contains("Team not found", exception.Message);
 
         await sutProvider.GetDependency<IGroupRepository>().DidNotReceiveWithAnyArgs().CreateAsync(default);
         await sutProvider.GetDependency<IEventService>().DidNotReceiveWithAnyArgs().LogGroupEventAsync(default, default, default);
@@ -63,7 +63,7 @@ public class UpdateGroupCommandTests
     {
         var exception = await Assert.ThrowsAsync<BadRequestException>(async () => await sutProvider.Sut.UpdateGroupAsync(group, organization, eventSystemUser));
 
-        Assert.Contains("This organization cannot use groups", exception.Message);
+        Assert.Contains("This team cannot use groups", exception.Message);
 
         await sutProvider.GetDependency<IGroupRepository>().DidNotReceiveWithAnyArgs().CreateAsync(default);
         await sutProvider.GetDependency<IEventService>().DidNotReceiveWithAnyArgs().LogGroupEventAsync(default, default, default);

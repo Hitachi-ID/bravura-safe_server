@@ -81,7 +81,7 @@ public class SendsControllerTests : IDisposable
     public async Task Post_DeletionDateIsMoreThan31DaysFromNow_ThrowsBadRequest()
     {
         var now = DateTime.UtcNow;
-        var expected = "You cannot have a Send with a deletion date that far " +
+        var expected = "You cannot have a Share with a deletion date that far " +
                     "into the future. Adjust the Deletion Date to a value less than 31 days from now " +
                     "and try again.";
         var request = new SendRequestModel() { DeletionDate = now.AddDays(32) };
@@ -94,7 +94,7 @@ public class SendsControllerTests : IDisposable
     public async Task PostFile_DeletionDateIsMoreThan31DaysFromNow_ThrowsBadRequest()
     {
         var now = DateTime.UtcNow;
-        var expected = "You cannot have a Send with a deletion date that far " +
+        var expected = "You cannot have a Share with a deletion date that far " +
                     "into the future. Adjust the Deletion Date to a value less than 31 days from now " +
                     "and try again.";
         var request = new SendRequestModel() { Type = SendType.File, FileLength = 1024L, DeletionDate = now.AddDays(32) };

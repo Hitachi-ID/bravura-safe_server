@@ -13,7 +13,7 @@ public partial class UseCustomPermissionsFlag : Migration
             table: "Organization",
             type: "boolean",
             nullable: false,
-            defaultValue: false);
+            defaultValue: true);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)

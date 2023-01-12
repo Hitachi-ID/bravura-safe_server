@@ -42,7 +42,7 @@
     @MaxAutoscaleSeats INT,
     @UseKeyConnector BIT = 0,
     @UseScim BIT = 0,
-    @UseCustomPermissions BIT = 0
+    @UseCustomPermissions BIT = 1
 AS
 BEGIN
     SET NOCOUNT ON
