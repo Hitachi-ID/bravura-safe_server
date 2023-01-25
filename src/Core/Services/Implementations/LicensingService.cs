@@ -81,10 +81,14 @@ public class LicensingService : ILicensingService
 
         var enabledOrgs = await _organizationRepository.GetManyByEnabledAsync();
         _logger.LogInformation(Constants.BypassFiltersEventId, null,
-            "Validating licenses for {0} teams.", enabledOrgs.Count);
+            "Validating licenses for {NumberOfOrganizations} teams.", enabledOrgs.Count);
+
+        var exceptions = new List<Exception>();
 
         foreach (var org in enabledOrgs)
         {
+            try
+            {
             var license = await ReadOrganizationLicenseAsync(org);
             if (license == null)
             {
@@ -92,7 +96,7 @@ public class LicensingService : ILicensingService
                 continue;
             }
 
-            var totalLicensedOrgs = enabledOrgs.Count(o => o.LicenseKey.Equals(license.LicenseKey));
+                var totalLicensedOrgs = enabledOrgs.Count(o => string.Equals(o.LicenseKey, license.LicenseKey));
             if (totalLicensedOrgs > 1)
             {
                 await DisableOrganizationAsync(org, license, "Multiple teams.");
@@ -110,6 +114,16 @@ public class LicensingService : ILicensingService
                 await DisableOrganizationAsync(org, license, "Invalid signature.");
                 continue;
             }
+        }
+            catch (Exception ex)
+            {
+                exceptions.Add(ex);
+    }
+        }
+
+        if (exceptions.Any())
+        {
+            throw new AggregateException("There were one or more exceptions while validating teams.", exceptions);
         }
     }
 

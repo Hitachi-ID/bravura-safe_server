@@ -157,6 +157,7 @@ public class StaticStore
                 HasScim = false,
                 HasResetPassword = false,
                 UsersGetPremium = true,
+                HasCustomPermissions = true,
 
                 UpgradeSortOrder = 7,
                 DisplaySortOrder = 7,
@@ -188,6 +189,7 @@ public class StaticStore
                 HasScim = false,
                 HasResetPassword = true,
                 UsersGetPremium = true,
+                HasCustomPermissions = true,
 
                 UpgradeSortOrder = 8,
                 DisplaySortOrder = 8,

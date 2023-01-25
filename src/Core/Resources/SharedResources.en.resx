@@ -377,7 +377,7 @@
     <value>The Callback Path field is required on a Open ID Connect configuration.</value>
   </data>
   <data name="SpEntityIdValidationError" xml:space="preserve">
-    <value>The Service Provider Configuration Entity Id field is required on a SAML configuration.</value>
+    <value>The Service Provider Configuration Entity ID field is required on a SAML configuration.</value>
   </data>
   <data name="IdpEntityIdValidationError" xml:space="preserve">
     <value>The Identity Provider Configuration Entity ID field is required on a SAML configuration.</value>
