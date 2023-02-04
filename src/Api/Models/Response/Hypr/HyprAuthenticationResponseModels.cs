@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Bit.Api.Models.Response.Hypr
 {
@@ -8,6 +7,8 @@ namespace Bit.Api.Models.Response.Hypr
         [Required]
         public int status { get; set; }
         public string? signature { get; set; }
+        public string? message { get; set; }
+        public int? errorCode { get; set; }
     }
 
     public class HyprAuthResponseJson
@@ -19,7 +20,7 @@ namespace Bit.Api.Models.Response.Hypr
     public class HyprAuthResponseJsonStatus
     {
         public int responseCode { get; set; }
-        public string responeMessage { get; set; }
+        public string responseMessage { get; set; }
     }
 
     public class HyprAuthResponseJsonResponse
@@ -48,5 +49,29 @@ namespace Bit.Api.Models.Response.Hypr
         public string value { get; set; }
         public string message { get; set; }
         public int timestamp { get; set; }
+    }
+
+    public class HyprAuthGetMagicLink
+    {
+        public string url { get; set; }
+        public string message { get; set; }
+        public int status { get; set; }
+    }
+
+    public class HyprMagicLinkResponseModel
+    {
+        public string rpAppId { get; set; }
+        public string username { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string email { get; set; }
+        public string webLink { get; set; }
+        public string mobileDeepLink { get; set; }
+        public string message { get; set; }
+        public string firebaseDynamicLinkForHyprApp { get; set; }
+        public long createTimeUTC { get; set; }
+        public long expirationTimeUTC { get; set; }
+        public long? usedOnTimeUTC { get; set; }
+        public string token { get; set; }
     }
 }

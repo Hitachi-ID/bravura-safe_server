@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Security.Policy;
 using System.Text.Json;
 using Bit.Core.Context;
 using Bit.Core.Entities;
@@ -497,6 +498,15 @@ public class UserService : UserManager<User>, IUserService, IDisposable
         user.SetTwoFactorProviders(providers);
         await UpdateTwoFactorProviderAsync(user, TwoFactorProviderType.WebAuthn);
         return true;
+    }
+
+    public async Task SendHyprMagicLinkEmailAsync(User user, string url, DateTime expirationDate)
+    {
+        if(!user.EmailVerified)
+        {
+            throw new BadRequestException("Email not verified.");
+        }
+        await _mailService.SendHyprMagicLinkEmailAsync(user.Email, url, expirationDate);
     }
 
     public async Task SendEmailVerificationAsync(User user)

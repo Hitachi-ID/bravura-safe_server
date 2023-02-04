@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Amazon.Runtime;
 using Bit.Api.Models.Request.Accounts;
 using Bit.Core.Entities;
 using Bit.Core.Enums;
@@ -284,6 +285,9 @@ public class UpdateTwoFactorHyprRequestModel : SecretVerificationRequestModel, I
     [Required]
     [StringLength(75, ErrorMessage = "The Server Address cannot exceed 75 characters. ")]
     public string ServerURL { get; set; }
+    
+    // Magic Link expiration in seconds
+    public int HyprMagicLinkDuration { get; set; }
 
     public Organization ToOrganization(Organization extistingOrg)
     {
@@ -303,7 +307,8 @@ public class UpdateTwoFactorHyprRequestModel : SecretVerificationRequestModel, I
             {
                 ["App"] = AppId,
                 ["AKey"] = ApiKey,
-                ["Server"] = ServerURL
+                ["Server"] = ServerURL,
+                ["LinkExpires"] = HyprMagicLinkDuration,
             },
             Enabled = true
         });
@@ -316,6 +321,10 @@ public class UpdateTwoFactorHyprRequestModel : SecretVerificationRequestModel, I
         if (!Core.Utilities.Hypr.HyprApi.ValidServer(ServerURL))
         {
             yield return new ValidationResult("Server URL is invalid.", new string[] { nameof(ServerURL) });
+        }
+        if (HyprMagicLinkDuration < 0)
+        {
+            yield return new ValidationResult("Magic Link expiration must be the number of seconds and cannot be negative.");
         }
     }
 }

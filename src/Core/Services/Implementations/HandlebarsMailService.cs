@@ -881,6 +881,22 @@ public class HandlebarsMailService : IMailService
         await _mailDeliveryService.SendEmailAsync(message);
     }
 
+    public async Task SendHyprMagicLinkEmailAsync(string email, string url, DateTime expirationDate)
+    {
+        var message = CreateDefaultMessage("Register your One Auth device", email);
+        var model = new HyprMagicLinkModel
+        {
+            Url = url,
+            TheDate = expirationDate.ToLongDateString(),
+            TheTime = expirationDate.ToShortTimeString(),
+            TimeZone = "UTC",
+        };
+        await AddMessageContentAsync(message, "HyprMagicLinkRegistration", model);
+        message.MetaData.Add("SendGridBypassListManagement", true);
+        message.Category = "HyprMagicLinkRegistration";
+        await _mailDeliveryService.SendEmailAsync(message);
+    }
+
     private static string GetUserIdentifier(string email, string userName)
     {
         return string.IsNullOrEmpty(userName) ? email : CoreHelpers.SanitizeForEmail(userName, false);
