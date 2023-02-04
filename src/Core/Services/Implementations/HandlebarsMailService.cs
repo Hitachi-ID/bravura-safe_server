@@ -883,7 +883,7 @@ public class HandlebarsMailService : IMailService
 
     public async Task SendHyprMagicLinkEmailAsync(string email, string url, DateTime expirationDate)
     {
-        var message = CreateDefaultMessage("Register your One Auth device", email);
+        var message = CreateDefaultMessage("Bravura OneAuth device registration", email);
         var model = new HyprMagicLinkModel
         {
             Url = url,
