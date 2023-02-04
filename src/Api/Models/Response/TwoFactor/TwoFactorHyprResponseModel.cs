@@ -26,6 +26,7 @@ namespace Bit.Api.Models.Response.TwoFactor
         public string ServerURL { get; set; }
         public string ApiKey { get; set; }
         public string AppID { get; set; }
+        public int HyprMagicLinkDuration { get; set; }
 
         private void Build(TwoFactorProvider provider)
         {
@@ -44,6 +45,10 @@ namespace Bit.Api.Models.Response.TwoFactor
                 if (provider.MetaData.ContainsKey("App"))
                 {
                     AppID = (string)provider.MetaData["App"];
+                }
+                if (provider.MetaData.ContainsKey("LinkExpires"))
+                {
+                    HyprMagicLinkDuration = Convert.ToInt32(provider.MetaData["LinkExpires"]);
                 }
             }
             else

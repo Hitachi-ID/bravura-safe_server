@@ -237,4 +237,8 @@ public class NoopMailService : IMailService
     {
         return Task.FromResult(0);
     }
+    public Task SendHyprMagicLinkEmailAsync(string email, string url, DateTime expirationDate)
+    {
+        return Task.FromResult(0);
+    }
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Bit.Api.Models.Request;
 using Bit.Api.Models.Request.Accounts;
 using Bit.Api.Models.Request.Hypr;
@@ -25,6 +21,7 @@ using Fido2NetLib;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Bit.Core.Models.Api.Error.Hypr;
 
 namespace Bit.Api.Controllers;
 
@@ -617,51 +614,71 @@ public class TwoFactorController : Controller
             using (var hyprApi = new HyprApi(ApiKey, ServerURL, AppID))
             {
                 var jsonMessage = JsonSerializer.Serialize(pushRequestJson);
-                var (httpResponseInitial, pushCallResponse) = await hyprApi.JSONApiCallAsync<HyprAuthResponseJson>("POST", "/rp/api/oob/client/authentication/requests", jsonMessage);
+                var (httpResponseInitial, respObj) = await hyprApi.JSONApiCallAsync<HyprAuthResponseJson>("POST", "/rp/api/oob/client/authentication/requests", jsonMessage);
 
-                if (httpResponseInitial.StatusCode != HttpStatusCode.OK || pushCallResponse is null || pushCallResponse.status.responseCode != 200)
+                if (respObj is HyprAuthResponseJson pushCallResponse)
                 {
-                    if (httpResponseInitial is not null)
+                    if (httpResponseInitial.StatusCode != HttpStatusCode.OK || pushCallResponse.status.responseCode != 200)
                     {
-                        string jsonResultStr = httpResponseInitial.Content.ReadAsStringAsync().Result;
-                        Dictionary<string, object> result = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonResultStr);
-                        throw new HyprException(result["title"].ToString());
+                        if (httpResponseInitial is not null)
+                        {
+                            string jsonResultStr = httpResponseInitial.Content.ReadAsStringAsync().Result;
+                            Dictionary<string, object> result = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonResultStr);
+                            throw new HyprException(result["title"].ToString());
+                        }
+                        else
+                        {
+                            throw new HyprException("Push notification failed to initiate.");
+                        }
                     }
-                    else
+
+                    var requestid = pushCallResponse.response.requestId;
+                    var requestResponse = pushCallResponse.status.responseCode;
+                    string statusUrl = "/rp/api/oob/client/authentication/requests/" + requestid;
+                    int pollTime = 250;
+
+                    if (requestResponse == 200 && string.IsNullOrWhiteSpace(requestid))
                     {
-                        throw new HyprException("Push notification failed to initiate.");
+                        throw new HyprException("Hypr authentication request returned is not valid.");
                     }
+
+                    while (!stop && !found)
+                    {
+                        var (httpResponse, respObject) = await hyprApi?.JSONApiCallAsync<HyprAuthGetStatusResponseJson>("GET", statusUrl);
+                        if(respObject is HyprErrorResponseJson errResponse)
+                        {
+                            found = false;
+                            stop = true;
+                            return ReturnHyprResponse(400, errResponse.title, errResponse.errorCode);
+                        }
+                        else if (respObject is HyprAuthGetStatusResponseJson pushGetStatusResponse)
+                        {
+                            var states = pushGetStatusResponse?.state;
+                            if (states is null)
+                            {
+                                throw new HyprException("No request found.");
+                            }
+                            else
+                            {
+                                found = states.Any(item => item.value == "COMPLETED");
+                                stop = states.Any(item => item.value == "CANCELED" || item.value == "FAILED") || httpResponse.StatusCode != HttpStatusCode.OK || hyprApi is null;
+                            }
+
+                            if (!stop && !found)
+                            {
+                                await Task.Delay(pollTime);
+                            }
+                        }
+                    };
                 }
-
-                var requestid = pushCallResponse.response.requestId;
-                var requestResponse = pushCallResponse.status.responseCode;
-                string statusUrl = "/rp/api/oob/client/authentication/requests/" + requestid;
-                int pollTime = 250;
-
-                if (requestResponse == 200 && string.IsNullOrWhiteSpace(requestid))
+                else if (respObj is HyprErrorResponseJson errResponse)
                 {
-                    throw new HyprException("Hypr authentication request returned is not valid.");
+                    return ReturnHyprResponse(400, errResponse.title, errResponse.errorCode);
                 }
-
-                while (!stop && !found)
+                else
                 {
-                    var (httpResponse, pushGetStatusResponse) = await hyprApi?.JSONApiCallAsync<HyprAuthGetStatusResponseJson>("GET", statusUrl);
-                    var states = pushGetStatusResponse?.state;
-                    if(states is null)
-                    {
-                        throw new HyprException("No request found.");
-                    }
-                    else
-                    {
-                        found = states.Any(item => item.value == "COMPLETED");
-                        stop = states.Any(item => item.value == "CANCELED" || item.value == "FAILED") || httpResponse.StatusCode != HttpStatusCode.OK || hyprApi is null;
-                    }
-
-                    if (!stop && !found)
-                    {
-                        await Task.Delay(pollTime);
-                    }
-                };
+                    throw new HyprException("Push notification failed to initiate.");
+                }
             }
 
         }
@@ -675,16 +692,123 @@ public class TwoFactorController : Controller
             throw new UnauthorizedAccessException();
         }
 
-        var response = new HyprAuthenticationResponseModel
-        {
-            status = 200,
-            signature = HyprWeb.SignAuthRequest(_globalSettings.Hypr.SKey, username, teamid)
-        };
-
-        return response;
+        return ReturnHyprResponse(200, "", 0, HyprWeb.SignAuthRequest(_globalSettings.Hypr.SKey, username, teamid));
     }
 
-    private async Task<User> CheckAsync(SecretVerificationRequestModel model, bool premium)
+    [HttpPost("hypr/mail-registration")]
+    [AllowAnonymous]
+    public async Task<HyprAuthenticationResponseModel> OrganizationHyprSendEmailRegistration([FromBody] HyprAuthenticationRequestModel model)
+    {
+        var (username, teamid) = HyprWeb.VerifyTxResponse(_globalSettings.Hypr.SKey, model.Signature);
+
+        var (url, user, secondsValid) = await GetMagicLinkHypr(model, username);
+        if (!string.IsNullOrWhiteSpace(url))
+        {
+            var linkExpiration = DateTime.Now.AddSeconds(secondsValid);
+            await _userService.SendHyprMagicLinkEmailAsync(user, url, linkExpiration);
+            return ReturnHyprResponse(200, "Email dispatched.");
+        }
+
+        return ReturnHyprResponse(400, "Email not dispatched.");
+    }
+
+    [HttpPost("hypr/goto-hypr-management")]
+    public async Task<HyprAuthGetMagicLink> OrganizationHyprManage([FromBody] HyprAuthenticationRequestModel model)
+    {
+        var thisuser = await _userService.GetUserByPrincipalAsync(User);
+        var (url, user, secondsValid) = await GetMagicLinkHypr(model, thisuser.Name);
+        return new HyprAuthGetMagicLink
+        {
+            url = url,
+            message = "",
+            status = 200
+        };
+    }
+
+    private async Task<(string, User, int)> GetMagicLinkHypr(HyprAuthenticationRequestModel model, string username)
+    {
+        string url = "";
+        var teamguid = new Guid(model.Team);
+        var team = await _organizationRepository.GetByIdAsync(teamguid);
+        if (team == null)
+        {
+            throw new NotFoundException();
+        }
+        var user = await _userManager.FindByEmailAsync(username.ToLowerInvariant());
+        int secondsValid = 900;
+
+        string ServerURL = null;
+        string ApiKey = null;
+        string AppID = null;
+        var provider = team.GetTwoFactorProvider(TwoFactorProviderType.OrganizationHypr);
+        if (provider.MetaData.ContainsKey("Server"))
+        {
+            ServerURL = (string)provider.MetaData["Server"];
+        }
+        if (provider.MetaData.ContainsKey("AKey"))
+        {
+            ApiKey = (string)provider.MetaData["AKey"];
+        }
+        if (provider.MetaData.ContainsKey("App"))
+        {
+            AppID = (string)provider.MetaData["App"];
+        }
+        if (ApiKey is null || ServerURL is null || AppID is null)
+        {
+            throw new BadRequestException("Hypr not configured. Check two-factor login settings.");
+        }
+        if (provider.MetaData.ContainsKey("LinkExpires"))
+        {
+            secondsValid = Convert.ToInt32(provider.MetaData["LinkExpires"]);
+        }
+
+        try
+        {
+            var pushRequestJson = new HyprMagicLinkRequestModel
+            {
+
+                username = username,
+                message = "Bravura Safe OneAuth Magic Link request generation",
+                secondsValid = secondsValid,
+                mobileDeepLinkPrefix = "hypr://register",
+                hyprServerUrl = "https://" + ServerURL,
+                registrationsLimit = 1
+            };
+
+            using (var hyprApi = new HyprApi(ApiKey, ServerURL, AppID))
+            {
+                var jsonMessage = JsonSerializer.Serialize(pushRequestJson);
+                var (httpResponseInitial, respObj) = await hyprApi.JSONApiCallAsync<HyprMagicLinkResponseModel>("POST", "/rp/api/versioned/magiclink", jsonMessage);
+
+                if (httpResponseInitial.StatusCode != HttpStatusCode.OK || respObj is HyprErrorResponseJson)
+                {
+                    if (httpResponseInitial is not null)
+                    {
+                        string jsonResultStr = httpResponseInitial.Content.ReadAsStringAsync().Result;
+                        Dictionary<string, object> result = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonResultStr);
+                        throw new HyprException(result["title"].ToString());
+                    }
+                    else
+                    {
+                        throw new HyprException("Push notification failed to initiate.");
+                    }
+                }
+                else if (respObj is HyprMagicLinkResponseModel pushCallResponse)
+                {
+                    url = pushCallResponse.firebaseDynamicLinkForHyprApp;
+                }
+            }
+
+        }
+        catch (HyprException e)
+        {
+            throw new BadRequestException(e.Message);
+        }
+
+        return (url, user, secondsValid);
+    }
+
+        private async Task<User> CheckAsync(SecretVerificationRequestModel model, bool premium)
     {
         var user = await _userService.GetUserByPrincipalAsync(User);
         if (user == null)
@@ -736,5 +860,17 @@ public class TwoFactorController : Controller
         }
 
         return false;
+    }
+
+    private HyprAuthenticationResponseModel ReturnHyprResponse(int status, string message, int errorCode = 0, string signature = null)
+    { 
+        var err = new HyprAuthenticationResponseModel
+        {
+            status = status,
+            errorCode = errorCode,
+            message = message,
+            signature = signature
+        };
+        return err;
     }
 }
