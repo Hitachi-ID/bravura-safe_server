@@ -735,7 +735,7 @@ public class TwoFactorController : Controller
             throw new NotFoundException();
         }
         var user = await _userManager.FindByEmailAsync(username.ToLowerInvariant());
-        int secondsValid = 900;
+        int secondsValid = 3600;
 
         string ServerURL = null;
         string ApiKey = null;
