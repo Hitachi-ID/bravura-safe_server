@@ -716,7 +716,7 @@ public class TwoFactorController : Controller
     public async Task<HyprAuthGetMagicLink> OrganizationHyprManage([FromBody] HyprAuthenticationRequestModel model)
     {
         var thisuser = await _userService.GetUserByPrincipalAsync(User);
-        var (url, user, secondsValid) = await GetMagicLinkHypr(model, thisuser.Name);
+        var (url, user, secondsValid) = await GetMagicLinkHypr(model, thisuser.Email);
         return new HyprAuthGetMagicLink
         {
             url = url,
