@@ -89,6 +89,21 @@ public class TwoFactorController : Controller
         return new ListResponseModel<TwoFactorProviderResponseModel>(providers);
     }
 
+    [HttpGet("~/organizations/{id}/two-factor-enabled/{twoFactorType}")]
+    public async Task<bool> GetOrganization(string id, TwoFactorProviderType twoFactorType)
+    {
+        var orgIdGuid = new Guid(id);
+
+        var organization = await _organizationRepository.GetByIdAsync(orgIdGuid);
+        if (organization == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var provider = organization.GetTwoFactorProvider(twoFactorType);
+        return provider.Enabled;
+    }
+
     [HttpPost("get-authenticator")]
     public async Task<TwoFactorAuthenticatorResponseModel> GetAuthenticator([FromBody] SecretVerificationRequestModel model)
     {
