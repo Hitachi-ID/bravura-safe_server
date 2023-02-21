@@ -46,6 +46,7 @@ public class ProfileOrganizationResponseModel : ResponseModel
         FamilySponsorshipFriendlyName = organization.FamilySponsorshipFriendlyName;
         FamilySponsorshipAvailable = false;
         PlanProductType = StaticStore.GetPlan(organization.PlanType).Product;
+        PlanType = organization.PlanType;
         FamilySponsorshipLastSyncDate = organization.FamilySponsorshipLastSyncDate;
         FamilySponsorshipToDelete = organization.FamilySponsorshipToDelete;
         FamilySponsorshipValidUntil = organization.FamilySponsorshipValidUntil;
@@ -92,6 +93,7 @@ public class ProfileOrganizationResponseModel : ResponseModel
     public string FamilySponsorshipFriendlyName { get; set; }
     public bool FamilySponsorshipAvailable { get; set; }
     public ProductType PlanProductType { get; set; }
+    public PlanType PlanType { get; set; }
     public bool KeyConnectorEnabled { get; set; }
     public string KeyConnectorUrl { get; set; }
     public DateTime? FamilySponsorshipLastSyncDate { get; set; }
