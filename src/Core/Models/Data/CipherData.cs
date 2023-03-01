@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
+﻿namespace Bit.Core.Models.Data;
 
-namespace Bit.Core.Models.Data
+public abstract class CipherData
 {
-    public abstract class CipherData
-    {
-        public CipherData() { }
+    public CipherData() { }
 
-        public string Name { get; set; }
-        public string Notes { get; set; }
-        public IEnumerable<CipherFieldData> Fields { get; set; }
-        public IEnumerable<CipherPasswordHistoryData> PasswordHistory { get; set; }
-    }
+    public string Name { get; set; }
+    public string Notes { get; set; }
+    public IEnumerable<CipherFieldData> Fields { get; set; }
+    public IEnumerable<CipherPasswordHistoryData> PasswordHistory { get; set; }
 }

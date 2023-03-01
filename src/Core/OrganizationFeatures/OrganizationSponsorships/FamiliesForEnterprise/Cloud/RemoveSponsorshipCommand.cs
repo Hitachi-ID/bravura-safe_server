@@ -1,27 +1,25 @@
-﻿using System.Threading.Tasks;
-using Bit.Core.Entities;
+﻿using Bit.Core.Entities;
 using Bit.Core.Exceptions;
 using Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnterprise.Interfaces;
 using Bit.Core.Repositories;
 
-namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnterprise.Cloud
+namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnterprise.Cloud;
+
+public class RemoveSponsorshipCommand : CancelSponsorshipCommand, IRemoveSponsorshipCommand
 {
-    public class RemoveSponsorshipCommand : CancelSponsorshipCommand, IRemoveSponsorshipCommand
+    public RemoveSponsorshipCommand(
+        IOrganizationSponsorshipRepository organizationSponsorshipRepository,
+        IOrganizationRepository organizationRepository) : base(organizationSponsorshipRepository, organizationRepository)
     {
-        public RemoveSponsorshipCommand(
-            IOrganizationSponsorshipRepository organizationSponsorshipRepository,
-            IOrganizationRepository organizationRepository) : base(organizationSponsorshipRepository, organizationRepository)
+    }
+
+    public async Task RemoveSponsorshipAsync(OrganizationSponsorship sponsorship)
+    {
+        if (sponsorship == null || sponsorship.SponsoredOrganizationId == null)
         {
+            throw new BadRequestException("The requested team is not currently being sponsored.");
         }
 
-        public async Task RemoveSponsorshipAsync(OrganizationSponsorship sponsorship)
-        {
-            if (sponsorship == null || sponsorship.SponsoredOrganizationId == null)
-            {
-                throw new BadRequestException("The requested team is not currently being sponsored.");
-            }
-
-            await MarkToDeleteSponsorshipAsync(sponsorship);
-        }
+        await MarkToDeleteSponsorshipAsync(sponsorship);
     }
 }

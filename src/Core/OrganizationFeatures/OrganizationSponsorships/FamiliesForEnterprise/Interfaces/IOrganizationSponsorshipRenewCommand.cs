@@ -1,10 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnterprise.Interfaces;
 
-namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnterprise.Interfaces
+public interface IOrganizationSponsorshipRenewCommand
 {
-    public interface IOrganizationSponsorshipRenewCommand
-    {
-        Task UpdateExpirationDateAsync(Guid organizationId, DateTime expireDate);
-    }
+    Task UpdateExpirationDateAsync(Guid organizationId, DateTime expireDate);
 }

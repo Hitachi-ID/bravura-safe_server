@@ -1,11 +1,9 @@
-﻿using System.Threading.Tasks;
-using Bit.Core.Entities;
+﻿using Bit.Core.Entities;
 
-namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnterprise.Interfaces
+namespace Bit.Core.OrganizationFeatures.OrganizationSponsorships.FamiliesForEnterprise.Interfaces;
+
+public interface ISetUpSponsorshipCommand
 {
-    public interface ISetUpSponsorshipCommand
-    {
-        Task SetUpSponsorshipAsync(OrganizationSponsorship sponsorship,
-            Organization sponsoredOrganization);
-    }
+    Task SetUpSponsorshipAsync(OrganizationSponsorship sponsorship,
+        Organization sponsoredOrganization);
 }

@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Azure.Storage.Queues;
+﻿using Azure.Storage.Queues;
 using Bit.Core.Models.Mail;
 using Bit.Core.Settings;
 using Bit.Core.Utilities;
 
-namespace Bit.Core.Services
+namespace Bit.Core.Services;
+
+public class AzureQueueMailService : AzureQueueService<IMailQueueMessage>, IMailEnqueuingService
 {
-    public class AzureQueueMailService : AzureQueueService<IMailQueueMessage>, IMailEnqueuingService
-    {
-        public AzureQueueMailService(GlobalSettings globalSettings) : base(
-            new QueueClient(globalSettings.Mail.ConnectionString, "mail"),
-            JsonHelpers.IgnoreWritingNull)
-        { }
+    public AzureQueueMailService(GlobalSettings globalSettings) : base(
+        new QueueClient(globalSettings.Mail.ConnectionString, "mail"),
+        JsonHelpers.IgnoreWritingNull)
+    { }
 
-        public Task EnqueueAsync(IMailQueueMessage message, Func<IMailQueueMessage, Task> fallback) =>
-            CreateManyAsync(new[] { message });
+    public Task EnqueueAsync(IMailQueueMessage message, Func<IMailQueueMessage, Task> fallback) =>
+        CreateManyAsync(new[] { message });
 
-        public Task EnqueueManyAsync(IEnumerable<IMailQueueMessage> messages, Func<IMailQueueMessage, Task> fallback) =>
-            CreateManyAsync(messages);
-    }
+    public Task EnqueueManyAsync(IEnumerable<IMailQueueMessage> messages, Func<IMailQueueMessage, Task> fallback) =>
+        CreateManyAsync(messages);
 }

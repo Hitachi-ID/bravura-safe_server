@@ -66,6 +66,9 @@
                                     <a class="dropdown-item" asp-controller="Tools" asp-action="TaxRate">
                                         Manage Tax Rates
                                     </a>
+                                    <a class="dropdown-item" asp-controller="Tools" asp-action="StripeSubscriptions">
+                                        Manage Stripe Subscriptions
+                                    </a>
                                 </div>
                             </li>
                             <li class="nav-item" active-controller="Logs">
@@ -112,7 +115,7 @@
         @RenderBody()
     </main>
 
-    <footer class="container mb-4">
+    <footer class="container mb-4 text-muted">
         <hr />
         &copy; @DateTime.Now.Year, Bitwarden Inc., with modifications &copy; @DateTime.Now.Year, Bravura Security, Inc.
     </footer>
@@ -163,7 +166,50 @@
                 }
             });
 
-            
+            // add demote modal for team index page
+            $(document).on('click', '#demoteModalButton', function () {
+                var id = $(this).data('id');
+                var type = $(this).data('type');
+                $('#demoteButton').attr('data-id', id);
+                $('#demoteModal div.modal-dialog div.modal-content div.modal-body p').text('Are you sure you want to demote this ' + type + '?');
+            });
+
+            var demoteModalConfirm = function (callback) {
+                $('#demoteButton').on('click', function () {
+                    var id = $(this).data('id');
+                    callback(id);
+                    $('#demoteModal').modal('hide');
+                });
+            }
+
+            demoteModalConfirm(function (id) {
+                if (id) {
+                    $('form[data-id=' + id + '][action*=demote] > button').click();
+                }
+            });
+
+            // add promote modal for team index page
+            $(document).on('click', '#promoteModalButton', function () {
+                var id = $(this).data('id');
+                var type = $(this).data('type');
+                $('#promoteButton').attr('data-id', id);
+                $('#promoteModal div.modal-dialog div.modal-content div.modal-body p').text('Are you sure you want to promote this ' + type + '?');
+            });
+
+            var promoteModalConfirm = function (callback) {
+                $('#promoteButton').on('click', function () {
+                    var id = $(this).data('id');
+                    callback(id);
+                    $('#promoteModal').modal('hide');
+                });
+            }
+
+            promoteModalConfirm(function (id) {
+                if (id) {
+                    $('form[data-id=' + id + '][action*=promote] > button').click();
+                }
+            });
+
             // add delete modal for user and team index page
             // realize the modal confirmation function, and delete item function
             $(document).on('click', '#deleteModalButton', function () {
@@ -183,7 +229,7 @@
 
             modalConfirm(function (id) {
                 if (id) {
-                    $('form[data-id=' + id + '] > button').click();
+                    $('form[data-id=' + id + '][action*=delete] > button').click();
                 }
             });
 

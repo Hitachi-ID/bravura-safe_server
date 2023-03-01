@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace Bit.MySqlMigrations.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
@@ -14,8 +16,70 @@ namespace Bit.MySqlMigrations.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.12");
+                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.AuthRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("AccessCode")
+                        .HasMaxLength(25)
+                        .HasColumnType("varchar(25)");
+
+                    b.Property<bool?>("Approved")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("AuthenticationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MasterPasswordHash")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PublicKey")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RequestDeviceIdentifier")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<byte>("RequestDeviceType")
+                        .HasColumnType("tinyint unsigned");
+
+                    b.Property<string>("RequestFingerprint")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RequestIpAddress")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ResponseDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ResponseDeviceId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint unsigned");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResponseDeviceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AuthRequest", (string)null);
+                });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Cipher", b =>
                 {
@@ -61,7 +125,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Cipher");
+                    b.ToTable("Cipher", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Collection", b =>
@@ -89,7 +153,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Collection");
+                    b.ToTable("Collection", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.CollectionCipher", b =>
@@ -104,7 +168,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("CipherId");
 
-                    b.ToTable("CollectionCipher");
+                    b.ToTable("CollectionCipher", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.CollectionGroup", b =>
@@ -188,7 +252,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Device");
+                    b.ToTable("Device", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.EmergencyAccess", b =>
@@ -236,7 +300,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("GrantorId");
 
-                    b.ToTable("EmergencyAccess");
+                    b.ToTable("EmergencyAccess", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Event", b =>
@@ -287,6 +351,9 @@ namespace Bit.MySqlMigrations.Migrations
                     b.Property<Guid?>("ProviderUserId")
                         .HasColumnType("char(36)");
 
+                    b.Property<byte?>("SystemUser")
+                        .HasColumnType("tinyint unsigned");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -295,7 +362,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Event");
+                    b.ToTable("Event", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Folder", b =>
@@ -319,7 +386,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Folder");
+                    b.ToTable("Folder", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Grant", b =>
@@ -362,7 +429,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("Grant");
+                    b.ToTable("Grant", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Group", b =>
@@ -394,7 +461,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Group");
+                    b.ToTable("Group", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.GroupUser", b =>
@@ -414,7 +481,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GroupUser");
+                    b.ToTable("GroupUser", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Installation", b =>
@@ -438,7 +505,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Installation");
+                    b.ToTable("Installation", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Organization", b =>
@@ -555,6 +622,9 @@ namespace Bit.MySqlMigrations.Migrations
                     b.Property<bool>("UseApi")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("UseCustomPermissions")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<bool>("UseDirectory")
                         .HasColumnType("tinyint(1)");
 
@@ -573,6 +643,9 @@ namespace Bit.MySqlMigrations.Migrations
                     b.Property<bool>("UseResetPassword")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("UseScim")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<bool>("UseSso")
                         .HasColumnType("tinyint(1)");
 
@@ -584,7 +657,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organization");
+                    b.ToTable("Organization", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.OrganizationApiKey", b =>
@@ -609,7 +682,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("OrganizationApiKey");
+                    b.ToTable("OrganizationApiKey", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.OrganizationConnection", b =>
@@ -633,7 +706,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("OrganizationConnection");
+                    b.ToTable("OrganizationConnection", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.OrganizationSponsorship", b =>
@@ -676,7 +749,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("SponsoringOrganizationId");
 
-                    b.ToTable("OrganizationSponsorship");
+                    b.ToTable("OrganizationSponsorship", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.OrganizationUser", b =>
@@ -728,7 +801,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("OrganizationUser");
+                    b.ToTable("OrganizationUser", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Policy", b =>
@@ -758,7 +831,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Policy");
+                    b.ToTable("Policy", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Provider", b =>
@@ -807,7 +880,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Provider");
+                    b.ToTable("Provider", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.ProviderOrganization", b =>
@@ -839,7 +912,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("ProviderOrganization");
+                    b.ToTable("ProviderOrganization", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.ProviderUser", b =>
@@ -880,7 +953,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProviderUser");
+                    b.ToTable("ProviderUser", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Send", b =>
@@ -937,7 +1010,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Send");
+                    b.ToTable("Send", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.SsoConfig", b =>
@@ -965,7 +1038,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("SsoConfig");
+                    b.ToTable("SsoConfig", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.SsoUser", b =>
@@ -993,7 +1066,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SsoUser");
+                    b.ToTable("SsoUser", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.TaxRate", b =>
@@ -1022,7 +1095,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TaxRate");
+                    b.ToTable("TaxRate", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Transaction", b =>
@@ -1071,7 +1144,7 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transaction");
+                    b.ToTable("Transaction", (string)null);
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.User", b =>
@@ -1200,7 +1273,24 @@ namespace Bit.MySqlMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
+                });
+
+            modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.AuthRequest", b =>
+                {
+                    b.HasOne("Bit.Infrastructure.EntityFramework.Models.Device", "ResponseDevice")
+                        .WithMany()
+                        .HasForeignKey("ResponseDeviceId");
+
+                    b.HasOne("Bit.Infrastructure.EntityFramework.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ResponseDevice");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Bit.Infrastructure.EntityFramework.Models.Cipher", b =>

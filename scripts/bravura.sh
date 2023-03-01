@@ -2,7 +2,7 @@
 set -e
 
 cat << "EOF"
-HITACHI-ID
+BRAVURA-SECURITY
 Bravura Safe
 EOF
 

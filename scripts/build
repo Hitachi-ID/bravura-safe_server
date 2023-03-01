@@ -44,5 +44,4 @@ case "$PROJECT" in
     build Icons $PWD/src/Icons 
     build Notifications $PWD/src/Notifications 
     build EventsProcessor $PWD/src/EventsProcessor
-  ;;
 esac

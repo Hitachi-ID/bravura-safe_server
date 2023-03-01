@@ -40,7 +40,9 @@
     @RevisionDate DATETIME2(7),
     @OwnersNotifiedOfAutoscaling DATETIME2(7),
     @MaxAutoscaleSeats INT,
-    @UseKeyConnector BIT = 0
+    @UseKeyConnector BIT = 0,
+    @UseScim BIT = 0,
+    @UseCustomPermissions BIT = 1
 AS
 BEGIN
     SET NOCOUNT ON
@@ -88,7 +90,9 @@ BEGIN
         [RevisionDate] = @RevisionDate,
         [OwnersNotifiedOfAutoscaling] = @OwnersNotifiedOfAutoscaling,
         [MaxAutoscaleSeats] = @MaxAutoscaleSeats,
-        [UseKeyConnector] = @UseKeyConnector
+        [UseKeyConnector] = @UseKeyConnector,
+        [UseScim] = @UseScim,
+        [UseCustomPermissions] = @UseCustomPermissions
     WHERE
         [Id] = @Id
 END

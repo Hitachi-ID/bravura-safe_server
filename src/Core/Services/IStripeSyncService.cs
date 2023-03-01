@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿namespace Bit.Core.Services;
 
-namespace Bit.Core.Services
+public interface IStripeSyncService
 {
-    public interface IStripeSyncService
-    {
-        Task UpdateCustomerEmailAddress(string gatewayCustomerId, string emailAddress);
-    }
+    Task UpdateCustomerEmailAddress(string gatewayCustomerId, string emailAddress);
 }

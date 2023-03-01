@@ -89,5 +89,4 @@ case "$PROJECT" in
     docker_build MsSql $PWD/util/MsSql $TAG $PUSH
     docker_build Setup $PWD/util/Setup $TAG $PUSH
     docker_build EventsProcessor $PWD/src/EventsProcessor $TAG $PUSH
-  ;;
 esac

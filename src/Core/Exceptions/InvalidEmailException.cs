@@ -1,13 +1,10 @@
-﻿using System;
+﻿namespace Bit.Core.Exceptions;
 
-namespace Bit.Core.Exceptions
+public class InvalidEmailException : Exception
 {
-    public class InvalidEmailException : Exception
+    public InvalidEmailException()
+        : base("Invalid email.")
     {
-        public InvalidEmailException()
-            : base("Invalid email.")
-        {
 
-        }
     }
 }

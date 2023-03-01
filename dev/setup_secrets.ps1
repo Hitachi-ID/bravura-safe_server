@@ -24,6 +24,7 @@ $projects = @{
     Icons = "../src/Icons"
     Identity = "../src/Identity"
     Notifications = "../src/Notifications"
+    Scim = "../bitwarden_license/src/Scim" 
 }
 
 foreach ($key in $projects.keys) {

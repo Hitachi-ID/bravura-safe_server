@@ -1,24 +1,22 @@
-﻿using System;
-using Bit.Core.Utilities;
+﻿using Bit.Core.Utilities;
 
-namespace Bit.Core.Entities.Provider
+namespace Bit.Core.Entities.Provider;
+
+public class ProviderOrganization : ITableObject<Guid>
 {
-    public class ProviderOrganization : ITableObject<Guid>
-    {
-        public Guid Id { get; set; }
-        public Guid ProviderId { get; set; }
-        public Guid OrganizationId { get; set; }
-        public string Key { get; set; }
-        public string Settings { get; set; }
-        public DateTime CreationDate { get; internal set; } = DateTime.UtcNow;
-        public DateTime RevisionDate { get; internal set; } = DateTime.UtcNow;
+    public Guid Id { get; set; }
+    public Guid ProviderId { get; set; }
+    public Guid OrganizationId { get; set; }
+    public string Key { get; set; }
+    public string Settings { get; set; }
+    public DateTime CreationDate { get; internal set; } = DateTime.UtcNow;
+    public DateTime RevisionDate { get; internal set; } = DateTime.UtcNow;
 
-        public void SetNewId()
+    public void SetNewId()
+    {
+        if (Id == default)
         {
-            if (Id == default)
-            {
-                Id = CoreHelpers.GenerateComb();
-            }
+            Id = CoreHelpers.GenerateComb();
         }
     }
 }

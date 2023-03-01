@@ -225,4 +225,10 @@ server {
     proxy_pass http://key-connector:5000/;
   }
 {{/if}}
+{{#if EnableScim}}
+
+  location /scim/ {
+    proxy_pass http://scim:5000/;
+  }
+{{/if}}
 }

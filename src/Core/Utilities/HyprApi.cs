@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Bit.Core.Models.Api.Error.Hypr;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace Bit.Core.Utilities.Hypr
@@ -82,7 +79,7 @@ namespace Bit.Core.Utilities.Hypr
             return response;
         }
 
-        public async Task<(HttpResponseMessage,T)> JSONApiCallAsync<T>(string method, string path, string jsonMessage = "{}")
+        public async Task<(HttpResponseMessage,object)> JSONApiCallAsync<T>(string method, string path, string jsonMessage = "{}")
             where T : class
         {
             var res = await ApiCallAsync(method, path, jsonMessage);
@@ -93,7 +90,7 @@ namespace Bit.Core.Utilities.Hypr
                 {
                     return (res,JsonSerializer.Deserialize<T>(responseBody));
                 }
-                return (res, null);
+                return (res,JsonSerializer.Deserialize<HyprErrorResponseJson>(responseBody));
             }
             catch (Exception e)
             {
