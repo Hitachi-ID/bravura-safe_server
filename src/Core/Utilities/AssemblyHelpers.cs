@@ -6,14 +6,17 @@ public static class AssemblyHelpers
 {
     private static readonly IEnumerable<AssemblyMetadataAttribute> _assemblyMetadataAttributes;
     private static readonly AssemblyInformationalVersionAttribute _assemblyInformationalVersionAttributes;
+    private static readonly AssemblyDescriptionAttribute _assemblyDescriptionAttributes;
     private const string GIT_HASH_ASSEMBLY_KEY = "GitHash";
     private static string _version;
+    private static string _internalVersion;
     private static string _gitHash;
 
     static AssemblyHelpers()
     {
         _assemblyMetadataAttributes = Assembly.GetEntryAssembly().GetCustomAttributes<AssemblyMetadataAttribute>();
         _assemblyInformationalVersionAttributes = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+        _assemblyDescriptionAttributes = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyDescriptionAttribute>();
     }
 
     public static string GetVersion()
@@ -28,12 +31,12 @@ public static class AssemblyHelpers
 
     public static string GetInternalVersion()
     {
-        if (string.IsNullOrWhiteSpace(_version))
+        if (string.IsNullOrWhiteSpace(_internalVersion))
         {
-            _version = _assemblyInformationalVersionAttributes.InformationalVersion;
+            _internalVersion = _assemblyDescriptionAttributes.Description;
         }
 
-        return _version;
+        return _internalVersion;
     }
 
     public static string GetGitHash()
