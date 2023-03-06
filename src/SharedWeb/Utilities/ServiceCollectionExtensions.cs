@@ -144,6 +144,14 @@ public static class ServiceCollectionExtensions
         services.AddWebAuthn(globalSettings);
         // Required for HTTP calls
         services.AddHttpClient();
+            services.AddHttpClient("identity")
+                    .ConfigureHttpMessageHandlerBuilder(builder =>
+                    {
+                        builder.PrimaryHandler = new System.Net.Http.HttpClientHandler
+                        {
+                            ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
+                        };
+                    });
 
         services.AddSingleton<IStripeAdapter, StripeAdapter>();
         services.AddSingleton<Braintree.IBraintreeGateway>((serviceProvider) =>
