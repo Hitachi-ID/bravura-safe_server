@@ -41,7 +41,7 @@ public class AppleIapService : IAppleIapService
             (!(_hostingEnvironment.IsProduction() || _hostingEnvironment.IsEnvironment("QA")) && receiptStatus.Environment == "Sandbox") ||
             ((_hostingEnvironment.IsProduction() || _hostingEnvironment.IsEnvironment("QA")) && receiptStatus.Environment != "Sandbox");
         var validProductBundle = receiptStatus.Receipt.BundleId == "com.bitwarden.desktop" ||
-            receiptStatus.Receipt.BundleId == "com.8bit.bitwarden";
+            receiptStatus.Receipt.BundleId == "com.hitachiid.bravurasafe";
         var validProduct = receiptStatus.LatestReceiptInfo.LastOrDefault()?.ProductId == "premium_annually";
         var validIds = receiptStatus.GetOriginalTransactionId() != null &&
             receiptStatus.GetLastTransactionId() != null;
