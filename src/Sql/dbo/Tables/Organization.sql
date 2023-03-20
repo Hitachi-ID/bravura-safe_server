@@ -37,12 +37,13 @@
     [TwoFactorProviders]            NVARCHAR (MAX)   NULL,
     [ExpirationDate]                DATETIME2 (7)    NULL,
     [CreationDate]                  DATETIME2 (7)    NOT NULL,
-    [RevisionDate]                  DATETIME2 (7)   NOT NULL,
-    [OwnersNotifiedOfAutoscaling]   DATETIME2(7)    NULL,
-    [MaxAutoscaleSeats]             INT             NULL,
-    [UseKeyConnector]               BIT             NOT NULL,
+    [RevisionDate]                  DATETIME2 (7)    NOT NULL,
+    [OwnersNotifiedOfAutoscaling]   DATETIME2 (7)    NULL,
+    [MaxAutoscaleSeats]             INT              NULL,
+    [UseKeyConnector]               BIT              NOT NULL,
     [UseScim]                       BIT              NOT NULL CONSTRAINT [DF_Organization_UseScim] DEFAULT (0),
     [UseCustomPermissions]          BIT              NOT NULL CONSTRAINT [DF_Organization_UseCustomPermissions] DEFAULT (1),
+    [UseSecretsManager]             BIT              NOT NULL CONSTRAINT [DF_Organization_UseSecretsManager] DEFAULT (0),
     CONSTRAINT [PK_Organization] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

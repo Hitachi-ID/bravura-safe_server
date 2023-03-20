@@ -17,11 +17,15 @@ public class OrganizationUserUserDetails : IExternal, ITwoFactorProvidersUser
     public OrganizationUserStatusType Status { get; set; }
     public OrganizationUserType Type { get; set; }
     public bool AccessAll { get; set; }
+    public bool AccessSecretsManager { get; set; }
     public string ExternalId { get; set; }
     public string SsoExternalId { get; set; }
     public string Permissions { get; set; }
     public string ResetPasswordKey { get; set; }
     public bool UsesKeyConnector { get; set; }
+
+    public ICollection<Guid> Groups { get; set; } = new List<Guid>();
+    public ICollection<CollectionAccessSelection> Collections { get; set; } = new List<CollectionAccessSelection>();
 
     public Dictionary<TwoFactorProviderType, TwoFactorProvider> GetTwoFactorProviders()
     {

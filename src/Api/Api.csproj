@@ -30,6 +30,7 @@
     <When Condition="!$(DefineConstants.Contains('OSS'))">
       <ItemGroup>
         <ProjectReference Include="..\..\bitwarden_license\src\Commercial.Core\Commercial.Core.csproj" />
+        <ProjectReference Include="..\..\bitwarden_license\src\Commercial.Infrastructure.EntityFramework\Commercial.Infrastructure.EntityFramework.csproj" />
       </ItemGroup>
     </When>
   </Choose>
@@ -40,7 +41,7 @@
     <PackageReference Include="NewRelic.Agent" Version="9.8.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
 </Project>

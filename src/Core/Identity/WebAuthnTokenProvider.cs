@@ -107,6 +107,8 @@ public class WebAuthnTokenProvider : IUserTwoFactorTokenProvider<User>
             return false;
         }
 
+        // Callback to check user ownership of credential. Always return true since we have already
+        // established ownership in this context.
         IsUserHandleOwnerOfCredentialIdAsync callback = (args, cancellationToken) => Task.FromResult(true);
 
         var res = await _fido2.MakeAssertionAsync(clientResponse, options, webAuthCred.Item2.PublicKey, webAuthCred.Item2.SignatureCounter, callback);
