@@ -42,7 +42,8 @@ public class HomeController : Controller
 
     public async Task<IActionResult> GetLatestVersion(ProjectType project, CancellationToken cancellationToken)
     {
-        var requestUri = $"https://selfhost.bitwarden.com/version.json";
+        //var requestUri = $"https://selfhost.bitwarden.com/version.json";
+        var requestUri = $"{_globalSettings.BaseServiceUri.InternalVault}/version.json";
         try
         {
             var response = await _httpClient.GetAsync(requestUri, cancellationToken);
@@ -74,9 +75,9 @@ public class HomeController : Controller
             var response = await _httpClient.GetAsync(requestUri, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                using var jsonDocument = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(cancellationToken), cancellationToken: cancellationToken);
-                var root = jsonDocument.RootElement;
-                return new JsonResult(root.GetProperty("version").GetString());
+                var vtext = await response.Content.ReadAsStringAsync();
+                var latestVersions = JsonConvert.DeserializeObject<Version>(vtext);
+                return new JsonResult(latestVersions.version);
             }
         }
         catch (HttpRequestException e)
@@ -84,10 +85,21 @@ public class HomeController : Controller
             _logger.LogError(e, $"Error encountered while sending GET request to {requestUri}");
             return new JsonResult("Unable to fetch installed version") { StatusCode = StatusCodes.Status500InternalServerError };
         }
+        catch(Exception)
+        {
+            return new JsonResult("Unable to get installed version") { StatusCode = StatusCodes.Status500InternalServerError };
+        }
 
         return new JsonResult("-");
     }
 
+    private class Version
+    {
+        [JsonProperty("version")]
+        public string version { get; set; }
+        [JsonProperty("versions")]
+        public Versions versions { get; set; }
+    }
     private class LatestVersions
     {
         [JsonProperty("versions")]

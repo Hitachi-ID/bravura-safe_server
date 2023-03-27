@@ -16,7 +16,8 @@ public class RelayPushRegistrationService : BaseIdentityClientService, IPushRegi
         : base(
             httpFactory,
             globalSettings.PushRelayBaseUri,
-            globalSettings.Installation.IdentityUri,
+                //globalSettings.Installation.IdentityUri,
+                globalSettings.SelfHosted ? globalSettings.BaseServiceUri.Identity : globalSettings.Installation.IdentityUri,
             ApiScopes.ApiPush,
             $"installation.{globalSettings.Installation.Id}",
             globalSettings.Installation.Key,

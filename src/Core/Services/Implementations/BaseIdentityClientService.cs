@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -37,8 +38,10 @@ public abstract class BaseIdentityClientService : IDisposable
         Client.BaseAddress = new Uri(baseClientServerUri);
         Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
+
+            var pathWithTrailingSlash = baseIdentityServerUri.TrimEnd('/') + @"/";
         IdentityClient = _httpFactory.CreateClient("identity");
-        IdentityClient.BaseAddress = new Uri(baseIdentityServerUri);
+            IdentityClient.BaseAddress = new Uri(pathWithTrailingSlash);
         IdentityClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
@@ -146,10 +149,10 @@ public abstract class BaseIdentityClientService : IDisposable
                 _nextAuthAttempt = DateTime.UtcNow.AddDays(1);
             }
 
-            if (_logger.IsEnabled(LogLevel.Debug))
+                //if (_logger.IsEnabled(LogLevel.Debug))
             {
                 var responseBody = await response.Content.ReadAsStringAsync();
-                _logger.LogDebug("Error response body:\n{ResponseBody}", responseBody);
+                    _logger.LogError("Error response body:\n{ResponseBody}", responseBody);
             }
 
             return false;
