@@ -76,14 +76,7 @@ public class Configuration
     [Description("Nginx Header Content-Security-Policy parameter\n" +
         "WARNING: Reconfiguring this parameter may break features. By changing this parameter\n" +
         "you become responsible for maintaining this value.")]
-    public string NginxHeaderContentSecurityPolicy { get; set; } = "default-src 'self'; style-src 'self' " +
-        "'unsafe-inline'; img-src 'self' data: https://haveibeenpwned.com; " +
-        "child-src 'self' https://*.duosecurity.com https://*.duofederal.com; " +
-        "form-action 'self'; " +
-        "frame-ancestors 'self'; " +
-        "frame-src 'self' https://*.duosecurity.com https://*.duofederal.com; " +
-        "connect-src 'self' wss://{0} https://api.pwnedpasswords.com " +
-        "https://api.2fa.directory; object-src 'self' blob:;";
+    public string NginxHeaderContentSecurityPolicy { get; set; }
 
     [Description("Communicate with the Bravura Safe push relay service (push.safe.hitachi-id.net) for mobile\n" +
         "app live sync.")]
