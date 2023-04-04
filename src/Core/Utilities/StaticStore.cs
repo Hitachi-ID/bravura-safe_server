@@ -137,7 +137,7 @@ public class StaticStore
                 NameLocalizationKey = "bravuraPlanNameTeams",
                 DescriptionLocalizationKey = "bravuraPlanDescTeams",
                 BaseSeats = 32767,
-                BaseStorageGb = 10240,
+                BaseStorageGb = 100,
 
                 MaxCollections = 32767,
 
@@ -172,7 +172,7 @@ public class StaticStore
                 NameLocalizationKey = "bravuraPlanNameEnterprise",
                 DescriptionLocalizationKey = "bravuraPlanDescEnterprise",
                 BaseSeats = 1000000,
-                BaseStorageGb = 10240,
+                BaseStorageGb = 100,
 
                 MaxCollections = 32767,
 
