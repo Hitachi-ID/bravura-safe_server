@@ -131,6 +131,116 @@ public class StaticStore
             },
             new Plan
             {
+                Type = PlanType.TeamsAnnually2019,
+                Product = ProductType.Teams,
+                Name = "Teams (Annually) 2019",
+                IsAnnual = true,
+                NameLocalizationKey = "planNameTeams",
+                DescriptionLocalizationKey = "planDescTeams",
+                CanBeUsedByBusiness = true,
+                BaseSeats = 5,
+                BaseStorageGb = 1,
+
+                HasAdditionalSeatsOption = true,
+                HasAdditionalStorageOption = true,
+                TrialPeriodDays = 7,
+
+                HasTotp = true,
+
+                UpgradeSortOrder = 2,
+                DisplaySortOrder = 2,
+                LegacyYear = 2020,
+
+                StripePlanId = "teams-org-annually",
+                StripeSeatPlanId = "teams-org-seat-annually",
+                StripeStoragePlanId = "storage-gb-annually",
+                BasePrice = 60,
+                SeatPrice = 24,
+                AdditionalStoragePricePerGb = 4,
+
+                AllowSeatAutoscale = true,
+            },
+            new Plan
+            {
+                Type = PlanType.EnterpriseAnnually2019,
+                Name = "Enterprise (Annually) 2019",
+                IsAnnual = true,
+                Product = ProductType.Enterprise,
+                NameLocalizationKey = "planNameEnterprise",
+                DescriptionLocalizationKey = "planDescEnterprise",
+                CanBeUsedByBusiness = true,
+                BaseSeats = 0,
+                BaseStorageGb = 1,
+
+                HasAdditionalSeatsOption = true,
+                HasAdditionalStorageOption = true,
+                TrialPeriodDays = 7,
+
+                HasPolicies = true,
+                HasSelfHost = true,
+                HasGroups = true,
+                HasDirectory = true,
+                HasEvents = true,
+                HasTotp = true,
+                Has2fa = true,
+                HasApi = true,
+                UsersGetPremium = true,
+                HasCustomPermissions = true,
+
+                UpgradeSortOrder = 3,
+                DisplaySortOrder = 3,
+                LegacyYear = 2020,
+
+                StripePlanId = null,
+                StripeSeatPlanId = "enterprise-org-seat-annually",
+                StripeStoragePlanId = "storage-gb-annually",
+                BasePrice = 0,
+                SeatPrice = 36,
+                AdditionalStoragePricePerGb = 4,
+
+                AllowSeatAutoscale = true,
+            },
+            new Plan
+            {
+                Type = PlanType.EnterpriseMonthly2019,
+                Product = ProductType.Enterprise,
+                Name = "Enterprise (Monthly) 2019",
+                NameLocalizationKey = "planNameEnterprise",
+                DescriptionLocalizationKey = "planDescEnterprise",
+                CanBeUsedByBusiness = true,
+                BaseSeats = 0,
+                BaseStorageGb = 1,
+
+                HasAdditionalSeatsOption = true,
+                HasAdditionalStorageOption = true,
+                TrialPeriodDays = 7,
+
+                HasPolicies = true,
+                HasGroups = true,
+                HasDirectory = true,
+                HasEvents = true,
+                HasTotp = true,
+                Has2fa = true,
+                HasApi = true,
+                HasSelfHost = true,
+                UsersGetPremium = true,
+                HasCustomPermissions = true,
+
+                UpgradeSortOrder = 3,
+                DisplaySortOrder = 3,
+                LegacyYear = 2020,
+
+                StripePlanId = null,
+                StripeSeatPlanId = "enterprise-org-seat-monthly",
+                StripeStoragePlanId = "storage-gb-monthly",
+                BasePrice = 0,
+                SeatPrice = 4M,
+                AdditionalStoragePricePerGb = 0.5M,
+
+                AllowSeatAutoscale = true,
+            },
+            new Plan
+            {
                 Type = PlanType.BravuraTeams,
                 Product = ProductType.Teams,
                 Name = "Teams",
