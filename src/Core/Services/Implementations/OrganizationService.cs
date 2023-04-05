@@ -734,7 +734,7 @@ public class OrganizationService : IOrganizationService
             PlanType = license.PlanType,
             Seats = license.Seats,
             MaxCollections = license.MaxCollections,
-            MaxStorageGb = _globalSettings.SelfHosted ? 10240 : license.MaxStorageGb, // 10 TB
+            MaxStorageGb = _globalSettings.SelfHosted ? 100 : license.MaxStorageGb, // 100 GB
             UsePolicies = license.UsePolicies,
             UseSso = license.UseSso,
             UseKeyConnector = license.UseKeyConnector,

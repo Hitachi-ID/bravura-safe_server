@@ -1130,7 +1130,7 @@ public class UserService : UserManager<User>, IUserService, IDisposable
 
         user.Premium = license.Premium;
         user.RevisionDate = DateTime.UtcNow;
-        user.MaxStorageGb = _globalSettings.SelfHosted ? 10240 : license.MaxStorageGb; // 10 TB
+        user.MaxStorageGb = _globalSettings.SelfHosted ? 100 : license.MaxStorageGb; // 100 GB
         user.LicenseKey = license.LicenseKey;
         user.PremiumExpirationDate = license.Expires;
         await SaveUserAsync(user);
