@@ -5,7 +5,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Bravura Safe</title>
 </head>
-
 <body style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; height: 100%; line-height: 25px; width: 100% !important; margin: 0;" bgcolor="#f6f6f6">
     <style type="text/css">
         ﻿ body {
@@ -46,8 +45,19 @@
         body {
             background-color: #f6f6f6;
         }
-        
-        @media only screen and (max-width: 600px) {
+
+        .white-title {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+            font-size: 24px;
+            line-height: 32px;
+            font-weight: 700;
+            -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: none;
+            color: #ffffff;
+        }
+
+        @media only screen and (max-width: 350px) {
             body {
                 padding: 0 !important;
             }
@@ -91,17 +101,60 @@
             .indented {
                 padding-left: 10px;
             }
+
+            .title-header-text {
+                width: 100%;
+                display: block;
+                padding-top: 75px;
+                padding-bottom: 0px;
+                padding-left: 35px;
+                padding-right: 20px;
+            }
+
+            .title-header-image {
+                width: 100%;
+                display: block;
+            }
+
+            .footer-image {
+                display: none;
+            }
+
+            .footer-text {
+                width: 100%;
+            }
         }
 
-        @media only screen and (min-width: 600px) {
+        @media only screen and (min-width: 350px) {
+            .title-header-text {
+                width: 65%;
+                display: inline-block;
+                padding-top: 75px;
+                padding-bottom: 75px;
+                padding-left: 35px;
+                padding-right: 20px;
+            }
+
+            .title-header-image {
+                display: inline-block;
+            }
+
             {{! Fix for Apple Mail }}
             .content-table {
                 width: 600px !important;
             }
+
+            .footer-image {
+                display: block;
+            }
+
+            .footer-text {
+                width: 65%;
+            }
         }
-        
-        /* Component styling - these are explicitly applied via classes so that they can be 
-            gradually introduced as we update templates.*/
+
+        /* Component styling - these are explicitly applied via classes so that they can be
+        gradually introduced as we update templates.*/
         a.inline-link {
             font-weight: bold;
             color: #008080;
@@ -118,14 +171,17 @@
         }
 
     </style>
-    <table class="body-wrap" cellpadding="0" cellspacing="0" style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; box-sizing: border-box; color: #333; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; margin: 0; width: 100%;" bgcolor="#f6f6f6">
-        <tr style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; box-sizing: border-box; color: #333; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; margin: 0;">
-            <td class="container" align="center" style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; box-sizing: border-box; clear: both !important; color: #333; display: block !important; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; margin: 0 auto; max-width: 600px !important; width: 600px;" valign="top">
-                <table cellpadding="0" cellspacing="0" class="container-table" style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; box-sizing: border-box; clear: both !important; color: #333; display: block !important; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; margin: 0 auto; max-width: 600px !important; width: 600px;">
-                    <tr style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; box-sizing: border-box; color: #333; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; margin: 0;">
-                        <td class="content" align="center" style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; box-sizing: border-box; color: #333; display: block; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 0; line-height: 0; margin: 0 auto; max-width: 600px; padding-bottom: 20px;" valign="top">
-                            <table class="main" width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 16px; color: #333; line-height: 25px; -webkit-font-smoothing: antialiased; margin: 0; -webkit-text-size-adjust: none; border: 1px solid #e9e9e9; border-radius: 3px;" bgcolor="white">
-                                <tr style="margin: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 16px; color: #333; line-height: 25px; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none;">
+    {{! Yahoo center fix }}
+    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f6f6f6">
+        <tr>
+            <td class="container" width="100%" align="center">
+                {{! 600px container }}
+                <table cellpadding="0" cellspacing="0" width="100%" class="content-table">
+                    <tr>
+                        <td></td> {{! Left column (center fix) }}
+                        <td class="content" align="center" valign="top" width="600" style="padding-bottom: 20px;">
+                            <table class="main" cellpadding="0" cellspacing="0" style="border: 1px solid #e9e9e9; border-radius: 3px;" bgcolor="white">
+                                <tr>
                                     <td class="content-wrap" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 16px; color: #333; line-height: 25px; margin: 0; -webkit-font-smoothing: antialiased; padding: 20px; -webkit-text-size-adjust: none;" valign="top">
 
                                         {{>@partial-block}}
@@ -133,17 +189,19 @@
                                     </td>
                                 </tr>
                             </table>
-                            <table class="footer" cellpadding="0" cellspacing="0" width="100%" style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; box-sizing: border-box; clear: both; color: #999; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; margin: 0; width: 100%;">
-                        <tr>
-                            <td class="content-block" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; color: #666666; line-height: 25px; margin: 0; -webkit-font-smoothing: antialiased; padding: 15px 0 0 0; -webkit-text-size-adjust: none; text-align: center;" valign="top">
-                                &copy; {{CurrentYear}}, Bitwarden Inc., with modifications &copy; {{CurrentYear}}, Bravura Security, Inc.
-                            </td>
+                            <table class="footer" cellpadding="0" cellspacing="0" width="100%" style="margin: 0; width: 100%;">
+                                <tr>
+                                    <td class="content-block" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; color: #666666; line-height: 25px; margin: 0; -webkit-font-smoothing: antialiased; padding: 15px 0 0 0; -webkit-text-size-adjust: none; text-align: center;" valign="top">
+                                        &copy; {{CurrentYear}}, Bitwarden Inc., with modifications &copy; {{CurrentYear}}, Bravura Security, Inc
+                                    </td>
                                 </tr>
                             </table>
                         </td>
-                <td></td> {{! Right column (center fix) }}
+                        <td></td> {{! Right column (center fix) }}
                     </tr>
                 </table>
-    </td></tr></table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
