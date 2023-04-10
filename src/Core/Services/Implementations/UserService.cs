@@ -10,6 +10,8 @@ using Bit.Core.Models.Business;
 using Bit.Core.Repositories;
 using Bit.Core.Settings;
 using Bit.Core.Utilities;
+using Bit.Core.Vault.Entities;
+using Bit.Core.Vault.Repositories;
 using Fido2NetLib;
 using Fido2NetLib.Objects;
 using Microsoft.AspNetCore.DataProtection;
@@ -47,7 +49,6 @@ public class UserService : UserManager<User>, IUserService, IDisposable
     private readonly IGlobalSettings _globalSettings;
     private readonly IOrganizationService _organizationService;
     private readonly IProviderUserRepository _providerUserRepository;
-    private readonly IDeviceRepository _deviceRepository;
     private readonly IStripeSyncService _stripeSyncService;
 
     public UserService(
@@ -78,7 +79,6 @@ public class UserService : UserManager<User>, IUserService, IDisposable
         IGlobalSettings globalSettings,
         IOrganizationService organizationService,
         IProviderUserRepository providerUserRepository,
-        IDeviceRepository deviceRepository,
         IStripeSyncService stripeSyncService)
         : base(
               store,
@@ -114,7 +114,6 @@ public class UserService : UserManager<User>, IUserService, IDisposable
         _globalSettings = globalSettings;
         _organizationService = organizationService;
         _providerUserRepository = providerUserRepository;
-        _deviceRepository = deviceRepository;
         _stripeSyncService = stripeSyncService;
     }
 
@@ -357,7 +356,7 @@ public class UserService : UserManager<User>, IUserService, IDisposable
         await _mailService.SendMasterPasswordHintEmailAsync(email, user.MasterPasswordHint);
     }
 
-    public async Task SendTwoFactorEmailAsync(User user, bool isBecauseNewDeviceLogin = false)
+    public async Task SendTwoFactorEmailAsync(User user)
     {
         var provider = user.GetTwoFactorProvider(TwoFactorProviderType.Email);
         if (provider == null || provider.MetaData == null || !provider.MetaData.ContainsKey("Email"))
@@ -369,14 +368,7 @@ public class UserService : UserManager<User>, IUserService, IDisposable
         var token = await base.GenerateUserTokenAsync(user, TokenOptions.DefaultEmailProvider,
             "2faEmail:" + email);
 
-        if (isBecauseNewDeviceLogin)
-        {
-            await _mailService.SendNewDeviceLoginTwoFactorEmailAsync(email, token);
-        }
-        else
-        {
-            await _mailService.SendTwoFactorEmailAsync(email, token);
-        }
+        await _mailService.SendTwoFactorEmailAsync(email, token);
     }
 
     public async Task<bool> VerifyTwoFactorEmailAsync(User user, string token)
@@ -1490,37 +1482,5 @@ public class UserService : UserManager<User>, IUserService, IDisposable
         return user.UsesKeyConnector
             ? await VerifyOTPAsync(user, secret)
             : await CheckPasswordAsync(user, secret);
-    }
-
-    public async Task<bool> Needs2FABecauseNewDeviceAsync(User user, string deviceIdentifier, string grantType)
-    {
-        return CanEditDeviceVerificationSettings(user)
-               && user.UnknownDeviceVerificationEnabled
-               && grantType != "authorization_code"
-               && await IsNewDeviceAndNotTheFirstOneAsync(user, deviceIdentifier);
-    }
-
-    public bool CanEditDeviceVerificationSettings(User user)
-    {
-        return _globalSettings.TwoFactorAuth.EmailOnNewDeviceLogin
-               && user.EmailVerified
-               && !user.UsesKeyConnector
-               && !(user.GetTwoFactorProviders()?.Any() ?? false);
-    }
-
-    private async Task<bool> IsNewDeviceAndNotTheFirstOneAsync(User user, string deviceIdentifier)
-    {
-        if (user == null)
-        {
-            return default;
-        }
-
-        var devices = await _deviceRepository.GetManyByUserIdAsync(user.Id);
-        if (!devices.Any())
-        {
-            return false;
-        }
-
-        return !devices.Any(d => d.Identifier == deviceIdentifier);
     }
 }
