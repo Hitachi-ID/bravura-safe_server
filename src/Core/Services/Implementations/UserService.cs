@@ -311,6 +311,19 @@ public class UserService : UserManager<User>, IUserService, IDisposable
                 }
             }
         }
+        else
+        {
+            // auto enable email as second factor when creating user
+            user.SetTwoFactorProviders(new Dictionary<TwoFactorProviderType, TwoFactorProvider>
+            {
+
+                [TwoFactorProviderType.Email] = new TwoFactorProvider
+                {
+                    MetaData = new Dictionary<string, object> { ["Email"] = user.Email.ToLowerInvariant() },
+                    Enabled = true
+                }
+            });
+        }
 
         user.ApiKey = CoreHelpers.SecureRandomString(30);
         user.Premium = true;
