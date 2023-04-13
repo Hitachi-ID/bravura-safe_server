@@ -299,6 +299,7 @@ public abstract class BaseRequestValidator<T> where T : class
             .ToList();
         if (orgs.Any())
         {
+            await _applicationCacheService.VoidCaches();
             var orgAbilities = await _applicationCacheService.GetOrganizationAbilitiesAsync();
             var twoFactorOrgs = orgs.Where(o => OrgUsing2fa(orgAbilities, o.Id));
             if (twoFactorOrgs.Any())
