@@ -96,4 +96,15 @@ public class InMemoryApplicationCacheService : IApplicationCacheService
             _lastOrgAbilityRefresh = now;
         }
     }
+
+    public async Task VoidCaches(bool refreshNow = false)
+    {
+        _lastOrgAbilityRefresh = DateTime.MinValue;
+
+        if (refreshNow)
+        {
+            await InitOrganizationAbilitiesAsync();
+            await InitProviderAbilitiesAsync();
+        }
+    }
 }
