@@ -5,6 +5,7 @@ using Bit.Core.Models.Api;
 using Bit.Core.Models.Data;
 using Bit.Core.Models.Data.Organizations.OrganizationUsers;
 using Bit.Core.Utilities;
+using Bit.Core.Models;
 
 namespace Bit.Api.Models.Response.Organizations;
 
@@ -96,8 +97,8 @@ public class OrganizationUserUserDetailsResponseModel : OrganizationUserResponse
         Groups = organizationUser.Groups;
         // Prevent reset password when using key connector.
         ResetPasswordEnrolled = ResetPasswordEnrolled && !organizationUser.UsesKeyConnector;
+        TwoFactorProvidersEnabled = organizationUser.GetTwoFactorProviders();
     }
-
 
     public string Name { get; set; }
     public string Email { get; set; }
@@ -106,6 +107,7 @@ public class OrganizationUserUserDetailsResponseModel : OrganizationUserResponse
     public bool SsoBound { get; set; }
     public IEnumerable<SelectionReadOnlyResponseModel> Collections { get; set; }
     public IEnumerable<Guid> Groups { get; set; }
+    public IDictionary<TwoFactorProviderType, TwoFactorProvider> TwoFactorProvidersEnabled { get; set; }
 }
 
 public class OrganizationUserResetPasswordDetailsResponseModel : ResponseModel

@@ -305,7 +305,7 @@ public class OrganizationUserRepository : Repository<Core.Entities.OrganizationU
         }
     }
 
-    public async Task<ICollection<OrganizationUserUserDetails>> GetManyDetailsByOrganizationAsync(Guid organizationId, bool includeGroups, bool includeCollections)
+    public async Task<ICollection<OrganizationUserUserDetails>> GetManyDetailsByOrganizationAsync(Guid organizationId, bool includeGroups, bool includeCollections, bool includeTwoFactorProvidersEnabled)
     {
         using (var scope = ServiceScopeFactory.CreateScope())
         {
@@ -315,7 +315,7 @@ public class OrganizationUserRepository : Repository<Core.Entities.OrganizationU
                                where ou.OrganizationId == organizationId
                                select ou).ToListAsync();
 
-            if (!includeCollections && !includeGroups)
+            if (!includeCollections && !includeGroups && !includeTwoFactorProvidersEnabled)
             {
                 return users;
             }
@@ -362,6 +362,10 @@ public class OrganizationUserRepository : Repository<Core.Entities.OrganizationU
                             ReadOnly = cu.ReadOnly,
                             HidePasswords = cu.HidePasswords
                         }).ToList() ?? new List<CollectionAccessSelection>();
+                }
+                if (includeTwoFactorProvidersEnabled)
+                {
+                    user.GetTwoFactorProviders();
                 }
             }
 
