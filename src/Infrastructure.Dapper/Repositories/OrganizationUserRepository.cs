@@ -198,7 +198,7 @@ public class OrganizationUserRepository : Repository<OrganizationUser, Guid>, IO
         }
     }
 
-    public async Task<ICollection<OrganizationUserUserDetails>> GetManyDetailsByOrganizationAsync(Guid organizationId, bool includeGroups, bool includeCollections)
+    public async Task<ICollection<OrganizationUserUserDetails>> GetManyDetailsByOrganizationAsync(Guid organizationId, bool includeGroups, bool includeCollections, bool includeTwoFactorProvidersEnabled)
     {
         using (var connection = new SqlConnection(ConnectionString))
         {
@@ -212,7 +212,7 @@ public class OrganizationUserRepository : Repository<OrganizationUser, Guid>, IO
 
             var users = results.ToList();
 
-            if (!includeCollections && !includeGroups)
+            if (!includeCollections && !includeGroups & !includeTwoFactorProvidersEnabled)
             {
                 return users;
             }
@@ -255,6 +255,10 @@ public class OrganizationUserRepository : Repository<OrganizationUser, Guid>, IO
                             ReadOnly = uc.ReadOnly,
                             HidePasswords = uc.HidePasswords
                         }).ToList() ?? new List<CollectionAccessSelection>();
+                }
+                if (includeTwoFactorProvidersEnabled)
+                {
+                    user.GetTwoFactorProviders();
                 }
             }
 

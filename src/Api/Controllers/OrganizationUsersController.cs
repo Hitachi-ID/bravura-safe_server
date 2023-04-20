@@ -68,7 +68,7 @@ public class OrganizationUsersController : Controller
     }
 
     [HttpGet("")]
-    public async Task<ListResponseModel<OrganizationUserUserDetailsResponseModel>> Get(string orgId, bool includeGroups = false, bool includeCollections = false)
+    public async Task<ListResponseModel<OrganizationUserUserDetailsResponseModel>> Get(string orgId, bool includeGroups = false, bool includeCollections = false, bool includeTwoFactorProvidersEnabled = false)
     {
         var orgGuidId = new Guid(orgId);
         if (!await _currentContext.ViewAllCollections(orgGuidId) &&
@@ -79,7 +79,7 @@ public class OrganizationUsersController : Controller
             throw new NotFoundException();
         }
 
-        var organizationUsers = await _organizationUserRepository.GetManyDetailsByOrganizationAsync(orgGuidId, includeGroups, includeCollections);
+        var organizationUsers = await _organizationUserRepository.GetManyDetailsByOrganizationAsync(orgGuidId, includeGroups, includeCollections, includeTwoFactorProvidersEnabled);
         var responseTasks = organizationUsers.Select(async o => new OrganizationUserUserDetailsResponseModel(o,
             await _userService.TwoFactorIsEnabledAsync(o)));
         var responses = await Task.WhenAll(responseTasks);
