@@ -74,14 +74,6 @@ public class PolicyService : IPolicyService
                     await DependsOnSingleOrgAsync(org);
                 }
                 break;
-
-            // Activate Autofill is only available to Enterprise 2020-current plans
-            case PolicyType.ActivateAutofill:
-                if (policy.Enabled)
-                {
-                    LockedTo2020Plan(org);
-                }
-                break;
         }
 
         var now = DateTime.UtcNow;
