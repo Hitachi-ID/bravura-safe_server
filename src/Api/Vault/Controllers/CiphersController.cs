@@ -636,7 +636,7 @@ public class CiphersController : Controller
 
     [HttpPost("{id}/attachment/{attachmentId}")]
     [SelfHosted(SelfHostedOnly = true)]
-    [RequestSizeLimit(Constants.FileSize501mb)]
+    [RequestSizeLimit(Constants.FileSize2gb)]
     [DisableFormValueModelBinding]
     public async Task PostFileForExistingAttachment(string id, string attachmentId)
     {

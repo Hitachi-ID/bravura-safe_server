@@ -16,8 +16,8 @@ namespace Bit.Core.Vault.Services;
 
     public class CipherService : ICipherService
     {
-        public const long MAX_FILE_SIZE = Constants.FileSize501mb;
-        public const string MAX_FILE_SIZE_READABLE = "500 MB";
+        public const long MAX_FILE_SIZE = Constants.FileSize2gb;
+        public const string MAX_FILE_SIZE_READABLE = "1.8 GB";
         private readonly ICipherRepository _cipherRepository;
         private readonly IFolderRepository _folderRepository;
         private readonly ICollectionRepository _collectionRepository;
