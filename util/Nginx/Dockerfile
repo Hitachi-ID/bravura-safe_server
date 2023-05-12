@@ -39,6 +39,7 @@ RUN set -eux; \
                 linux-pam \
                 shadow \
                 freetype \
+                openssl \
                 curl
 
 COPY nginx.conf /etc/nginx
