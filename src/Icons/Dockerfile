@@ -39,6 +39,7 @@ RUN set -eux; \
                 linux-pam \
                 shadow \
                 tzdata \
+                openssl \
                 icu-libs
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
